@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.frcteam1939.scouting2026.Greeting
+import org.w3c.dom.Text
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +31,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ButtonCounter() {
     Button(
-        onClick = {}
-    ) {
+        onClick = {},
+        colors = ButtonDefaults.buttonColors(
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    ) {Text(text = "Sigmakindle7")
 
     }
 }
