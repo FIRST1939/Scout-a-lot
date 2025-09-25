@@ -20,9 +20,19 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     GreetingView(Greeting().greet())
+                    ButtonCounter()
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ButtonCounter() {
+    Button(
+        onClick = {}
+    ) {
+
     }
 }
 
