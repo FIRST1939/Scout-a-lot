@@ -34,9 +34,10 @@ fun ButtonCounter() {
         onClick = {},
         colors = ButtonDefaults.buttonColors(
             contentColor = MaterialTheme.colorScheme.primary
-        )
-    ) {Text(text = "Sigmakindle7")
-
+        ),
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Text(text = "Sigmakindle7", style = MaterialTheme.typography.bodyMedium)
     }
 }
 
