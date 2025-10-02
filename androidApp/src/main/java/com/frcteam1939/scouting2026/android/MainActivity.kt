@@ -8,6 +8,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.frcteam1939.scouting2026.Greeting
 import org.w3c.dom.Text
 
@@ -30,14 +35,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ButtonCounter() {
-    Button(
+    TextButton(
         onClick = {},
-        colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colorScheme.primary
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.secondary
         ),
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.small
     ) {
-        Text(text = "Sigmakindle7", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "button", style = MaterialTheme.typography.bodyMedium)
     }
 }
 
