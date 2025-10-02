@@ -3,6 +3,7 @@ package com.frcteam1939.scouting2026.android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -23,7 +24,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     GreetingView(Greeting().greet())
-                    ButtonCounter()
+                    Column{
+                        ButtonCounter()
+                        ButtonCounter()
+                        ButtonCounter()
+                    }
                 }
             }
         }
@@ -35,14 +40,18 @@ fun ButtonCounter() {
     TextButton(
         onClick = {},
         modifier = Modifier
-            .padding(50.dp),
+            .padding(25.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.secondary
         ),
         shape = MaterialTheme.shapes.small
     ) {
-        Text(text = "button", style = MaterialTheme.typography.bodyMedium)
+        Column {
+            Text(text = "small", style = MaterialTheme.typography.bodySmall)
+            Text(text = "medium", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "large", style = MaterialTheme.typography.bodyLarge)
+        }
     }
 }
 
