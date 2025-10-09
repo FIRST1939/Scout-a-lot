@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.frcteam1939.scouting2026.Greeting
 import androidx.compose.ui.unit.dp
 
@@ -24,12 +23,22 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     Column (
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
+
                     )
                         {
-                        GreetingView(Greeting().greet())
+                        Settingsbutton(
+                            text = "settings",
+                            modifier = Modifier.align(Alignment.End)
+
+                        )
+
+                        GreetingView(Greeting().greet()
+                        )
 
                         Button2(
                             text = "SCOUNt")
@@ -40,7 +49,27 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@Composable
+fun Settingsbutton(
+    text: String,
+    modifier: Modifier,
 
+    ) {
+    TextButton(
+        onClick = {},
+        modifier = modifier
+            .padding(all = 10.dp),
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.secondary,
+        ) ,
+        shape = MaterialTheme.shapes.small
+
+        ) {
+            Text("settings", style = MaterialTheme.typography.bodyLarge)
+        }
+
+}
 @Composable
 fun HomeColumn() {
     Column(
@@ -94,7 +123,9 @@ fun ButtonCounter(text: String) {
 }
 
 @Composable
-fun GreetingView(text: String) {
+fun GreetingView(
+    text: String
+) {
     Text(
         text = "Match Scouting Collector Creator",
         modifier = Modifier.padding(all = 25.dp),
@@ -103,10 +134,4 @@ fun GreetingView(text: String) {
 
 }
 
-@Preview
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-        GreetingView("Hello, Android!")
-    }
-}
+
