@@ -23,25 +23,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
                     Column (
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
-
                     )
                         {
-                        Settingsbutton(
+                        SettingsButton(
                             text = "settings",
                             modifier = Modifier.align(Alignment.End)
-
                         )
-
-                        GreetingView(Greeting().greet()
-                        )
-
-                        Button2(
-                            text = "SCOUNt")
+                        GreetingView(Greeting().greet())
+                        Button2(text = "SCOUNt")
                         HomeColumn()
                     }
                 }
@@ -49,11 +42,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
-fun Settingsbutton(
+fun SettingsButton(
     text: String,
     modifier: Modifier,
-
     ) {
     TextButton(
         onClick = {},
@@ -62,13 +55,11 @@ fun Settingsbutton(
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary,
-        ) ,
+            ),
         shape = MaterialTheme.shapes.small
-
         ) {
             Text("settings", style = MaterialTheme.typography.bodyLarge)
         }
-
 }
 @Composable
 fun HomeColumn() {
@@ -86,26 +77,21 @@ fun HomeColumn() {
 }
 
 @Composable
-fun Button2(
-    text: String
-) {
+fun Button2(text: String) {
     TextButton(
         onClick = {},
         modifier = Modifier
-            .padding(all = 100.dp)
-            ,
-
+            .padding(all = 100.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary
         ),
         shape = MaterialTheme.shapes.small,
-
     ) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
-
     }
 }
+
 @Composable
 fun ButtonCounter(text: String) {
     TextButton(
