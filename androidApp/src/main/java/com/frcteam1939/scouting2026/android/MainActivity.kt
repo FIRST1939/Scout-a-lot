@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 object AppRoutes {
     const val HOME = "home"
     const val SETTINGS = "settings"
-
     const val SELECT = "select"
+    const val SAVED = "saved"
 }
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,10 +56,46 @@ fun ScoutingApp() {
             composable(AppRoutes.SELECT) {
                 SelectScreen(navController = navController)
             }
+            composable(AppRoutes.SAVED) {
+                SavedScreen(navController = navController)
+            }
         }
     }
 }
+@Composable
+fun SavedButton(
+    text: String,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.secondary,
+        ),
+        shape = MaterialTheme.shapes.small
+    ) {
+        Text(text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
 
+@Composable
+fun SavedScreen(
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("You can see and manage saved ones . . at one pint", style= MaterialTheme.typography.headlineMedium)
+        Button(onClick = {navController.popBackStack() }) {
+            Text("Go Back")
+        }
+    }
+}
 @Composable
 fun SelectButton(
     text: String,
@@ -165,7 +201,11 @@ fun HomeColumn(navController: NavController
             text = "select"
         )
         Text(text = "Selected: sigmaboi2026")
-        ButtonCounter(text = "saved")
+        SavedButton(
+            onClick = {navController.navigate(AppRoutes.SAVED)},
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = "saved"
+        )
 
     }
 }
