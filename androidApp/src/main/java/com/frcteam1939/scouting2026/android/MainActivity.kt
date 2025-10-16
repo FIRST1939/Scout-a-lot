@@ -81,7 +81,7 @@ fun Button2(text: String) {
     TextButton(
         onClick = {},
         modifier = Modifier
-            .padding(all = 100.dp),
+            .padding(all = 75.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary
@@ -113,7 +113,7 @@ fun GreetingView(
     text: String
 ) {
     Text(
-        text = "Match Scouting Collector Creator",
+        text = "FRC Scout Maker",
         modifier = Modifier.padding(all = 25.dp),
         style = MaterialTheme.typography.bodyLarge,
     )
