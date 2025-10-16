@@ -51,7 +51,7 @@ fun SettingsButton(
     TextButton(
         onClick = {},
         modifier = modifier
-            .padding(vertical = 30.dp, horizontal = 10.dp),
+            .padding(vertical = 10.dp, horizontal = 10.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary,
