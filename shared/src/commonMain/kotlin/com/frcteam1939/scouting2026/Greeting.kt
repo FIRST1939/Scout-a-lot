@@ -4,7 +4,6 @@ class Greeting {
     private val platform: Platform = getPlatform()
 
     fun greet(): String {
-        //siiiiiiiiiiiiiiiigmaaaaaaaaa
-        return "Hello, ${platform.name}! ARE you a sigma kindle?"
+        return "Hello, ${platform.name}!"
     }
 }
