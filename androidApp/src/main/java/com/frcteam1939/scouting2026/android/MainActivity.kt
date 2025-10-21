@@ -17,12 +17,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.frcteam1939.scouting2026.Greeting
 import androidx.compose.ui.unit.dp
-
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import android.widget.Toast.makeText
 object AppRoutes {
     const val HOME = "home"
     const val SETTINGS = "settings"
     const val SELECT = "select"
     const val SAVED = "saved"
+    const val OPERATOR = "operator"
 }
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +40,23 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
+@Composable
+fun MatchSelector(
+    text: String,
+    context: Context = LocalContext.current
+) {
+    TextButton(
+        onClick = {
+            makeText(context, "Not implemented 😨😨", Toast.LENGTH_SHORT).show()
+        },
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.secondary,
+        ),
+    ) {
+        Text(text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
 
 @Composable
 fun ScoutingApp() {
@@ -59,9 +79,47 @@ fun ScoutingApp() {
             composable(AppRoutes.SAVED) {
                 SavedScreen(navController = navController)
             }
+            composable(AppRoutes.OPERATOR) {
+                OperatorSettings(navController = navController)
+            }
         }
     }
 }
+@Composable
+fun OperatorButton(
+    text: String,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.secondary,
+        ),
+        shape = MaterialTheme.shapes.small
+    ) {
+        Text(text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+@Composable
+fun OperatorSettings(
+    navController: NavController
+) {
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HomeColumn(navController)
+        Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
+        Button(onClick = {navController.popBackStack() }) {
+            Text("Go Back")}
+    }
+}
+
 @Composable
 fun SavedButton(
     text: String,
@@ -137,7 +195,7 @@ fun HomeScreen(navController: NavController) {
     )
     {
         SettingsButton(
-            text = "settings",
+            text = "Settings",
             modifier = Modifier.align(Alignment.End),
             onClick = {
                 navController.navigate(AppRoutes.SETTINGS)
@@ -149,8 +207,11 @@ fun HomeScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             GreetingView(Greeting().greet())
-            Button2(text = "SCOUNt")
-            HomeColumn(navController)
+            Button2(text = "Start Scouting")
+            MatchSelector(
+                text = "Match Selector")
+
+
         }
     }
 }
@@ -162,7 +223,12 @@ fun SettingsScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("This is the Settings Page", style= MaterialTheme.typography.headlineMedium)
+        Text("Settings", style= MaterialTheme.typography.headlineMedium)
+        OperatorButton(
+            text = "Operator",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {navController.navigate(AppRoutes.OPERATOR)}
+        )
         Button(onClick = {navController.popBackStack() }) {
             Text("Go Back")
         }
@@ -194,17 +260,17 @@ fun HomeColumn(navController: NavController
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ButtonCounter(text = "+ create")
+        ButtonCounter(text = "Create a Set")
         SelectButton(
             onClick = {navController.navigate(AppRoutes.SELECT)},
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = "select"
+            text = "Select Set"
         )
-        Text(text = "Selected: sigmaboi2026")
+        Text(text = "Selected: sigmaboi2026 (match scout)")
         SavedButton(
             onClick = {navController.navigate(AppRoutes.SAVED)},
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = "saved"
+            text = "Saved Sets"
         )
 
     }
