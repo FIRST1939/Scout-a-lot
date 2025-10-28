@@ -5,23 +5,18 @@ import com.frcteam1939.scouting2026.Greeting
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.compose.ui.unit.dp
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
-import android.widget.Toast.makeText
+import android.widget.*
+import androidx.compose.runtime.*
 object AppRoutes {
     const val HOME = "home"
     const val SETTINGS = "settings"
@@ -60,6 +55,7 @@ fun MatchSelector(
 }
 
 @Composable
+//navigation controller
 fun ScoutingApp() {
     val navController = rememberNavController()
 
@@ -87,6 +83,7 @@ fun ScoutingApp() {
     }
 }
 @Composable
+//button that goes to operator settings
 fun OperatorButton(
     text: String,
     modifier: Modifier,
@@ -105,6 +102,7 @@ fun OperatorButton(
     }
 }
 @Composable
+//operator settings menu
 fun OperatorSettings(
     navController: NavController
 ) {
@@ -114,14 +112,15 @@ fun OperatorSettings(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        HomeColumn(navController)
         Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
+        HomeColumn(navController)
         Button(onClick = {navController.popBackStack() }) {
             Text("Go Back")}
     }
 }
 
 @Composable
+//goes to saved sets menu
 fun SavedButton(
     text: String,
     modifier: Modifier,
@@ -141,6 +140,7 @@ fun SavedButton(
 }
 
 @Composable
+//shows all created sets to manage
 fun SavedScreen(
     navController: NavController
 ) {
@@ -156,6 +156,7 @@ fun SavedScreen(
     }
 }
 @Composable
+//goes to select set screen
 fun SelectButton(
     text: String,
     modifier: Modifier,
@@ -175,6 +176,7 @@ fun SelectButton(
     }
 
 @Composable
+//this is where you select a set that the scouter will use
 fun SelectScreen(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -188,6 +190,7 @@ fun SelectScreen(navController: NavController) {
     }
 }
 @Composable
+//this is home screen
 fun HomeScreen(navController: NavController) {
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -218,6 +221,7 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
+//main settings
 fun SettingsScreen(navController: NavController) {
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -225,9 +229,12 @@ fun SettingsScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Settings", style= MaterialTheme.typography.headlineMedium)
+        var isChecked by remember { mutableStateOf( false ) }
+        Switch(checked = isChecked, onCheckedChange = {isChecked = it})
         OperatorButton(
             text = "Operator",
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+                .padding(all = 30.dp),
             onClick = {navController.navigate(AppRoutes.OPERATOR)}
         )
         Button(onClick = {navController.popBackStack() }) {
@@ -236,6 +243,7 @@ fun SettingsScreen(navController: NavController) {
     }
 }
 @Composable
+//button that goes to settings
 fun SettingsButton(
     text: String,
     modifier: Modifier,
@@ -255,6 +263,7 @@ fun SettingsButton(
     }
 }
 @Composable
+//this is actually the operator's column now
 fun HomeColumn(navController: NavController
 ) {
     Column(
@@ -278,6 +287,7 @@ fun HomeColumn(navController: NavController
 }
 
 @Composable
+//SCOUNt BUTTON!!!! BUTTON!!!! BUTTON!!!! 😂😂 accession
 fun Button2(text: String) {
     TextButton(
         onClick = {},
@@ -294,6 +304,7 @@ fun Button2(text: String) {
 }
 
 @Composable
+//create a set button
 fun ButtonCounter(text: String) {
     TextButton(
         onClick = {},
@@ -310,6 +321,7 @@ fun ButtonCounter(text: String) {
 }
 
 @Composable
+//main text on the home screen
 fun GreetingView(
     text: String
 ) {
