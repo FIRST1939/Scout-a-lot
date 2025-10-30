@@ -2,6 +2,8 @@ package com.frcteam1939.scouting2026.android
 
 
 import com.frcteam1939.scouting2026.Greeting
+import com.frcteam1939.scouting2026.TBAAuth
+import com.frcteam1939.scouting2026.CompInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +24,8 @@ import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
 import android.widget.Toast.makeText
+import androidx.compose.runtime.*
+
 object AppRoutes {
     const val HOME = "home"
     const val SETTINGS = "settings"
@@ -207,7 +211,19 @@ fun HomeScreen(navController: NavController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            GreetingView(Greeting().greet())
+            var text by remember { mutableStateOf("Loading") }
+            val context = LocalContext.current
+
+            LaunchedEffect(true) {
+                text = try {
+                    val tbaAuth = TBAAuth(context)
+                    CompInfo(tbaAuth).pullCompInfo()
+                } catch (e: Exception) {
+                    e.message ?: "error"
+                }
+            }
+
+            GreetingView(text)
             Button2(text = "Start Scouting")
             MatchSelector(
                 text = "Match Selector")
@@ -314,7 +330,7 @@ fun GreetingView(
     text: String
 ) {
     Text(
-        text = "FRC Scout Maker",
+        text = text,
         modifier = Modifier.padding(all = 25.dp),
         style = MaterialTheme.typography.bodyLarge,
     )
