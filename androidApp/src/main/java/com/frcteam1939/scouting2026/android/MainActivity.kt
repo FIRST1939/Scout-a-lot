@@ -10,13 +10,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.*
+import androidx.compose.ui.text.AnnotatedString
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import androidx.compose.ui.unit.dp
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import android.widget.*
+import android.widget.Toast.makeText
 import androidx.compose.runtime.*
+import androidx.appcompat.app.AppCompatActivity
 object AppRoutes {
     const val HOME = "home"
     const val SETTINGS = "settings"
@@ -27,15 +31,53 @@ object AppRoutes {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MyApplicationTheme {
                 ScoutingApp()
-
-
-                    }
-                }
             }
         }
+
+
+    }
+}
+@Composable
+fun MatchSelecto2() {
+    var state by remember { mutableStateOf("") }
+    TextField(
+        value = state,
+        onValueChange = { if (it.length <= 16) state = it },
+        visualTransformation = VisualTransformation { text ->
+            // Making XXXX-XXXX-XXXX-XXXX string.
+            var out = ""
+            for (i in text.indices) {
+                out += text[i]
+                if (i % 4 == 3 && i != 15) out += "-"
+            }
+
+            TransformedText(
+                text = AnnotatedString(out),
+                offsetMapping = object : OffsetMapping {
+                    override fun originalToTransformed(offset: Int): Int {
+                        if (offset <= 3) return offset
+                        if (offset <= 7) return offset + 1
+                        if (offset <= 11) return offset + 2
+                        if (offset <= 16) return offset + 3
+                        return 19
+                    }
+
+                    override fun transformedToOriginal(offset: Int): Int {
+                        if (offset <= 4) return offset
+                        if (offset <= 9) return offset - 1
+                        if (offset <= 14) return offset - 2
+                        if (offset <= 19) return offset - 3
+                        return 16
+                    }
+                }
+            )
+        }
+    )
+}
 @Composable
 fun MatchSelector(
     text: String,
@@ -212,8 +254,7 @@ fun HomeScreen(navController: NavController) {
         ) {
             GreetingView(Greeting().greet())
             Button2(text = "Start Scouting")
-            MatchSelector(
-                text = "Match Selector")
+            MatchSelecto2()
 
 
         }
