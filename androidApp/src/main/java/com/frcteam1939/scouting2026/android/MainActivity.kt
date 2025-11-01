@@ -212,14 +212,13 @@ fun HomeScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             var text by remember { mutableStateOf("Loading") }
-            val context = LocalContext.current
+            val tbaAuth = TBAAuth(LocalContext.current)
 
             LaunchedEffect(true) {
                 text = try {
-                    val tbaAuth = TBAAuth(context)
                     CompInfo(tbaAuth).pullCompInfo()
                 } catch (e: Exception) {
-                    e.message ?: "error"
+                    e.message ?: "i cant reach the TBA api ):"
                 }
             }
 

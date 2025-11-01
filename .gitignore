@@ -8,4 +8,4 @@ captures
 .cxx
 local.properties
 xcuserdata
-androidApp/src/main/res/raw/tba_auth_key.txt
+androidApp/src/main/assets/X-TBA-Auth-Key.txt
