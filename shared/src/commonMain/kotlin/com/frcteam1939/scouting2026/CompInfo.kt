@@ -14,7 +14,7 @@ class CompInfo(private val tbaAuth: TBAAuth) {
     private val client = HttpClient()
 
     suspend fun pullCompInfoFromTBA(): String {
-        val response = client.get("http://www.thebluealliance.com/api/v3/event/2025mokc/matches") {
+        val response = client.get("https://www.thebluealliance.com/api/v3/event/2025mokc/matches") {
             headers {
                 append("X-TBA-Auth-Key", tbaAuth.getTBAKey())
                 append("User-Agent", "Mozilla/5.0")

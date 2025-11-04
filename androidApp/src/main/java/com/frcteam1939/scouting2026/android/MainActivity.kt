@@ -218,7 +218,7 @@ fun HomeScreen(navController: NavController) {
                 text = try {
                     CompInfo(tbaAuth).pullCompInfo()
                 } catch (e: Exception) {
-                    e.message ?: "i cant reach the TBA api ):"
+                    e.message ?: "i cant reach the TBA api"
                 }
             }
 
