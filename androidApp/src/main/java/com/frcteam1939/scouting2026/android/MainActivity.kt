@@ -15,18 +15,52 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import android.widget.*
 import android.widget.Toast.makeText
 import androidx.compose.runtime.*
-import androidx.appcompat.app.AppCompatActivity
+import kotlin.text.toIntOrNull
+import androidx.compose.foundation.selection.*
 object AppRoutes {
     const val HOME = "home"
     const val SETTINGS = "settings"
     const val SELECT = "select"
     const val SAVED = "saved"
     const val OPERATOR = "operator"
+}
+
+@Composable
+fun RadioButtonSingleSelection(modifier: Modifier = Modifier) {
+    val radioOptions = listOf("at", "One", "Pint 😂😂✅")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    Column(modifier.selectableGroup()) {
+        radioOptions.forEach { text ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .selectable(
+                        selected = (text == selectedOption),
+                        onClick = { onOptionSelected(text) },
+                        role = Role.RadioButton
+                    )
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = (text == selectedOption),
+                    onClick = null
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
+    }
 }
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +80,11 @@ fun MatchSelecto2() {
     var state by remember { mutableStateOf("") }
     TextField(
         value = state,
-        onValueChange = { if (it.length <= 3) state = it },
-        label = { Text("Select match") },
+        onValueChange = {
+            if (it.length <= 3 && it.toIntOrNull() != null || it.isEmpty()) state = it
+                        },
+        singleLine = true,
+        label = { Text("Match Number") },
 
     )
 }
@@ -245,6 +282,7 @@ fun SettingsScreen(navController: NavController) {
         Text("Settings", style= MaterialTheme.typography.headlineMedium)
         var isChecked by remember { mutableStateOf( false ) }
         Switch(checked = isChecked, onCheckedChange = {isChecked = it})
+        RadioButtonSingleSelection()
         OperatorButton(
             text = "Operator",
             modifier = Modifier.align(Alignment.CenterHorizontally)
