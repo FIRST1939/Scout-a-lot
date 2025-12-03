@@ -13,8 +13,8 @@ expect class TBAAuth {
 class CompInfo(private val tbaAuth: TBAAuth) {
     private val client = HttpClient()
 
-    suspend fun pullCompInfoFromTBA(): String {
-        val response = client.get("https://www.thebluealliance.com/api/v3/event/2025mokc/matches") {
+    suspend fun pullFromTBA(eventKey: String, type: String): String {
+        val response = client.get("https://www.thebluealliance.com/api/v3/event/${eventKey}/${type}") {
             headers {
                 append("X-TBA-Auth-Key", tbaAuth.getTBAKey())
                 append("User-Agent", "Mozilla/5.0")
@@ -23,10 +23,17 @@ class CompInfo(private val tbaAuth: TBAAuth) {
         return response.bodyAsText()
     }
 
-    suspend fun pullCompInfo(): String {
-        // must suspend, pullCompInfoFromTBA is a suspend function
-        // TODO: add logic for sourcing comp info elsewhere
+    suspend fun pullCompMatches(eventKey: String): String {
+        // must suspend, pullCompMatchesFromTBA is a suspend function
+        // TODO: add logic for sourcing comp info elsewhere, stored on-device
 
-        return this.pullCompInfoFromTBA()
+        return this.pullFromTBA(eventKey, type="matches")
+    }
+
+    suspend fun pullCompTeams(eventKey: String): String {
+        // must suspend, pullCompTeamsFromTBA is a suspend function
+        // TODO: add logic for sourcing comp info elsewhere, stored on-device
+
+        return this.pullFromTBA(eventKey, type="teams")
     }
 }

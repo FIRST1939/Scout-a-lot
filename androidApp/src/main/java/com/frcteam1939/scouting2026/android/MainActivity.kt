@@ -1,7 +1,6 @@
 package com.frcteam1939.scouting2026.android
 
 
-import com.frcteam1939.scouting2026.Greeting
 import com.frcteam1939.scouting2026.TBAAuth
 import com.frcteam1939.scouting2026.CompInfo
 import android.os.Bundle
@@ -216,7 +215,7 @@ fun HomeScreen(navController: NavController) {
 
             LaunchedEffect(true) {
                 text = try {
-                    CompInfo(tbaAuth).pullCompInfo()
+                    CompInfo(tbaAuth).pullCompMatches(eventKey = "2025mokc")
                 } catch (e: Exception) {
                     e.message ?: "i cant reach the TBA api"
                 }
