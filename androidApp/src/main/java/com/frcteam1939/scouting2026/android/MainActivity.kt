@@ -2,6 +2,7 @@ package com.frcteam1939.scouting2026.android
 
 
 import com.frcteam1939.scouting2026.Greeting
+import com.frcteam1939.scouting2026.android.Inputs
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -239,7 +240,7 @@ fun HomeScreen(navController: NavController) {
         ) {
             GreetingView(Greeting().greet())
             Button2(text = "Start Scouting")
-            MatchSelector()
+            // TODO: call match selector from Inputs
         }
     }
 }
