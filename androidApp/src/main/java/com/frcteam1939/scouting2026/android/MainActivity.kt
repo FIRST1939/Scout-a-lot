@@ -314,10 +314,12 @@ fun Button2(
 ) {
     TextButton(
         onClick = {
-            makeText(context, "NOT. IMPLEMENTED. PINT. 😡😡 WATCHDOG 🅱️ARK 🅱️INT", Toast.LENGTH_LONG).show()
+            makeText(
+                context,
+                "NOT. IMPLEMENTED. PINT. 😡😡 WATCHDOG 🅱️ARK 🅱️INT",
+                Toast.LENGTH_LONG).show()
         },
-        modifier = Modifier
-            .padding(all = 75.dp),
+        modifier = Modifier.padding(all = 75.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary
