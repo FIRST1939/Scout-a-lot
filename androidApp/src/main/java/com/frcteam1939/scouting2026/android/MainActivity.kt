@@ -10,8 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.*
-import androidx.compose.ui.text.AnnotatedString
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import androidx.compose.ui.unit.dp
@@ -29,6 +27,17 @@ object AppRoutes {
     const val SELECT = "select"
     const val SAVED = "saved"
     const val OPERATOR = "operator"
+}
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MyApplicationTheme {
+                ScoutingApp()
+            }
+        }
+    }
 }
 
 @Composable
@@ -62,27 +71,14 @@ fun RadioButtonSingleSelection(modifier: Modifier = Modifier) {
         }
     }
 }
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-        setContent {
-            MyApplicationTheme {
-                ScoutingApp()
-            }
-        }
-
-
-    }
-}
 @Composable
-fun MatchSelecto2() {
+fun MatchSelector() {
     var state by remember { mutableStateOf("") }
     TextField(
         value = state,
         onValueChange = {
-            if (it.length <= 3 && it.toIntOrNull() != null || it.isEmpty()) state = it
-                        },
+            if (it.length <= 3 && it.toIntOrNull() != null || it.isEmpty()) state = it },
         singleLine = true,
         label = { Text("Match Number") },
 
@@ -142,7 +138,6 @@ fun OperatorButton(
 fun OperatorSettings(
     navController: NavController
 ) {
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -150,7 +145,7 @@ fun OperatorSettings(
     ) {
         Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
         HomeColumn(navController)
-        Button(onClick = {navController.popBackStack() }) {
+        Button(onClick = { navController.popBackStack() }) {
             Text("Go Back")}
     }
 }
@@ -186,11 +181,10 @@ fun SavedScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("You can see and manage saved ones . . at one pint", style= MaterialTheme.typography.headlineMedium)
-        Button(onClick = {navController.popBackStack() }) {
-            Text("Go Back")
-        }
+        Button(onClick = { navController.popBackStack() }) { Text("Go Back") }
     }
 }
+
 @Composable
 //goes to select set screen
 fun SelectButton(
@@ -206,10 +200,8 @@ fun SelectButton(
                 contentColor = MaterialTheme.colorScheme.secondary,
             ),
             shape = MaterialTheme.shapes.small
-        ) {
-            Text(text, style = MaterialTheme.typography.bodyLarge)
+        ) { Text(text, style = MaterialTheme.typography.bodyLarge) }
         }
-    }
 
 @Composable
 //this is where you select a set that the scouter will use
@@ -220,11 +212,10 @@ fun SelectScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("You will select here. . at one pint")
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Go Back")
-        }
+        Button(onClick = { navController.popBackStack() }) { Text("Go Back") }
     }
 }
+
 @Composable
 //this is home screen
 fun HomeScreen(navController: NavController) {
@@ -248,9 +239,7 @@ fun HomeScreen(navController: NavController) {
         ) {
             GreetingView(Greeting().greet())
             Button2(text = "Start Scouting")
-            MatchSelecto2()
-
-
+            MatchSelector()
         }
     }
 }
@@ -273,9 +262,7 @@ fun SettingsScreen(navController: NavController) {
                 .padding(all = 30.dp),
             onClick = {navController.navigate(AppRoutes.OPERATOR)}
         )
-        Button(onClick = {navController.popBackStack() }) {
-            Text("Go Back")
-        }
+        Button(onClick = {navController.popBackStack() }) { Text("Go Back") }
     }
 }
 @Composable
@@ -287,17 +274,15 @@ fun SettingsButton(
     ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier
-            .padding(vertical = 10.dp, horizontal = 10.dp),
+        modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary,
         ),
         shape = MaterialTheme.shapes.small
-    ) {
-        Text(text, style = MaterialTheme.typography.bodyLarge)
-    }
+    ) { Text(text, style = MaterialTheme.typography.bodyLarge) }
 }
+
 @Composable
 //this is actually the operator's column now
 fun HomeColumn(navController: NavController
@@ -318,7 +303,6 @@ fun HomeColumn(navController: NavController
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = "Saved Sets"
         )
-
     }
 }
 
@@ -339,9 +323,7 @@ fun Button2(
             contentColor = MaterialTheme.colorScheme.secondary
         ),
         shape = MaterialTheme.shapes.small,
-    ) {
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
-    }
+    ) { Text(text = text, style = MaterialTheme.typography.bodyLarge) }
 }
 
 @Composable
@@ -349,29 +331,21 @@ fun Button2(
 fun ButtonCounter(text: String) {
     TextButton(
         onClick = {},
-        modifier = Modifier
-            .padding(all = 10.dp),
+        modifier = Modifier.padding(all = 10.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.secondary
         ),
         shape = MaterialTheme.shapes.small
-    ) {
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
-    }
+    ) { Text(text = text, style = MaterialTheme.typography.bodyLarge) }
 }
 
 @Composable
 //main text on the home screen
-fun GreetingView(
-    text: String
-) {
+fun GreetingView(text: String) {
     Text(
         text = "FRC Scout Maker",
         modifier = Modifier.padding(all = 25.dp),
         style = MaterialTheme.typography.bodyLarge,
     )
-
 }
-
-
