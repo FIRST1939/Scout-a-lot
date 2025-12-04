@@ -88,23 +88,7 @@ fun MatchSelecto2() {
 
     )
 }
-@Composable
-fun MatchSelector(
-    text: String,
-    context: Context = LocalContext.current
-) {
-    TextButton(
-        onClick = {
-            makeText(context, "Not implemented 😨😨", Toast.LENGTH_SHORT).show()
-        },
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.secondary,
-        ),
-    ) {
-        Text(text, style = MaterialTheme.typography.bodyLarge)
-    }
-}
+
 
 @Composable
 //navigation controller
@@ -340,9 +324,14 @@ fun HomeColumn(navController: NavController
 
 @Composable
 //SCOUNt BUTTON!!!! BUTTON!!!! BUTTON!!!! 😂😂 accession
-fun Button2(text: String) {
+fun Button2(
+    text: String,
+    context: Context = LocalContext.current
+) {
     TextButton(
-        onClick = {},
+        onClick = {
+            makeText(context, "NOT. IMPLEMENTED. PINT. 😡😡 WATCHDOG 🅱️ARK 🅱️INT", Toast.LENGTH_LONG).show()
+        },
         modifier = Modifier
             .padding(all = 75.dp),
         colors = ButtonDefaults.textButtonColors(
