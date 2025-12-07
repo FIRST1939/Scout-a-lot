@@ -1,6 +1,8 @@
 package com.frcteam1939.scouting2026.android
 
 
+import com.frcteam1939.scouting2026.TBAAuth
+import com.frcteam1939.scouting2026.CompInfo
 import com.frcteam1939.scouting2026.Greeting
 import com.frcteam1939.scouting2026.android.Inputs
 import android.os.Bundle
@@ -8,7 +10,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -22,6 +23,7 @@ import android.widget.Toast.makeText
 import androidx.compose.runtime.*
 import kotlin.text.toIntOrNull
 import androidx.compose.foundation.selection.*
+
 object AppRoutes {
     const val HOME = "home"
     const val SETTINGS = "settings"
@@ -238,7 +240,18 @@ fun HomeScreen(navController: NavController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            GreetingView(Greeting().greet())
+            var text by remember { mutableStateOf("Loading") }
+            val tbaAuth = TBAAuth(LocalContext.current)
+
+            LaunchedEffect(true) {
+                text = try {
+                    CompInfo(tbaAuth).pullCompMatches(eventKey = "2025mokc")
+                } catch (e: Exception) {
+                    e.message ?: "i cant reach the TBA api"
+                }
+            }
+
+            GreetingView(text)
             Button2(text = "Start Scouting")
             // TODO: call match selector from Inputs
         }
@@ -347,7 +360,7 @@ fun ButtonCounter(text: String) {
 //main text on the home screen
 fun GreetingView(text: String) {
     Text(
-        text = "FRC Scout Maker",
+        text = text,
         modifier = Modifier.padding(all = 25.dp),
         style = MaterialTheme.typography.bodyLarge,
     )
