@@ -3,26 +3,28 @@ package com.frcteam1939.scouting2026.android
 
 import com.frcteam1939.scouting2026.TBAAuth
 import com.frcteam1939.scouting2026.CompInfo
-import com.frcteam1939.scouting2026.Greeting
 import com.frcteam1939.scouting2026.android.Inputs
 import android.os.Bundle
+import android.content.Context
+import android.widget.Toast
+import android.widget.Toast.makeText
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.compose.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.Role
-import android.content.Context
 import androidx.compose.ui.platform.LocalContext
-import android.widget.*
-import android.widget.Toast.makeText
 import androidx.compose.runtime.*
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
 import kotlin.text.toIntOrNull
-import androidx.compose.foundation.selection.*
 
 object AppRoutes {
     const val HOME = "home"
@@ -148,8 +150,7 @@ fun OperatorSettings(
     ) {
         Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
         HomeColumn(navController)
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Go Back")}
+        Button(onClick = { navController.popBackStack() }) { Text("Go Back")}
     }
 }
 
@@ -231,9 +232,7 @@ fun HomeScreen(navController: NavController) {
         SettingsButton(
             text = "Settings",
             modifier = Modifier.align(Alignment.End),
-            onClick = {
-                navController.navigate(AppRoutes.SETTINGS)
-            }
+            onClick = { navController.navigate(AppRoutes.SETTINGS) }
         )
         Column(
             modifier = Modifier.fillMaxSize(),
