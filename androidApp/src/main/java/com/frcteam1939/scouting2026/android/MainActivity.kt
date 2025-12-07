@@ -3,26 +3,26 @@ package com.frcteam1939.scouting2026.android
 
 import com.frcteam1939.scouting2026.TBAAuth
 import com.frcteam1939.scouting2026.CompInfo
+import com.frcteam1939.scouting2026.Greeting
+import com.frcteam1939.scouting2026.android.Inputs
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
+import android.widget.*
 import android.widget.Toast.makeText
 import androidx.compose.runtime.*
+import kotlin.text.toIntOrNull
+import androidx.compose.foundation.selection.*
 
 object AppRoutes {
     const val HOME = "home"
@@ -31,37 +31,66 @@ object AppRoutes {
     const val SAVED = "saved"
     const val OPERATOR = "operator"
 }
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
                 ScoutingApp()
-
-
-                    }
-                }
             }
         }
-@Composable
-fun MatchSelector(
-    text: String,
-    context: Context = LocalContext.current
-) {
-    TextButton(
-        onClick = {
-            makeText(context, "Not implemented 😨😨", Toast.LENGTH_SHORT).show()
-        },
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.secondary,
-        ),
-    ) {
-        Text(text, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
 @Composable
+fun RadioButtonSingleSelection(modifier: Modifier = Modifier) {
+    val radioOptions = listOf("at", "One", "Pint 😂😂✅")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    Column(modifier.selectableGroup()) {
+        radioOptions.forEach { text ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .selectable(
+                        selected = (text == selectedOption),
+                        onClick = { onOptionSelected(text) },
+                        role = Role.RadioButton
+                    )
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = (text == selectedOption),
+                    onClick = null
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MatchSelector() {
+    var state by remember { mutableStateOf("") }
+    TextField(
+        value = state,
+        onValueChange = {
+            if (it.length <= 3 && it.toIntOrNull() != null || it.isEmpty()) state = it },
+        singleLine = true,
+        label = { Text("Match Number") },
+
+    )
+}
+
+
+@Composable
+//navigation controller
 fun ScoutingApp() {
     val navController = rememberNavController()
 
@@ -89,6 +118,7 @@ fun ScoutingApp() {
     }
 }
 @Composable
+//button that goes to operator settings
 fun OperatorButton(
     text: String,
     modifier: Modifier,
@@ -107,23 +137,24 @@ fun OperatorButton(
     }
 }
 @Composable
+//operator settings menu
 fun OperatorSettings(
     navController: NavController
 ) {
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        HomeColumn(navController)
         Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
-        Button(onClick = {navController.popBackStack() }) {
+        HomeColumn(navController)
+        Button(onClick = { navController.popBackStack() }) {
             Text("Go Back")}
     }
 }
 
 @Composable
+//goes to saved sets menu
 fun SavedButton(
     text: String,
     modifier: Modifier,
@@ -143,6 +174,7 @@ fun SavedButton(
 }
 
 @Composable
+//shows all created sets to manage
 fun SavedScreen(
     navController: NavController
 ) {
@@ -152,12 +184,12 @@ fun SavedScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("You can see and manage saved ones . . at one pint", style= MaterialTheme.typography.headlineMedium)
-        Button(onClick = {navController.popBackStack() }) {
-            Text("Go Back")
-        }
+        Button(onClick = { navController.popBackStack() }) { Text("Go Back") }
     }
 }
+
 @Composable
+//goes to select set screen
 fun SelectButton(
     text: String,
     modifier: Modifier,
@@ -171,12 +203,11 @@ fun SelectButton(
                 contentColor = MaterialTheme.colorScheme.secondary,
             ),
             shape = MaterialTheme.shapes.small
-        ) {
-            Text(text, style = MaterialTheme.typography.bodyLarge)
+        ) { Text(text, style = MaterialTheme.typography.bodyLarge) }
         }
-    }
 
 @Composable
+//this is where you select a set that the scouter will use
 fun SelectScreen(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -184,12 +215,12 @@ fun SelectScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("You will select here. . at one pint")
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Go Back")
-        }
+        Button(onClick = { navController.popBackStack() }) { Text("Go Back") }
     }
 }
+
 @Composable
+//this is home screen
 fun HomeScreen(navController: NavController) {
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -222,15 +253,13 @@ fun HomeScreen(navController: NavController) {
 
             GreetingView(text)
             Button2(text = "Start Scouting")
-            MatchSelector(
-                text = "Match Selector")
-
-
+            // TODO: call match selector from Inputs
         }
     }
 }
 
 @Composable
+//main settings
 fun SettingsScreen(navController: NavController) {
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -238,17 +267,20 @@ fun SettingsScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Settings", style= MaterialTheme.typography.headlineMedium)
+        var isChecked by remember { mutableStateOf( false ) }
+        Switch(checked = isChecked, onCheckedChange = {isChecked = it})
+        RadioButtonSingleSelection()
         OperatorButton(
             text = "Operator",
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+                .padding(all = 30.dp),
             onClick = {navController.navigate(AppRoutes.OPERATOR)}
         )
-        Button(onClick = {navController.popBackStack() }) {
-            Text("Go Back")
-        }
+        Button(onClick = {navController.popBackStack() }) { Text("Go Back") }
     }
 }
 @Composable
+//button that goes to settings
 fun SettingsButton(
     text: String,
     modifier: Modifier,
@@ -256,18 +288,17 @@ fun SettingsButton(
     ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier
-            .padding(vertical = 10.dp, horizontal = 10.dp),
+        modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary,
         ),
         shape = MaterialTheme.shapes.small
-    ) {
-        Text(text, style = MaterialTheme.typography.bodyLarge)
-    }
+    ) { Text(text, style = MaterialTheme.typography.bodyLarge) }
 }
+
 @Composable
+//this is actually the operator's column now
 fun HomeColumn(navController: NavController
 ) {
     Column(
@@ -286,52 +317,51 @@ fun HomeColumn(navController: NavController
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = "Saved Sets"
         )
-
     }
 }
 
 @Composable
-fun Button2(text: String) {
+//SCOUNt BUTTON!!!! BUTTON!!!! BUTTON!!!! 😂😂 accession
+fun Button2(
+    text: String,
+    context: Context = LocalContext.current
+) {
     TextButton(
-        onClick = {},
-        modifier = Modifier
-            .padding(all = 75.dp),
+        onClick = {
+            makeText(
+                context,
+                "NOT. IMPLEMENTED. PINT. 😡😡 WATCHDOG 🅱️ARK 🅱️INT",
+                Toast.LENGTH_LONG).show()
+        },
+        modifier = Modifier.padding(all = 75.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary
         ),
         shape = MaterialTheme.shapes.small,
-    ) {
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
-    }
+    ) { Text(text = text, style = MaterialTheme.typography.bodyLarge) }
 }
 
 @Composable
+//create a set button
 fun ButtonCounter(text: String) {
     TextButton(
         onClick = {},
-        modifier = Modifier
-            .padding(all = 10.dp),
+        modifier = Modifier.padding(all = 10.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.secondary
         ),
         shape = MaterialTheme.shapes.small
-    ) {
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
-    }
+    ) { Text(text = text, style = MaterialTheme.typography.bodyLarge) }
 }
 
 @Composable
-fun GreetingView(
-    text: String
-) {
+//main text on the home screen
+fun GreetingView(text: String) {
     Text(
         text = text,
         modifier = Modifier.padding(all = 25.dp),
         style = MaterialTheme.typography.bodyLarge,
     )
-
 }
-
-

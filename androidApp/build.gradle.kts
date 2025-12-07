@@ -44,5 +44,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.material)
     debugImplementation(libs.compose.ui.tooling)
 }
