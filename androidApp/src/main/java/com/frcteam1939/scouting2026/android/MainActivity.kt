@@ -3,6 +3,7 @@ package com.frcteam1939.scouting2026.android
 
 import com.frcteam1939.scouting2026.TBAAuth
 import com.frcteam1939.scouting2026.CompInfo
+import com.frcteam1939.scouting2026.android.DataInputs
 import android.os.Bundle
 import android.content.Context
 import android.widget.Toast
@@ -252,16 +253,16 @@ fun HomeScreen(navController: NavController) {
             //TODO: fix this GreetingView() reference, put api call somewhere else
             //GreetingView(text)
 
-            Button2(text = "Start Scouting")
             val homeScreenInputs = DataInputs()
-            val matchSelector = homeScreenInputs.Textbox(
+
+            Button2(text = "Start Scouting")
+            //input for match selector
+            homeScreenInputs.TextboxInput(
                 label = "Match Number",
                 singleLine = true,
                 forceNumberInput = true,
                 characterLimit = 3
             )
-
-            matchSelector.Create()
         }
     }
 }
