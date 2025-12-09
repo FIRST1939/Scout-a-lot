@@ -20,7 +20,13 @@ class DataInputs {
         var state by remember { mutableStateOf("") }
         TextField(
             value = state,
-            onValueChange = { if (it.length <= characterLimit && (!forceNumberInput || it.toIntOrNull() != null) || it.isEmpty()) state = it },
+            onValueChange = {
+                //state can't be negative if forceNumberInput is true
+                var validUpdate: Boolean = true
+                if (it.length > characterLimit) validUpdate = false
+                if (forceNumberInput && it.toIntOrNull() == null) validUpdate = false
+                if (it.isEmpty()) validUpdate = true
+                if (validUpdate) state = it },
             singleLine = singleLine,
             label = { Text(label) },
         )
