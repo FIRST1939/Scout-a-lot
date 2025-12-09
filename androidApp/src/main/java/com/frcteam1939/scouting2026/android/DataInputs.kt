@@ -33,21 +33,21 @@ class DataInputs {
     }
 
     @Composable
-    fun RadioButton(
+    fun RadioButtonInput(
 
     ) {
 
     }
 
     @Composable
-    fun Button(
+    fun ButtonInput(
 
     ) {
 
     }
 
     @Composable
-    fun Slider(
+    fun SliderInput(
 
     ) {
 
