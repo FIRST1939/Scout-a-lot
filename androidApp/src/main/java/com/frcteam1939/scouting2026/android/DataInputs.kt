@@ -9,7 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import kotlin.text.toIntOrNull
 
-class Inputs {
+class DataInputs {
 
     inner class Textbox(
         val form: Boolean = false,
@@ -19,12 +19,11 @@ class Inputs {
         val characterLimit: Int = 2500
     ) {
         @Composable
-        fun create() {
+        fun Create() {
             var state by remember { mutableStateOf("") }
             TextField(
                 value = state,
-                onValueChange = {
-                    if (it.length <= characterLimit && it.toIntOrNull() != null || it.isEmpty()) state = it },
+                onValueChange = { if (it.length <= characterLimit && (!forceNumberInput || it.toIntOrNull() != null) || it.isEmpty()) state = it },
                 singleLine = singleLine,
                 label = { Text(label) },
             )
