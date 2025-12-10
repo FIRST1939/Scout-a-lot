@@ -52,4 +52,11 @@ class DataInputs {
     ) {
 
     }
+    @Composable
+    fun CounterInput() {
+    }
+
+    @Composable
+    fun SwitchInput() {
+    }
 }
