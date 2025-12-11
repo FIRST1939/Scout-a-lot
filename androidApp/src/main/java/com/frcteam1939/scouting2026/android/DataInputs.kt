@@ -59,5 +59,5 @@ class DataInputs {
     @Composable
     fun SwitchInput() {
     }
-    
+
 }
