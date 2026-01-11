@@ -2,19 +2,15 @@ package com.frcteam1939.scouting2026.android
 
 
 import android.os.Bundle
-import android.content.Context
 import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.*
 import androidx.navigation.NavController
@@ -37,6 +33,17 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import kotlinx.coroutines.launch
 import kotlin.text.toIntOrNull
 
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MyApplicationTheme {
+                ScoutingApp()
+            }
+        }
+    }
+}
+
 object AppRoutes {
     const val SCOUT_MATCHES = "scout matches"
     const val SCOUT_PITS = "scout pits"
@@ -58,17 +65,6 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
     object EditForms : Screen(AppRoutes.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.SETTINGS, "Settings", Icons.Default.Settings)
-}
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MyApplicationTheme {
-                ScoutingApp()
-            }
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -168,48 +164,34 @@ fun ScoutingApp() {
 }
 
 @Composable
-fun RadioButtonSingleSelection(modifier: Modifier = Modifier) {
-    val radioOptions = listOf("at", "One", "Pint 😂😂✅")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
-    Column(modifier.selectableGroup()) {
-        radioOptions.forEach { text ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .selectable(
-                        selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text) },
-                        role = Role.RadioButton
-                    )
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = null
-                )
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
-        }
-    }
-}
+//this is scouting screen
+fun ScoutMatchesScreen(navController: NavController) {
+    var matchNumber by remember { mutableStateOf("") }
 
-@Composable
-fun MatchSelector() {
-    var state by remember { mutableStateOf("") }
-    TextField(
-        value = state,
-        onValueChange = {
-            if (it.length <= 3 && it.toIntOrNull() != null || it.isEmpty()) state = it },
-        singleLine = true,
-        label = { Text("Match Number") },
-
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val context = LocalContext.current
+        UserInputs.TextButtonInput(
+            onClick = {
+                makeText(context, "scouting not implemented... uh oh..!", Toast.LENGTH_SHORT).show()
+            },
+            text = "Scout Match",
+            modifier = Modifier.padding(all = 75.dp)
         )
+
+        //input for match selector
+        UserInputs.TextboxInput(
+            value = matchNumber,
+            onValueChange = { matchNumber = it },
+            label = "Match Number",
+            singleLine = true,
+            forceNumberInput = true,
+            characterLimit = 3
+        )
+    }
 }
 
 @Composable
@@ -231,6 +213,7 @@ fun OperatorButton(
         Text(text, style = MaterialTheme.typography.bodyLarge)
     }
 }
+
 @Composable
 //operator settings menu
 fun OperatorSettings(
@@ -314,65 +297,34 @@ fun SelectScreen(navController: NavController) {
 }
 
 @Composable
-//this is scouting screen
-fun ScoutMatchesScreen(navController: NavController) {
-    var matchNumber by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button2(text = "Start Scouting")
-        //input for match selector
-        UserInputs.TextboxInput(
-            value = matchNumber,
-            onValueChange = { matchNumber = it },
-            label = "Match Number",
-            singleLine = true,
-            forceNumberInput = true,
-            characterLimit = 3
-        )
-    }
-}
-
-@Composable
 //main settings
 fun SettingsScreen(navController: NavController) {
+    var isChecked by remember { mutableStateOf( false ) }
+
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf("") }
+
     Column (
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Settings", style= MaterialTheme.typography.headlineMedium)
-        var isChecked by remember { mutableStateOf( false ) }
+
         Switch(checked = isChecked, onCheckedChange = {isChecked = it})
-        RadioButtonSingleSelection()
+
+        UserInputs.RadioButtonInput(
+            radioOptions = listOf("one", "two", "three"),
+            selectedOption = selectedOption,
+            onOptionSelected = onOptionSelected
+        )
+
         OperatorButton(
             text = "Operator",
             modifier = Modifier.align(Alignment.CenterHorizontally)
                 .padding(all = 30.dp),
             onClick = {navController.navigate(AppRoutes.OPERATOR)}
         )
-        Button(onClick = {navController.popBackStack() }) { Text("Go Back") }
     }
-}
-@Composable
-//button that goes to settings
-fun SettingsButton(
-    text: String,
-    modifier: Modifier,
-    onClick: () -> Unit
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp),
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
-            contentColor = MaterialTheme.colorScheme.secondary,
-        ),
-        shape = MaterialTheme.shapes.small
-    ) { Text(text, style = MaterialTheme.typography.bodyLarge) }
 }
 
 @Composable
@@ -395,28 +347,6 @@ fun OperatorColumn(navController: NavController
             text = "Saved Sets"
         )
     }
-}
-
-@Composable
-//SCOUNt BUTTON!!!! BUTTON!!!! BUTTON!!!! 😂😂 accession
-fun Button2(
-    text: String,
-    context: Context = LocalContext.current
-) {
-    TextButton(
-        onClick = {
-            makeText(
-                context,
-                "NOT. IMPLEMENTED. PINT. 😡😡 WATCHDOG 🅱️ARK 🅱️INT",
-                Toast.LENGTH_LONG).show()
-        },
-        modifier = Modifier.padding(all = 75.dp),
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
-            contentColor = MaterialTheme.colorScheme.secondary
-        ),
-        shape = MaterialTheme.shapes.small,
-    ) { Text(text = text, style = MaterialTheme.typography.bodyLarge) }
 }
 
 @Composable
