@@ -1,8 +1,6 @@
 package com.frcteam1939.scouting2026.android
 
 
-import com.frcteam1939.scouting2026.TBAAuth
-import com.frcteam1939.scouting2026.CompInfo
 import android.os.Bundle
 import android.content.Context
 import android.widget.Toast
@@ -134,7 +132,6 @@ fun ScoutingApp() {
                 )
             }
         ) { innerPadding ->
-            // The rest of your app content
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
@@ -319,16 +316,18 @@ fun SelectScreen(navController: NavController) {
 @Composable
 //this is scouting screen
 fun ScoutMatchesScreen(navController: NavController) {
+    var matchNumber by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val scoutScreenInputs = DataInputs()
-
         Button2(text = "Start Scouting")
         //input for match selector
-        scoutScreenInputs.TextboxInput(
+        UserInputs.TextboxInput(
+            value = matchNumber,
+            onValueChange = { matchNumber = it },
             label = "Match Number",
             singleLine = true,
             forceNumberInput = true,

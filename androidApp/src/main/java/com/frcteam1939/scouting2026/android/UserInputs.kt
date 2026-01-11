@@ -9,24 +9,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import kotlin.text.toIntOrNull
 
-class DataInputs {
+object UserInputs {
     @Composable
     fun TextboxInput(
+        value: String,
+        onValueChange: (String) -> Unit,
         label: String = "",
         singleLine: Boolean = false,
         forceNumberInput: Boolean = false,
         characterLimit: Int = 2500
     ) {
-        var state by remember { mutableStateOf("") }
         TextField(
-            value = state,
-            onValueChange = {
+            value = value,
+            onValueChange = { input ->
                 //state can't be negative if forceNumberInput is true
-                var validUpdate: Boolean = true
-                if (it.length > characterLimit) validUpdate = false
-                if (forceNumberInput && it.toIntOrNull() == null) validUpdate = false
-                if (it.isEmpty()) validUpdate = true
-                if (validUpdate) state = it },
+                var validUpdate = true
+                if (input.length > characterLimit) validUpdate = false
+                if (forceNumberInput && input.toIntOrNull() == null) validUpdate = false
+                if (input.isEmpty()) validUpdate = true
+                if (validUpdate) onValueChange(input) },
             singleLine = singleLine,
             label = { Text(label) },
         )
