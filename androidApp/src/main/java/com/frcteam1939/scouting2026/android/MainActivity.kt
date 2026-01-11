@@ -3,7 +3,6 @@ package com.frcteam1939.scouting2026.android
 
 import com.frcteam1939.scouting2026.TBAAuth
 import com.frcteam1939.scouting2026.CompInfo
-import com.frcteam1939.scouting2026.android.DataInputs
 import android.os.Bundle
 import android.content.Context
 import android.widget.Toast
@@ -24,14 +23,43 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import kotlinx.coroutines.launch
 import kotlin.text.toIntOrNull
 
 object AppRoutes {
-    const val HOME = "home"
-    const val SETTINGS = "settings"
+    const val SCOUT_MATCHES = "scout matches"
+    const val SCOUT_PITS = "scout pits"
+    const val MATCH_REPORTS = "match reports"
+    const val TEAM_STATS = "team info"
+    const val SYNC = "sync"
+    const val EDIT_FORMS = "edit forms"
     const val SELECT = "select"
     const val SAVED = "saved"
+    const val SETTINGS = "settings"
     const val OPERATOR = "operator"
+}
+
+sealed class Screen(val route: String, val label: String, val icon: ImageVector) {
+    object ScoutMatches : Screen(AppRoutes.SCOUT_MATCHES, "Scout Matches", Icons.Default.Build)
+    object ScoutPits : Screen(AppRoutes.SCOUT_PITS, "Scout Pits", Icons.Default.Person)
+    object MatchReports : Screen(AppRoutes.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
+    object TeamStats : Screen(AppRoutes.TEAM_STATS, "Team Stats", Icons.Default.List)
+    object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
+    object EditForms : Screen(AppRoutes.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
+    object Settings : Screen(AppRoutes.SETTINGS, "Settings", Icons.Default.Settings)
 }
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +68,103 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 ScoutingApp()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+//navigation controller
+fun ScoutingApp() {
+    val navController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    // List of items to show in the NavigationRail
+    val items = listOf(
+        Screen.ScoutMatches,
+        Screen.ScoutPits,
+        Screen.MatchReports,
+        Screen.TeamStats,
+        Screen.Sync,
+        Screen.EditForms,
+        Screen.Settings,
+    )
+    var selectedItem by remember { mutableStateOf(0) }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(12.dp))
+                items.forEachIndexed { index, screen ->
+                    NavigationDrawerItem(
+                        icon = { Icon(screen.icon, contentDescription = screen.label) },
+                        label = { Text(screen.label) },
+                        selected = index == selectedItem,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            selectedItem = index
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+            }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("1939 Scouting Tool") },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menu"
+                            )
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            // The rest of your app content
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                NavHost(navController = navController, startDestination = AppRoutes.SCOUT_MATCHES) {
+                    composable(AppRoutes.SCOUT_MATCHES) {
+                        ScoutMatchesScreen(navController = navController)
+                    }
+                    composable(AppRoutes.SCOUT_PITS) {
+                        // TODO: pit scouting screen & implementation
+                    }
+                    composable(AppRoutes.MATCH_REPORTS) {
+                        // TODO: match report generation
+                    }
+                    composable(AppRoutes.TEAM_STATS) {
+                        // TODO: team stats page (all teams)
+                    }
+                    composable(AppRoutes.SYNC) {
+                        // TODO: device & data synchronization
+                    }
+                    composable(AppRoutes.EDIT_FORMS) {
+                        // TODO: add edit forms function
+                        // this is where saved and select will be
+                    }
+                    composable(AppRoutes.SETTINGS) {
+                        SettingsScreen(navController = navController)
+                    }
+                }
             }
         }
     }
@@ -87,38 +212,9 @@ fun MatchSelector() {
         singleLine = true,
         label = { Text("Match Number") },
 
-    )
+        )
 }
 
-
-@Composable
-//navigation controller
-fun ScoutingApp() {
-    val navController = rememberNavController()
-
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        NavHost(navController = navController, startDestination = AppRoutes.HOME) {
-            composable(AppRoutes.HOME) {
-                HomeScreen(navController = navController)
-            }
-            composable(AppRoutes.SETTINGS) {
-                SettingsScreen(navController = navController)
-            }
-            composable(AppRoutes.SELECT) {
-                SelectScreen(navController = navController)
-            }
-            composable(AppRoutes.SAVED) {
-                SavedScreen(navController = navController)
-            }
-            composable(AppRoutes.OPERATOR) {
-                OperatorSettings(navController = navController)
-            }
-        }
-    }
-}
 @Composable
 //button that goes to operator settings
 fun OperatorButton(
@@ -149,7 +245,7 @@ fun OperatorSettings(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
-        HomeColumn(navController)
+        OperatorColumn(navController)
         Button(onClick = { navController.popBackStack() }) { Text("Go Back")}
     }
 }
@@ -195,17 +291,17 @@ fun SelectButton(
     text: String,
     modifier: Modifier,
     onClick: () -> Unit
-        ) {
-        TextButton(
-            onClick = onClick,
-            modifier = modifier,
-            colors = ButtonDefaults.textButtonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.secondary,
-            ),
-            shape = MaterialTheme.shapes.small
-        ) { Text(text, style = MaterialTheme.typography.bodyLarge) }
-        }
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.secondary,
+        ),
+        shape = MaterialTheme.shapes.small
+    ) { Text(text, style = MaterialTheme.typography.bodyLarge) }
+}
 
 @Composable
 //this is where you select a set that the scouter will use
@@ -221,49 +317,23 @@ fun SelectScreen(navController: NavController) {
 }
 
 @Composable
-//this is home screen
-fun HomeScreen(navController: NavController) {
-    Column (
+//this is scouting screen
+fun ScoutMatchesScreen(navController: NavController) {
+    Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        SettingsButton(
-            text = "Settings",
-            modifier = Modifier.align(Alignment.End),
-            onClick = { navController.navigate(AppRoutes.SETTINGS) }
+    ) {
+        val scoutScreenInputs = DataInputs()
+
+        Button2(text = "Start Scouting")
+        //input for match selector
+        scoutScreenInputs.TextboxInput(
+            label = "Match Number",
+            singleLine = true,
+            forceNumberInput = true,
+            characterLimit = 3
         )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            var text by remember { mutableStateOf("Loading") }
-            val tbaAuth = TBAAuth(LocalContext.current)
-
-            LaunchedEffect(true) {
-                text = try {
-                    CompInfo(tbaAuth).pullCompMatches(eventKey = "2025mokc")
-                } catch (e: Exception) {
-                    e.message ?: "i cant reach the TBA api"
-                }
-            }
-            
-            //TODO: fix this GreetingView() reference, put api call somewhere else
-            //GreetingView(text)
-
-            val homeScreenInputs = DataInputs()
-
-            Button2(text = "Start Scouting")
-            //input for match selector
-            homeScreenInputs.TextboxInput(
-                label = "Match Number",
-                singleLine = true,
-                forceNumberInput = true,
-                characterLimit = 3
-            )
-        }
     }
 }
 
@@ -294,7 +364,7 @@ fun SettingsButton(
     text: String,
     modifier: Modifier,
     onClick: () -> Unit
-    ) {
+) {
     TextButton(
         onClick = onClick,
         modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp),
@@ -307,8 +377,7 @@ fun SettingsButton(
 }
 
 @Composable
-//this is actually the operator's column now
-fun HomeColumn(navController: NavController
+fun OperatorColumn(navController: NavController
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -363,14 +432,4 @@ fun ButtonCounter(text: String) {
         ),
         shape = MaterialTheme.shapes.small
     ) { Text(text = text, style = MaterialTheme.typography.bodyLarge) }
-}
-
-@Composable
-//main text on the home screen
-fun GreetingView(text: String) {
-    Text(
-        text = text,
-        modifier = Modifier.padding(all = 25.dp),
-        style = MaterialTheme.typography.bodyLarge,
-    )
 }
