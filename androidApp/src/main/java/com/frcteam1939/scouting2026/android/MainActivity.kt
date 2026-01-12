@@ -31,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import kotlinx.coroutines.launch
-import kotlin.text.toIntOrNull
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,6 +156,15 @@ fun ScoutingApp() {
                     composable(AppRoutes.SETTINGS) {
                         SettingsScreen(navController = navController)
                     }
+                    composable(AppRoutes.OPERATOR) {
+                        OperatorScreen(navController = navController)
+                    }
+                    composable(AppRoutes.SELECT) {
+                        SelectScreen(navController = navController)
+                    }
+                    composable(AppRoutes.SAVED) {
+                        SavedScreen(navController = navController)
+                    }
                 }
             }
         }
@@ -195,28 +203,8 @@ fun ScoutMatchesScreen(navController: NavController) {
 }
 
 @Composable
-//button that goes to operator settings
-fun OperatorButton(
-    text: String,
-    modifier: Modifier,
-    onClick: () -> Unit
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier,
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.secondary,
-        ),
-        shape = MaterialTheme.shapes.small
-    ) {
-        Text(text, style = MaterialTheme.typography.bodyLarge)
-    }
-}
-
-@Composable
 //operator settings menu
-fun OperatorSettings(
+fun OperatorScreen(
     navController: NavController
 ) {
     Column(
@@ -225,7 +213,23 @@ fun OperatorSettings(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
-        OperatorColumn(navController)
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ButtonCounter(text = "Create a Set")
+            SelectButton(
+                onClick = {navController.navigate(AppRoutes.SELECT)},
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = "Select Set"
+            )
+            Text(text = "Selected: sigmaboi2026 (match scout)")
+            SavedButton(
+                onClick = {navController.navigate(AppRoutes.SAVED)},
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = "Saved Sets"
+            )
+        }
         Button(onClick = { navController.popBackStack() }) { Text("Go Back")}
     }
 }
@@ -310,7 +314,7 @@ fun SettingsScreen(navController: NavController) {
     ) {
         Text("Settings", style= MaterialTheme.typography.headlineMedium)
 
-        Switch(checked = isChecked, onCheckedChange = {isChecked = it})
+        UserInputs.SwitchInput(checked = isChecked, onCheckedChange = {isChecked = it})
 
         UserInputs.RadioButtonInput(
             radioOptions = listOf("one", "two", "three"),
@@ -318,33 +322,10 @@ fun SettingsScreen(navController: NavController) {
             onOptionSelected = onOptionSelected
         )
 
-        OperatorButton(
-            text = "Operator",
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-                .padding(all = 30.dp),
-            onClick = {navController.navigate(AppRoutes.OPERATOR)}
-        )
-    }
-}
-
-@Composable
-fun OperatorColumn(navController: NavController
-) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ButtonCounter(text = "Create a Set")
-        SelectButton(
-            onClick = {navController.navigate(AppRoutes.SELECT)},
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = "Select Set"
-        )
-        Text(text = "Selected: sigmaboi2026 (match scout)")
-        SavedButton(
-            onClick = {navController.navigate(AppRoutes.SAVED)},
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = "Saved Sets"
+        UserInputs.TextButtonInput(
+            onClick = {navController.navigate(AppRoutes.OPERATOR)},
+            text = "Operator Settings",
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(all = 30.dp),
         )
     }
 }
