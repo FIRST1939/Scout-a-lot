@@ -114,8 +114,12 @@ object UserInputs {
 
     @Composable
     fun SwitchInput(
-
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit
     ) {
-
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
     }
 }
