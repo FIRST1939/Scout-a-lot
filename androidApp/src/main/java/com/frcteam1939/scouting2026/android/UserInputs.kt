@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlin.text.toIntOrNull
 
@@ -27,6 +29,8 @@ object UserInputs {
         forceNumberInput: Boolean = false,
         characterLimit: Int = 2500
     ) {
+        var keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+        if (forceNumberInput) keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         TextField(
             value = value,
             onValueChange = { input ->
@@ -36,6 +40,7 @@ object UserInputs {
                 if (forceNumberInput && input.toIntOrNull() == null) validUpdate = false
                 if (input.isEmpty()) validUpdate = true
                 if (validUpdate) onValueChange(input) },
+            keyboardOptions = keyboardOptions,
             singleLine = singleLine,
             label = { Text(label) },
         )
