@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -100,7 +101,9 @@ fun ScoutingApp() {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                drawerContainerColor = MaterialTheme.colorScheme.primary,
+            ) {
                 Spacer(Modifier.height(12.dp))
                 items.forEachIndexed { index, screen ->
                     NavigationDrawerItem(
@@ -118,7 +121,15 @@ fun ScoutingApp() {
                                 restoreState = true
                             }
                         },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                            selectedTextColor = MaterialTheme.colorScheme.onBackground,
+                            selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                            unselectedContainerColor = MaterialTheme.colorScheme.primary,
+                            unselectedTextColor = MaterialTheme.colorScheme.secondary,
+                            unselectedIconColor = MaterialTheme.colorScheme.secondary,
+                        )
                     )
                 }
             }
@@ -135,7 +146,12 @@ fun ScoutingApp() {
                                 contentDescription = "Menu"
                             )
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.secondary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.secondary
+                    )
                 )
             }
         ) { innerPadding ->
@@ -151,6 +167,9 @@ fun ScoutingApp() {
                     }
                     composable(AppRoutes.MatchScouting.TEAM_CONFIRMATION) {
                         TeamConfirmationScreen(navController = navController)
+                    }
+                    composable(AppRoutes.MatchScouting.SCOUT_AUTO) {
+                        // TODO: auto scouting screen
                     }
                     composable(AppRoutes.PitScouting.SCOUT_PITS) {
                         // TODO: pit scouting screen & implementation
@@ -193,22 +212,26 @@ fun ScoutMatchesScreen(navController: NavController) {
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val context = LocalContext.current
         Text("Current Event: None Selected")
         Image(
             painter = painterResource(id = R.drawable.bunny),
-            contentDescription = "bunny",
+            contentDescription = "bunny"
         )
         UserInputs.TextButtonInput(
             onClick = {
-                makeText(context, "scouting not implemented... uh oh..!", Toast.LENGTH_SHORT).show()
-                navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
+                var canStartScouting = true
+                if (matchNumber.toIntOrNull() == null) {
+                    canStartScouting = false
+                    makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT).show()
+                }
+
+                if (canStartScouting) navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
             },
             text = "Scout Match",
-            modifier = Modifier.padding(all = 75.dp)
         )
 
         //input for match selector
@@ -225,27 +248,103 @@ fun ScoutMatchesScreen(navController: NavController) {
 
 @Composable
 fun TeamConfirmationScreen(navController: NavController) {
-    // TODO: add team confirmation screen
+    // TODO: add photo capability
+    val teamNumber = 1234
+    var noShowPopup by remember { mutableStateOf(false) }
+
+    if(noShowPopup) {
+        AlertDialog(
+            onDismissRequest = { noShowPopup = false },
+            title = { Text("Why did the robot not show up?", color = MaterialTheme.colorScheme.onPrimary) },
+            containerColor = MaterialTheme.colorScheme.primary,
+
+            // Robot no-showed
+            confirmButton = {
+                UserInputs.TextButtonInput(
+                    onClick = {
+                        noShowPopup = false
+                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                    },
+                    text = "Robot no-show",
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            },
+
+            // Robot not part of this match
+            dismissButton = {
+                UserInputs.TextButtonInput(
+                    onClick = {
+                        noShowPopup = false
+                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                    },
+                    text = "Team not in match",
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            },
+        )
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.missing_image),
+            contentDescription = "no robot image available",
+            modifier = Modifier.padding(all = 50.dp)
+        )
+        Text(text = "You're scouting team $teamNumber", style = MaterialTheme.typography.headlineLarge)
+        Text(text = "Can you locate this robot on the field?")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            // Yes button
+            UserInputs.TextButtonInput(
+                onClick = { navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO) },
+                text = "Yes",
+                modifier = Modifier.padding(all = 25.dp),
+                containerColor = MaterialTheme.colorScheme.primary
+            )
+
+            // No button
+            UserInputs.TextButtonInput(
+                onClick = { noShowPopup = true },
+                text = "No",
+                modifier = Modifier.padding(all = 25.dp),
+            )
+        }
+    }
 }
 
 @Composable
 //main settings
 fun SettingsScreen(navController: NavController) {
-    var isChecked by remember { mutableStateOf( false ) }
-
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf("") }
+    var exampleSetting by remember { mutableStateOf( false ) }
+    var deviceRobotAssignment by remember { mutableStateOf("Red 1") }
 
     Column (
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Settings", style= MaterialTheme.typography.headlineMedium)
-        UserInputs.SwitchInput(checked = isChecked, onCheckedChange = {isChecked = it})
-        UserInputs.RadioButtonInput(
-            radioOptions = listOf("one", "two", "three"),
-            selectedOption = selectedOption,
-            onOptionSelected = onOptionSelected
+        Text(
+            text = "1939 Scouting Tool - Settings",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(all = 16.dp)
+        )
+        UserInputs.SwitchTextBarInput(
+            checked = exampleSetting,
+            onCheckedChange = { exampleSetting = it },
+            text = "Example Setting (does nothing)"
+        )
+        UserInputs.DropdownTextBarInput(
+            options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
+            onOptionSelected = {deviceRobotAssignment = it}, // TODO: save settings when a setting is selected
+            text = "Robot and Alliance Assignment"
         )
         UserInputs.TextButtonInput(
             onClick = {navController.navigate(AppRoutes.OPERATOR)},
@@ -327,4 +426,3 @@ fun SelectScreen(navController: NavController) {
         )
     }
 }
-
