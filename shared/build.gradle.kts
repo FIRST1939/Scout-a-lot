@@ -39,6 +39,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.datastore)
         }
         iosMain.dependencies {
             // the lion does not concern herself with iOS
