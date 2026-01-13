@@ -1,5 +1,7 @@
 package com.frcteam1939.scouting2026.android
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -126,5 +130,77 @@ object UserInputs {
             checked = checked,
             onCheckedChange = onCheckedChange
         )
+    }
+
+    @Composable
+    fun SwitchTextBarInput(
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        text: String
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = text)
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+        }
+        Divider(thickness = 1.dp)
+    }
+
+    @Composable
+    fun DropdownTextBarInput(
+        options: List<String>,
+        onOptionSelected: (String) -> Unit,
+        text: String
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        var selectedOption by remember { mutableStateOf(options[0]) }
+
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = text)
+            Box {
+                OutlinedButton(
+                    onClick = { expanded = true },
+                ) {
+                    Text(text = selectedOption)
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Dropdown arrow"
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    content = {
+                        options.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option) },
+                                onClick = {
+                                    onOptionSelected(option)
+                                    selectedOption = option
+                                    expanded = false // Close the menu
+                                },
+                            )
+                        }
+                    }
+                )
+            }
+        }
+        Divider(thickness = 1.dp)
     }
 }
