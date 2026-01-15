@@ -158,11 +158,12 @@ object UserInputs {
     @Composable
     fun DropdownTextBarInput(
         options: List<String>,
+        selectedOption: String,
         onOptionSelected: (String) -> Unit,
         text: String
     ) {
         var expanded by remember { mutableStateOf(false) }
-        var selectedOption by remember { mutableStateOf(options[0]) }
+        var selectedOption by remember { mutableStateOf(selectedOption) }
 
         Divider(thickness = 1.dp)
         Row(

@@ -1,6 +1,7 @@
 package com.frcteam1939.scouting2026.android
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.activity.ComponentActivity
@@ -334,8 +335,9 @@ fun SettingsScreen(navController: NavController) {
     val settingsViewModel: SettingsViewModel = viewModel(
         factory = viewModelFactory { SettingsViewModel(getDatabase().settingsDao()) }
     )
-    var exampleSetting by remember { mutableStateOf( false ) }
-    var deviceRobotAssignment by remember { mutableStateOf("Red 1") }
+    // This collects the StateFlow from the settings view model
+    val settingsState by settingsViewModel.settings.collectAsState()
+    val currentSettings = settingsState ?: return
 
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -348,13 +350,18 @@ fun SettingsScreen(navController: NavController) {
             modifier = Modifier.padding(all = 16.dp)
         )
         UserInputs.SwitchTextBarInput(
-            checked = exampleSetting,
-            onCheckedChange = { exampleSetting = it },
+            checked = currentSettings.exampleSetting,
+            onCheckedChange = {
+                settingsViewModel.updateExampleSetting(it)
+            },
             text = "Example Setting (does nothing)"
         )
         UserInputs.DropdownTextBarInput(
             options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
-            onOptionSelected = {deviceRobotAssignment = it}, // TODO: save settings when a setting is selected
+            selectedOption = currentSettings.deviceRobotAssignment,
+            onOptionSelected = {
+                settingsViewModel.updateDeviceRobotAssignment(it)
+            },
             text = "Robot and Alliance Assignment"
         )
         UserInputs.TextButtonInput(
