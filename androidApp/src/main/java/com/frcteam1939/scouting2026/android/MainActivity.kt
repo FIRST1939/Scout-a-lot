@@ -1,6 +1,5 @@
 package com.frcteam1939.scouting2026.android
 
-
 import android.os.Bundle
 import android.widget.Toast
 import android.widget.Toast.makeText
@@ -29,15 +28,22 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.frcteam1939.scouting2026.data.AppDatabase
+import com.frcteam1939.scouting2026.data.getDatabase
+import com.frcteam1939.scouting2026.data.initAppContextForDB
+import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
+import com.frcteam1939.scouting2026.viewmodels.viewModelFactory
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Give the context to the DB initializer
+        initAppContextForDB(this)
         setContent {
             MyApplicationTheme {
                 ScoutingApp()
@@ -83,6 +89,8 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
 @Composable
 //navigation controller
 fun ScoutingApp() {
+    val database: AppDatabase = remember { getDatabase() }
+
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -323,6 +331,9 @@ fun TeamConfirmationScreen(navController: NavController) {
 @Composable
 //main settings
 fun SettingsScreen(navController: NavController) {
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = viewModelFactory { SettingsViewModel(getDatabase().settingsDao()) }
+    )
     var exampleSetting by remember { mutableStateOf( false ) }
     var deviceRobotAssignment by remember { mutableStateOf("Red 1") }
 
@@ -349,7 +360,9 @@ fun SettingsScreen(navController: NavController) {
         UserInputs.TextButtonInput(
             onClick = {navController.navigate(AppRoutes.OPERATOR)},
             text = "Operator Settings",
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(all = 30.dp),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(all = 30.dp),
         )
     }
 }
