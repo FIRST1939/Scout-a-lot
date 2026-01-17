@@ -249,12 +249,19 @@ object UserInputs {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = text)
-            Box {
+            Text(
+                text = text,
+                modifier = Modifier.weight(2f)
+            )
+            Box(modifier = Modifier.weight(1f)) {
                 OutlinedButton(
                     onClick = { expanded = true },
+
                 ) {
-                    Text(text = selectedOption)
+                    Text(
+                        text = selectedOption,
+                        maxLines = 1
+                    )
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = "Dropdown arrow"
