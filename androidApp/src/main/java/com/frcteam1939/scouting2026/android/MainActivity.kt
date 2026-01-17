@@ -333,7 +333,7 @@ fun TeamConfirmationScreen(navController: NavController) {
 //main settings
 fun SettingsScreen(navController: NavController) {
     val settingsViewModel: SettingsViewModel = viewModel(
-        factory = viewModelFactory { SettingsViewModel(getDatabase().settingsDao()) }
+        factory = viewModelFactory { SettingsViewModel() }
     )
     // This collects the StateFlow from the settings view model
     val settingsState by settingsViewModel.settings.collectAsState()
