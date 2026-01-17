@@ -1,0 +1,14 @@
+package com.frcteam1939.scouting2026.data.entities
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "events")
+data class Event(
+    @PrimaryKey(autoGenerate = true) val id: Int, // Change to choose ID
+    @ColumnInfo(name = "name") val customEventName: String,
+    @ColumnInfo(name = "code") val eventCode: String,
+    @ColumnInfo(name = "year") val eventYear: Int,
+    @ColumnInfo(name = "match_info") val matchInfo: String
+)
