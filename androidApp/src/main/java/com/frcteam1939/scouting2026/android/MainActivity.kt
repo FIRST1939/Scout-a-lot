@@ -38,7 +38,15 @@ import com.frcteam1939.scouting2026.data.initAppContextForDB
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.viewModelFactory
 import kotlinx.coroutines.launch
-
+import android.net.Uri
+import android.content.Intent
+import android.provider.DocumentsContract
+import androidx.core.app.ActivityCompat.startActivityForResult
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.provider.Settings
+import androidx.core.content.ContextCompat.startActivity
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +102,8 @@ fun ScoutingApp() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val bluetoothManager: BluetoothManager? = getSystemService(BluetoothManager::class.java as Context)
+    val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.getAdapter()
     // List of items to show in the NavigationRail
     val items = listOf(
         Screen.ScoutMatches,
@@ -190,6 +200,7 @@ fun ScoutingApp() {
                     }
                     composable(AppRoutes.SYNC) {
                         // TODO: device & data synchronization
+                        SyncScreen(navController = navController)
                     }
                     composable(AppRoutes.EDIT_FORMS) {
                         // TODO: add edit forms function
@@ -211,6 +222,12 @@ fun ScoutingApp() {
             }
         }
     }
+}
+
+fun startActivityForResult(activity: Intent, intent2: Any) {}
+
+fun getSystemService(context: Context): BluetoothManager?{
+    return context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
 }
 
 @Composable
@@ -327,6 +344,49 @@ fun TeamConfirmationScreen(navController: NavController) {
         }
     }
 }
+const val PICK_PDF_FILE = 2
+@Composable
+fun openFile(pickerInitialUri: Uri) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = "application/pdf"
+
+        // Optionally, specify a URI for the file that should appear in the
+        // system file picker when it loads.
+        putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+    }
+    //startActivityForResult(intent, PICK_PDF_FILE)
+}
+
+@Composable
+fun SyncScreen(navController: NavController) {
+    fun startActivity(context: Intent) {}
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Sync",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(all = 16.dp)
+        )
+        UserInputs.TextButtonInput(
+            onClick = {
+                fun openBluetoothSettings() {
+                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                startActivity(intent)
+            }},
+            text = "Send"
+
+        )
+        TextButton(
+            onClick = {}
+        ) {
+            Text(text = "Recieve")
+        }
+    }
+}
 
 @Composable
 //main settings
@@ -355,7 +415,7 @@ fun SettingsScreen(navController: NavController) {
         UserInputs.DropdownTextBarInput(
             options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
             onOptionSelected = {deviceRobotAssignment = it}, // TODO: save settings when a setting is selected
-            text = "Robot and Alliance Assignment"
+            text = "Robot Assignment"
         )
         UserInputs.TextButtonInput(
             onClick = {navController.navigate(AppRoutes.OPERATOR)},
