@@ -2,9 +2,10 @@ package com.frcteam1939.scouting2026.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "events")
+@Entity(tableName = "events", indices = [Index(value = ["name"], unique = true)])
 data class Event(
     @PrimaryKey(autoGenerate = true) val id: Int, // Change to choose ID
     @ColumnInfo(name = "name") val customEventName: String,
