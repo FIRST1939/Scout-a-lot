@@ -1,7 +1,6 @@
 package com.frcteam1939.scouting2026.android
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.activity.ComponentActivity
@@ -13,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.runtime.*
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.getDatabase
 import com.frcteam1939.scouting2026.data.initAppContextForDB
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
@@ -90,7 +89,10 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
 @Composable
 //navigation controller
 fun ScoutingApp() {
-    val database: AppDatabase = remember { getDatabase() }
+    if (!LocalInspectionMode.current) {
+        // Avoid DB init in previews; the app context isn't set.
+        remember { getDatabase() }
+    }
 
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -332,12 +334,15 @@ fun TeamConfirmationScreen(navController: NavController) {
 @Composable
 //main settings
 fun SettingsScreen(navController: NavController) {
-    val settingsViewModel: SettingsViewModel = viewModel(
-        factory = viewModelFactory { SettingsViewModel(getDatabase().settingsDao()) }
-    )
-    // This collects the StateFlow from the settings view model
-    val settingsState by settingsViewModel.settings.collectAsState()
-    val currentSettings = settingsState ?: return
+    val settingsViewModel: SettingsViewModel? = if (!LocalInspectionMode.current) {
+        viewModel(
+            factory = viewModelFactory { SettingsViewModel(getDatabase().settingsDao()) }
+        )
+    } else {
+        null
+    }
+    var exampleSetting by remember { mutableStateOf( false ) }
+    var deviceRobotAssignment by remember { mutableStateOf("Red 1") }
 
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -350,18 +355,13 @@ fun SettingsScreen(navController: NavController) {
             modifier = Modifier.padding(all = 16.dp)
         )
         UserInputs.SwitchTextBarInput(
-            checked = currentSettings.exampleSetting,
-            onCheckedChange = {
-                settingsViewModel.updateExampleSetting(it)
-            },
+            checked = exampleSetting,
+            onCheckedChange = { exampleSetting = it },
             text = "Example Setting (does nothing)"
         )
         UserInputs.DropdownTextBarInput(
             options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
-            selectedOption = currentSettings.deviceRobotAssignment,
-            onOptionSelected = {
-                settingsViewModel.updateDeviceRobotAssignment(it)
-            },
+            onOptionSelected = {deviceRobotAssignment = it}, // TODO: save settings when a setting is selected
             text = "Robot and Alliance Assignment"
         )
         UserInputs.TextButtonInput(
