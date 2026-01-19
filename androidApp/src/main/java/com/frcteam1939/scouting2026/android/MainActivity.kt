@@ -339,6 +339,13 @@ fun SettingsScreen(navController: NavController) {
     val settingsState by settingsViewModel.settings.collectAsState()
     val currentSettings = settingsState ?: return
 
+    // Get the event names
+    val eventNames by settingsViewModel
+        .getEventNames()
+        .collectAsState(initial = emptyList())
+    val eventNamesWithNoneOption = listOf("None Selected").plus(eventNames)
+    val selectedEvent = currentSettings.currentEvent.ifBlank { "None Selected" }
+
     Column (
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -349,6 +356,8 @@ fun SettingsScreen(navController: NavController) {
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(all = 16.dp)
         )
+
+        // Select example setting
         UserInputs.SwitchTextBarInput(
             checked = currentSettings.exampleSetting,
             onCheckedChange = {
@@ -356,6 +365,8 @@ fun SettingsScreen(navController: NavController) {
             },
             text = "Example Setting (does nothing)"
         )
+
+        // Select robot assignment
         UserInputs.DropdownTextBarInput(
             options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
             selectedOption = currentSettings.deviceRobotAssignment,
@@ -364,6 +375,20 @@ fun SettingsScreen(navController: NavController) {
             },
             text = "Robot and Alliance Assignment"
         )
+
+        // Select current event
+        UserInputs.DropdownTextBarInput(
+            options = eventNamesWithNoneOption,
+            selectedOption = selectedEvent,
+            onOptionSelected = { selected ->
+                settingsViewModel.updateCurrentEvent(
+                    if (selected == "None Selected") "" else selected
+                )
+            },
+            text = "Current Event"
+        )
+
+        // Navigate to operator settings
         UserInputs.TextButtonInput(
             onClick = {navController.navigate(AppRoutes.OPERATOR)},
             text = "Operator Settings",
