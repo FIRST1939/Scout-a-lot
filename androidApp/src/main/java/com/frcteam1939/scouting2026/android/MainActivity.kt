@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.frcteam1939.scouting2026.data.AppDatabase
@@ -72,6 +73,7 @@ object AppRoutes {
     const val SELECT = "select"
     const val SAVED = "saved"
     const val SETTINGS = "settings"
+    const val EDIT_EVENTS = "edit events"
     const val OPERATOR = "operator"
 }
 
@@ -198,6 +200,9 @@ fun ScoutingApp() {
                     }
                     composable(AppRoutes.SETTINGS) {
                         SettingsScreen(navController = navController)
+                    }
+                    composable(AppRoutes.EDIT_EVENTS) {
+                        // TODO: add edit events function
                     }
                     composable(AppRoutes.OPERATOR) {
                         OperatorScreen(navController = navController)
@@ -352,9 +357,10 @@ fun SettingsScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "1939 Scouting Tool - Settings",
+            text = "Settings:",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(all = 16.dp)
+            textAlign = TextAlign.Left,
+            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
         )
 
         // Select example setting
@@ -388,13 +394,29 @@ fun SettingsScreen(navController: NavController) {
             text = "Current Event"
         )
 
+        Text(
+            text = "Actions:",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Left,
+            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+        )
+
+        // Add event
+        UserInputs.TextButtonInput(
+            onClick = {navController.navigate(AppRoutes.EDIT_EVENTS)},
+            text = "Edit Events",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(all = 4.dp),
+        )
+
         // Navigate to operator settings
         UserInputs.TextButtonInput(
             onClick = {navController.navigate(AppRoutes.OPERATOR)},
             text = "Operator Settings",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(all = 30.dp),
+                .padding(all = 4.dp),
         )
     }
 }
