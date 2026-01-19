@@ -37,7 +37,7 @@ import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.getDatabase
 import com.frcteam1939.scouting2026.data.initAppContextForDB
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
-import com.frcteam1939.scouting2026.viewmodels.viewModelFactory
+import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -333,7 +333,7 @@ fun TeamConfirmationScreen(navController: NavController) {
 //main settings
 fun SettingsScreen(navController: NavController) {
     val settingsViewModel: SettingsViewModel = viewModel(
-        factory = viewModelFactory { SettingsViewModel() }
+        factory = getViewModelFactory()
     )
     // This collects the StateFlow from the settings view model
     val settingsState by settingsViewModel.settings.collectAsState()
