@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "24037d89a3281f1fd2d3824b04457719",
+    "identityHash": "86e41894df2ef0bc0d780e5cff2166bf",
     "entities": [
       {
         "tableName": "app_settings",
@@ -80,12 +80,23 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_events_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_events_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24037d89a3281f1fd2d3824b04457719')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '86e41894df2ef0bc0d780e5cff2166bf')"
     ]
   }
 }
