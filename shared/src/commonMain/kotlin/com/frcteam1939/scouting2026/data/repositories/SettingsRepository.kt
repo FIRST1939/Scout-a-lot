@@ -1,7 +1,9 @@
 package com.frcteam1939.scouting2026.data.repositories
 
+import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.dao.SettingsDao
 import com.frcteam1939.scouting2026.data.entities.AppSettings
+import com.frcteam1939.scouting2026.data.getDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.SharingStarted
@@ -9,9 +11,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SettingsRepository(private val dao: SettingsDao, private val viewModelScope: CoroutineScope) {
+class SettingsRepository(private val db: AppDatabase, private val applicationScope: CoroutineScope) {
+    private val dao = db.settingsDao()
+
     init {
-        viewModelScope.launch {
+        applicationScope.launch {
             if (dao.getSettings().first() == null) {
                 restoreDefaultSettings()
             }
@@ -19,10 +23,10 @@ class SettingsRepository(private val dao: SettingsDao, private val viewModelScop
     }
 
     val settings: StateFlow<AppSettings?> = dao.getSettings()
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+        .stateIn(applicationScope, SharingStarted.Lazily, null)
 
     fun updateExampleSetting(enabled: Boolean) {
-        viewModelScope.launch {
+        applicationScope.launch {
             settings.value?.let {
                 dao.saveSettings(it.copy(exampleSetting = enabled))
             }
@@ -30,9 +34,17 @@ class SettingsRepository(private val dao: SettingsDao, private val viewModelScop
     }
 
     fun updateDeviceRobotAssignment(assignment: String) {
-        viewModelScope.launch {
+        applicationScope.launch {
             settings.value?.let {
                 dao.saveSettings(it.copy(deviceRobotAssignment = assignment))
+            }
+        }
+    }
+
+    fun updateCurrentEvent(customEventName: String) {
+        applicationScope.launch {
+            settings.value?.let {
+                dao.saveSettings(it.copy(currentEvent = customEventName))
             }
         }
     }
