@@ -174,12 +174,12 @@ object UserInputs {
         ) {
             Text(text = text)
             OutlinedButton(
-                onClick = { onClick },
+                onClick = { onClick() },
             ) {
                 Text(text = buttonText)
                 Icon(
                     imageVector = icon,
-                    contentDescription = "Dropdown arrow"
+                    contentDescription = ""
                 )
             }
         }
