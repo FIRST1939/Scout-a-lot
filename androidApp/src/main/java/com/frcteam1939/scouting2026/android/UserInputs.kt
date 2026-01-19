@@ -46,6 +46,7 @@ object UserInputs {
                 if (forceNumberInput && input.toIntOrNull() == null) validUpdate = false
                 if (input.isEmpty()) validUpdate = true
                 if (validUpdate) onValueChange(input) },
+            modifier = Modifier.padding(all = 8.dp),
             keyboardOptions = keyboardOptions,
             singleLine = singleLine,
             label = { Text(label) },
