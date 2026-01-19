@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
@@ -207,7 +208,7 @@ fun ScoutingApp() {
                         EditEventsScreen(navController = navController)
                     }
                     composable(AppRoutes.ADD_EVENT) {
-                        // TODO: add add events function
+                        AddEventScreen(navController = navController)
                     }
                     composable(AppRoutes.OPERATOR) {
                         OperatorScreen(navController = navController)
@@ -408,7 +409,7 @@ fun SettingsScreen(navController: NavController) {
 
         // Add event
         UserInputs.TextButtonInput(
-            onClick = {navController.navigate(AppRoutes.EDIT_EVENTS)},
+            onClick = { navController.navigate(AppRoutes.EDIT_EVENTS) },
             text = "Edit Events",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -417,7 +418,7 @@ fun SettingsScreen(navController: NavController) {
 
         // Navigate to operator settings
         UserInputs.TextButtonInput(
-            onClick = {navController.navigate(AppRoutes.OPERATOR)},
+            onClick = { navController.navigate(AppRoutes.OPERATOR) },
             text = "Operator Settings",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -428,6 +429,13 @@ fun SettingsScreen(navController: NavController) {
 
 @Composable
 fun EditEventsScreen(navController: NavController) {
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = getViewModelFactory()
+    )
+    val eventNames by settingsViewModel
+        .getEventNames()
+        .collectAsState(initial = emptyList())
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -446,6 +454,67 @@ fun EditEventsScreen(navController: NavController) {
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Left,
             modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+        )
+        eventNames.forEach {
+            UserInputs.OutlinedButtonTextBarInput(
+                text = it,
+                buttonText = "",
+                icon = Icons.Default.Delete,
+                onClick = {
+                    // TODO: delete the event
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun AddEventScreen(navController: NavController) {
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = getViewModelFactory()
+    )
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Add Event:",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Left,
+            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+        )
+
+        // Prompt event name
+        UserInputs.TextboxInput(
+            value = "",
+            onValueChange = {},
+            label = "Event Name",
+            singleLine = true
+        )
+
+        // Prompt event code
+        UserInputs.TextboxInput(
+            value = "",
+            onValueChange = {},
+            label = "Event Code",
+            singleLine = true
+        )
+
+        // Prompt event year
+        UserInputs.TextboxInput(
+            value = "",
+            onValueChange = {},
+            label = "Event Year",
+            singleLine = true,
+            forceNumberInput = true,
+            characterLimit = 4
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = { navController.popBackStack() },
+            text = "Add Event"
         )
     }
 }
