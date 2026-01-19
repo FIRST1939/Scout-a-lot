@@ -474,6 +474,12 @@ fun AddEventScreen(navController: NavController) {
         factory = getViewModelFactory()
     )
 
+    val context = LocalContext.current
+
+    var eventName by remember { mutableStateOf("") }
+    var eventCode by remember { mutableStateOf("") }
+    var eventYear by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -488,24 +494,24 @@ fun AddEventScreen(navController: NavController) {
 
         // Prompt event name
         UserInputs.TextboxInput(
-            value = "",
-            onValueChange = {},
+            value = eventName,
+            onValueChange = { eventName = it },
             label = "Event Name",
             singleLine = true
         )
 
         // Prompt event code
         UserInputs.TextboxInput(
-            value = "",
-            onValueChange = {},
+            value = eventCode,
+            onValueChange = { eventCode = it },
             label = "Event Code",
             singleLine = true
         )
 
         // Prompt event year
         UserInputs.TextboxInput(
-            value = "",
-            onValueChange = {},
+            value = eventYear,
+            onValueChange = { eventYear = it },
             label = "Event Year",
             singleLine = true,
             forceNumberInput = true,
@@ -513,7 +519,17 @@ fun AddEventScreen(navController: NavController) {
         )
 
         UserInputs.TextButtonInput(
-            onClick = { navController.popBackStack() },
+            onClick = {
+                // TODO: implement settingsViewModel.verifyEventInfo(eventCode, eventYear)
+                // TODO: implement settingsViewModel.addEvent(eventName, eventCode, eventYear)
+
+//                if (!eventName.isBlank() && settingsViewModel.verifyEventInfo(eventCode, eventYear)) {
+//                    settingsViewModel.addEvent(eventName, eventCode, eventYear)
+//                    navController.popBackStack()
+//                }
+//                else
+//                    makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()
+            },
             text = "Add Event"
         )
     }
