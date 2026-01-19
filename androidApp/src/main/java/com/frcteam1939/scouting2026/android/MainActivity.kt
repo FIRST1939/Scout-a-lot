@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
@@ -74,6 +75,7 @@ object AppRoutes {
     const val SAVED = "saved"
     const val SETTINGS = "settings"
     const val EDIT_EVENTS = "edit events"
+    const val ADD_EVENT = "add event"
     const val OPERATOR = "operator"
 }
 
@@ -202,7 +204,10 @@ fun ScoutingApp() {
                         SettingsScreen(navController = navController)
                     }
                     composable(AppRoutes.EDIT_EVENTS) {
-                        // TODO: add edit events function
+                        EditEventsScreen(navController = navController)
+                    }
+                    composable(AppRoutes.ADD_EVENT) {
+                        // TODO: add add events function
                     }
                     composable(AppRoutes.OPERATOR) {
                         OperatorScreen(navController = navController)
@@ -422,10 +427,32 @@ fun SettingsScreen(navController: NavController) {
 }
 
 @Composable
+fun EditEventsScreen(navController: NavController) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        UserInputs.OutlinedButtonTextBarInput(
+            text = "Add Event",
+            buttonText = "",
+            icon = Icons.Default.Add,
+            onClick = {
+                navController.navigate(AppRoutes.ADD_EVENT)
+            }
+        )
+        Text(
+            text = "Your Events:",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Left,
+            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+        )
+    }
+}
+
+@Composable
 //operator settings menu
-fun OperatorScreen(
-    navController: NavController
-) {
+fun OperatorScreen(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
