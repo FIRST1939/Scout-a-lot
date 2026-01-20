@@ -11,9 +11,18 @@ fun initAppContextForDB(context: Context) {
 
 actual fun getDatabase(): AppDatabase {
     val dbFile = appContext.getDatabasePath("scouting.db")
-    return Room.databaseBuilder(
-        context = appContext,
-        klass = AppDatabase::class.java,
-        name = dbFile.absolutePath
-    ).build()
+    val builder = if (dbFile != null) {
+        Room.databaseBuilder(
+            context = appContext,
+            klass = AppDatabase::class.java,
+            name = dbFile.absolutePath
+        )
+    } else {
+        // Preview/mock contexts can return null for getDatabasePath.
+        Room.inMemoryDatabaseBuilder(
+            context = appContext,
+            klass = AppDatabase::class.java
+        )
+    }
+    return builder.build()
 }
