@@ -1,9 +1,7 @@
 package com.frcteam1939.scouting2026.data.repositories
 
 import com.frcteam1939.scouting2026.data.AppDatabase
-import com.frcteam1939.scouting2026.data.dao.SettingsDao
 import com.frcteam1939.scouting2026.data.entities.AppSettings
-import com.frcteam1939.scouting2026.data.getDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.SharingStarted
