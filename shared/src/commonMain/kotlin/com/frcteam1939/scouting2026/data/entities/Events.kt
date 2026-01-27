@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "events", indices = [Index(value = ["name"], unique = true)])
 data class Event(
-    @PrimaryKey(autoGenerate = true) val id: Int, // Change to choose ID
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "name") val customEventName: String,
     @ColumnInfo(name = "code") val eventCode: String,
     @ColumnInfo(name = "year") val eventYear: Int,
