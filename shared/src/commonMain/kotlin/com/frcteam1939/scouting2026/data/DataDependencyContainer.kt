@@ -1,5 +1,8 @@
 package com.frcteam1939.scouting2026.data
 
+import com.frcteam1939.scouting2026.TBAInfo
+import com.frcteam1939.scouting2026.TBAAuth
+import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -19,5 +22,9 @@ object DataDependencyContainer {
 
     val eventsRepository: EventsRepository by lazy {
         EventsRepository(database, applicationScope)
+    }
+
+    val eventCodesRepository: EventCodesRepository by lazy {
+        EventCodesRepository(database, applicationScope, TBAInfo(TBAAuth()))
     }
 }
