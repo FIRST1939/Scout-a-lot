@@ -2,13 +2,7 @@ package com.frcteam1939.scouting2026.data
 
 import android.content.Context
 import androidx.room.Room
-
-// This lateinit structure is terrible but it works for now
-lateinit var applicationContext: Context
-
-fun initAppContextForDB(context: Context) {
-    applicationContext = context.applicationContext
-}
+import com.frcteam1939.scouting2026.applicationContext
 
 actual fun getDatabase(): AppDatabase {
     val dbFile = applicationContext.getDatabasePath("scouting.db")

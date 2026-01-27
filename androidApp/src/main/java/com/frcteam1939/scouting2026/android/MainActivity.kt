@@ -38,7 +38,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.getDatabase
-import com.frcteam1939.scouting2026.data.initAppContextForDB
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import kotlinx.coroutines.launch
@@ -47,7 +46,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Give the context to the DB initializer
-        initAppContextForDB(this)
         setContent {
             MyApplicationTheme {
                 ScoutingApp()
