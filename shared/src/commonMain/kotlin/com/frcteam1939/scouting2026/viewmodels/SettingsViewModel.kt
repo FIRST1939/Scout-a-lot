@@ -3,15 +3,19 @@ package com.frcteam1939.scouting2026.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.frcteam1939.scouting2026.data.entities.AppSettings
+import com.frcteam1939.scouting2026.data.entities.Event
+import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.Boolean
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
-    private val eventsRepository: EventsRepository
+    private val eventsRepository: EventsRepository,
+    private val eventCodesRepository: EventCodesRepository
 ) : ViewModel() {
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
 
@@ -30,5 +34,21 @@ class SettingsViewModel(
 
     fun getEventNames(): Flow<List<String>> {
         return eventsRepository.getEventNames()
+    }
+
+    suspend fun checkEventValidity(code: String, year: Int): Boolean? {
+        if (year >= 1992 && year <= 2026) {
+            val eventCodes = eventCodesRepository.getEventCodes(year).first()?.eventCodes
+            println("Code: $code")
+            println("Code: ${code.encodeToByteArray().joinToString()}")
+            println("Event codes @ settings view model layer: $eventCodes")
+            println("List length: ${eventCodes?.size}")
+            println("Event codes contains code: ${eventCodes?.contains(code)}")
+            return eventCodes?.contains(code)
+            // returns null if the event codes for that year don't exist
+        }
+        else {
+            return false
+        }
     }
 }
