@@ -38,6 +38,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.getDatabase
+import com.frcteam1939.scouting2026.initAppContext
+import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import kotlinx.coroutines.launch
@@ -46,11 +48,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Give the context to the DB initializer
+        initAppContext(this)
         setContent {
             MyApplicationTheme {
                 ScoutingApp()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setActivity(this)
     }
 }
 
@@ -364,7 +372,9 @@ fun SettingsScreen(navController: NavController) {
             text = "Settings:",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Left,
-            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
         )
 
         // Select example setting
@@ -402,7 +412,9 @@ fun SettingsScreen(navController: NavController) {
             text = "Actions:",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Left,
-            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
         )
 
         // Add event
@@ -451,7 +463,9 @@ fun EditEventsScreen(navController: NavController) {
             text = "Your Events:",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Left,
-            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
         )
         eventNames.forEach {
             UserInputs.OutlinedButtonTextBarInput(
@@ -473,6 +487,7 @@ fun AddEventScreen(navController: NavController) {
     )
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     var eventName by remember { mutableStateOf("") }
     var eventCode by remember { mutableStateOf("") }
@@ -487,7 +502,9 @@ fun AddEventScreen(navController: NavController) {
             text = "Add Event:",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Left,
-            modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
         )
 
         // Prompt event name
@@ -518,15 +535,21 @@ fun AddEventScreen(navController: NavController) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                // TODO: implement settingsViewModel.verifyEventInfo(eventCode, eventYear)
-                // TODO: implement settingsViewModel.addEvent(eventName, eventCode, eventYear)
-
-//                if (!eventName.isBlank() && settingsViewModel.verifyEventInfo(eventCode, eventYear)) {
-//                    settingsViewModel.addEvent(eventName, eventCode, eventYear)
-//                    navController.popBackStack()
-//                }
-//                else
-//                    makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()
+                coroutineScope.launch {
+                    Log.d("coroutine debugging", "coroutine launched")
+                    val isValid = !eventName.isBlank()
+                                && !eventCode.isBlank()
+                                && !eventYear.isBlank()
+                                && settingsViewModel.checkEventValidity(eventCode, eventYear.toInt())?: false
+                    Log.d("coroutine debugging", "coroutine calculated isValid: $isValid")
+                    if (isValid) {
+                        //settingsViewModel.addEvent(eventName, eventCode, eventYear)
+                        navController.popBackStack()
+                        makeText(context, "Valid event info", Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                        makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()
+                }
             },
             text = "Add Event"
         )
