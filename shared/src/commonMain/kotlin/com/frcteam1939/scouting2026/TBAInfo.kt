@@ -16,20 +16,14 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
 
     suspend fun pullEventFromTBA(endpoint: String): String {
         // must suspend, client.get waits for response
-        val response = client.get("https://www.thebluealliance.com/api/v3${endpoint}") {
-            headers {
-                append("X-TBA-Auth-Key", tbaAuth.getTBAKey())
-                append("User-Agent", "Mozilla/5.0")
-            }
-        }
-        return response.bodyAsText()
-    }
-
-    suspend fun pullEventKeyList(year: Int): List<String> {
         return try {
-            val jsonString = this.pullEventFromTBA("/events/${year}/keys")
-            val keyList = Json.decodeFromString<List<String>>(jsonString)
-            return keyList.map { it.substring(4) } // To remove the year from the key
+            val response = client.get("https://www.thebluealliance.com/api/v3${endpoint}") {
+                headers {
+                    append("X-TBA-Auth-Key", tbaAuth.getTBAKey())
+                    append("User-Agent", "Mozilla/5.0")
+                }
+            }
+            return response.bodyAsText()
         } catch (e: Exception) {
             println(e.stackTraceToString())
             showAlert(
@@ -37,7 +31,17 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
                 message = "Failed to pull event keys from TBA. " +
                         "Please check internet connection and try again."
             )
-            emptyList()
+            ""
+        }
+    }
+
+    suspend fun pullEventKeyList(year: Int): List<String> {
+        val jsonString = this.pullEventFromTBA("/events/${year}/keys")
+        if (jsonString.isNotBlank()) {
+            val keyList = Json.decodeFromString<List<String>>(jsonString)
+            return keyList.map { it.substring(4) } // To remove the year from the key
+        } else {
+            return emptyList()
         }
     }
 
