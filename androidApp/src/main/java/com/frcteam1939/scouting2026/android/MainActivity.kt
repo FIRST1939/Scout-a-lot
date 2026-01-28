@@ -543,7 +543,7 @@ fun AddEventScreen(navController: NavController) {
                                 && settingsViewModel.checkEventValidity(eventCode, eventYear.toInt())?: false
                     Log.d("coroutine debugging", "coroutine calculated isValid: $isValid")
                     if (isValid) {
-                        //settingsViewModel.addEvent(eventName, eventCode, eventYear)
+                        settingsViewModel.createEvent(eventName, eventCode, eventYear.toInt())
                         navController.popBackStack()
                         makeText(context, "Valid event info", Toast.LENGTH_SHORT).show()
                     }
