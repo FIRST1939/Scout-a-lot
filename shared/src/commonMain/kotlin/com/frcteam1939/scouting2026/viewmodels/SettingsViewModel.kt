@@ -47,8 +47,9 @@ class SettingsViewModel(
         }
     }
 
-    fun createEvent(name: String, code: String, year: Int) {
-        eventsRepository.createEvent(Event(id = 0, customEventName = name, eventCode = code, eventYear = year, matchInfo = ""))
+    suspend fun createEvent(name: String, code: String, year: Int) {
+        val matchInfo = tbaInfo.pullEventMatches("$year$code")
+        eventsRepository.createEvent(Event(id = 0, customEventName = name, eventCode = code, eventYear = year, matchInfo = matchInfo))
     }
 
     fun deleteEvent(name: String) {

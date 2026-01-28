@@ -547,16 +547,14 @@ fun AddEventScreen(navController: NavController) {
         UserInputs.TextButtonInput(
             onClick = {
                 coroutineScope.launch {
-                    Log.d("coroutine debugging", "coroutine launched")
                     val isValid = !eventName.isBlank()
                                 && !eventCode.isBlank()
                                 && !eventYear.isBlank()
                                 && settingsViewModel.checkEventValidity(eventCode, eventYear.toInt())?: false
-                    Log.d("coroutine debugging", "coroutine calculated isValid: $isValid")
                     if (isValid) {
                         settingsViewModel.createEvent(eventName, eventCode, eventYear.toInt())
                         navController.popBackStack()
-                        makeText(context, "Valid event info", Toast.LENGTH_SHORT).show()
+                        makeText(context, "Event creation successful!", Toast.LENGTH_SHORT).show()
                     }
                     else
                         makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()

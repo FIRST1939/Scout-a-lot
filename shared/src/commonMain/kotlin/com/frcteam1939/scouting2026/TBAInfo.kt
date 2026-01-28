@@ -14,7 +14,7 @@ expect class TBAAuth() {
 class TBAInfo(private val tbaAuth: TBAAuth) {
     private val client = HttpClient()
 
-    suspend fun pullEventFromTBA(endpoint: String): String {
+    suspend fun pullFromTBA(endpoint: String): String {
         // must suspend, client.get waits for response
         return try {
             val response = client.get("https://www.thebluealliance.com/api/v3${endpoint}") {
@@ -23,6 +23,7 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
                     append("User-Agent", "Mozilla/5.0")
                 }
             }
+            println(response.bodyAsText())
             return response.bodyAsText()
         } catch (e: Exception) {
             println(e.stackTraceToString())
@@ -36,7 +37,7 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
     }
 
     suspend fun pullEventKeyList(year: Int): List<String> {
-        val jsonString = this.pullEventFromTBA("/events/${year}/keys")
+        val jsonString = this.pullFromTBA("/events/${year}/keys")
         if (jsonString.isNotBlank()) {
             val keyList = Json.decodeFromString<List<String>>(jsonString)
             return keyList.map { it.substring(4) } // To remove the year from the key
@@ -46,10 +47,10 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
     }
 
     suspend fun pullEventMatches(eventKey: String): String {
-        return this.pullEventFromTBA("/event/${eventKey}/matches")
+        return this.pullFromTBA("/event/${eventKey}/matches/simple")
     }
 
     suspend fun pullEventTeams(eventKey: String): String {
-        return this.pullEventFromTBA("/event/${eventKey}/teams")
+        return this.pullFromTBA("/event/${eventKey}/teams")
     }
 }
