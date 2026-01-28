@@ -4,14 +4,13 @@ import com.frcteam1939.scouting2026.data.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import com.frcteam1939.scouting2026.TBAInfo
+import com.frcteam1939.scouting2026.data.DataDependencyContainer.tbaInfo
 import com.frcteam1939.scouting2026.data.entities.EventCodes
 
 
 class EventCodesRepository(
     private val db: AppDatabase,
     private val applicationScope: CoroutineScope,
-    private val tbaInfo: TBAInfo
 ) {
     private val dao = db.eventCodesDao()
 

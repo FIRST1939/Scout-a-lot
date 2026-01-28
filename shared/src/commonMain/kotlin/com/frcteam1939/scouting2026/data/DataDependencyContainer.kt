@@ -16,6 +16,9 @@ object DataDependencyContainer {
 
     private val database: AppDatabase by lazy { getDatabase() }
 
+
+    val tbaInfo: TBAInfo by lazy { TBAInfo(TBAAuth()) }
+
     val settingsRepository: SettingsRepository by lazy {
         SettingsRepository(database, applicationScope)
     }
@@ -25,6 +28,6 @@ object DataDependencyContainer {
     }
 
     val eventCodesRepository: EventCodesRepository by lazy {
-        EventCodesRepository(database, applicationScope, TBAInfo(TBAAuth()))
+        EventCodesRepository(database, applicationScope)
     }
 }
