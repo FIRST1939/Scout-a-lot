@@ -20,7 +20,6 @@ class EventCodesRepository(
     suspend fun getEventCodes(year: Int): Flow<EventCodes?> {
         if (dao.getEventCodesByYear(year).first() == null) {
             val eventKeys = tbaInfo.pullEventKeyList(year)
-            println("Event keys @ repo layer: $eventKeys")
             if (eventKeys.isNotEmpty()) {
                 dao.updateEventCodes(EventCodes(id = 0, year = year, eventCodes = eventKeys))
             }
