@@ -459,6 +459,14 @@ fun EditEventsScreen(navController: NavController) {
                 navController.navigate(AppRoutes.ADD_EVENT)
             }
         )
+        UserInputs.OutlinedButtonTextBarInput(
+            text = "Refresh Match Info",
+            buttonText = "",
+            icon = Icons.Default.Refresh,
+            onClick = {
+                TODO("Implement match info load/refresh")
+            }
+        )
         Text(
             text = "Your Events:",
             style = MaterialTheme.typography.headlineMedium,
@@ -474,6 +482,9 @@ fun EditEventsScreen(navController: NavController) {
                 icon = Icons.Default.Delete,
                 onClick = {
                     settingsViewModel.deleteEvent(it)
+                    if (it == settingsViewModel.settings.value?.currentEvent) {
+                        settingsViewModel.updateCurrentEvent("")
+                    }
                 }
             )
         }
