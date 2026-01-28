@@ -49,4 +49,8 @@ class SettingsViewModel(
     fun createEvent(name: String, code: String, year: Int) {
         eventsRepository.createEvent(Event(id = 0, customEventName = name, eventCode = code, eventYear = year, matchInfo = ""))
     }
+
+    fun deleteEvent(name: String) {
+        eventsRepository.deleteEvent(name)
+    }
 }

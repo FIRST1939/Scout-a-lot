@@ -473,7 +473,7 @@ fun EditEventsScreen(navController: NavController) {
                 buttonText = "",
                 icon = Icons.Default.Delete,
                 onClick = {
-                    // TODO: delete the event
+                    settingsViewModel.deleteEvent(it)
                 }
             )
         }
