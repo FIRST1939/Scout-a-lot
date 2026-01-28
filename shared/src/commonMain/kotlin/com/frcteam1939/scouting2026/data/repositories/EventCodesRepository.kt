@@ -4,10 +4,8 @@ import com.frcteam1939.scouting2026.data.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import com.frcteam1939.scouting2026.TBAInfo
 import com.frcteam1939.scouting2026.data.entities.EventCodes
-import kotlinx.coroutines.flow.onStart
 
 
 class EventCodesRepository(
