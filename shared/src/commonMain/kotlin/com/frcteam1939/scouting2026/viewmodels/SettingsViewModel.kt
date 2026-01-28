@@ -1,7 +1,6 @@
 package com.frcteam1939.scouting2026.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.entities.Event
 import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
@@ -45,5 +44,9 @@ class SettingsViewModel(
         else {
             return false
         }
+    }
+
+    fun createEvent(name: String, code: String, year: Int) {
+        eventsRepository.createEvent(Event(id = 0, customEventName = name, eventCode = code, eventYear = year, matchInfo = ""))
     }
 }
