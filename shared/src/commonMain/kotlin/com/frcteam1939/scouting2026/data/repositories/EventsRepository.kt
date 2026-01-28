@@ -2,6 +2,7 @@ package com.frcteam1939.scouting2026.data.repositories
 
 import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.entities.Event
+import com.frcteam1939.scouting2026.showAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class EventsRepository(private val db: AppDatabase, private val applicationScope
             try {
                 dao.createEvent(event)
             } catch (e: Exception) {
-                TODO("Add alert when errors: multiple events of same name")
+                showAlert(title = "Cannot create event.", message = "An event with this name already exists.")
             }
         }
     }
