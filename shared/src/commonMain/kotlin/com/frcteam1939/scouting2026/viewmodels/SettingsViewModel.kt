@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import kotlin.Boolean
 
 class SettingsViewModel(
@@ -39,6 +38,10 @@ class SettingsViewModel(
         return eventsRepository.getEventNames()
     }
 
+    suspend fun getEventByName(name: String): Event? {
+        return eventsRepository.getEventByName(name).first()
+    }
+
     suspend fun checkEventValidity(code: String, year: Int): Boolean? {
         if (year >= 1992 && year <= 2026) {
             val eventCodes = eventCodesRepository.getEventCodes(year).first()?.eventCodes
@@ -59,6 +62,11 @@ class SettingsViewModel(
         eventsRepository.deleteEvent(name)
     }
 
+    suspend fun updateEventMatchInfo(name: String, code: String, year: Int) {
+        val matchInfo = tbaInfo.pullEventMatches("$year$code")
+        eventsRepository.updateEventMatchInfo(name, matchInfo)
+    }
+
     suspend fun checkQualsMatchLoadStatus(name: String): Boolean {
         val jsonString = eventsRepository.getEventByName(name).first()?.matchInfo
         val matchInfo = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
@@ -74,6 +82,7 @@ class SettingsViewModel(
         val jsonString = eventsRepository.getEventByName(name).first()?.matchInfo
         val matchInfo = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
         for (match in matchInfo) {
+            //TODO: add ALL playoff match types
             if (match.compLevel == "f" || match.compLevel == "qf") {
                 return true
             }
