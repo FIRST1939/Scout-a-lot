@@ -1,5 +1,6 @@
-package com.frcteam1939.scouting2026
+package com.frcteam1939.scouting2026.tba
 
+import com.frcteam1939.scouting2026.applicationContext
 import okio.IOException
 
 actual class TBAAuth actual constructor() {

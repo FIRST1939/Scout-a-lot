@@ -1,5 +1,6 @@
-package com.frcteam1939.scouting2026
+package com.frcteam1939.scouting2026.tba
 
+import com.frcteam1939.scouting2026.showAlert
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -23,7 +24,6 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
                     append("User-Agent", "Mozilla/5.0")
                 }
             }
-            println(response.bodyAsText())
             return response.bodyAsText()
         } catch (e: Exception) {
             println(e.stackTraceToString())
@@ -48,9 +48,5 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
 
     suspend fun pullEventMatches(eventKey: String): String {
         return this.pullFromTBA("/event/${eventKey}/matches/simple")
-    }
-
-    suspend fun pullEventTeams(eventKey: String): String {
-        return this.pullFromTBA("/event/${eventKey}/teams")
     }
 }
