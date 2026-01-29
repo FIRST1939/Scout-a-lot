@@ -42,8 +42,10 @@ import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -446,6 +448,7 @@ fun EditEventsScreen(navController: NavController) {
     val eventNames by settingsViewModel
         .getEventNames()
         .collectAsState(initial = emptyList())
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -465,7 +468,18 @@ fun EditEventsScreen(navController: NavController) {
             buttonText = "",
             icon = Icons.Default.Refresh,
             onClick = {
-                TODO("Implement match info load/refresh")
+                coroutineScope.launch {
+                    eventNames.forEach {
+                        val event = settingsViewModel.getEventByName(it)
+
+                        settingsViewModel.updateEventMatchInfo(
+                            // TODO: look into !!. operator -- do we need error handling?
+                            name = event!!.customEventName,
+                            code = event.eventCode,
+                            year = event.eventYear
+                        )
+                    }
+                }
             }
         )
         Text(
