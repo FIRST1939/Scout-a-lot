@@ -42,6 +42,7 @@ import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -476,6 +477,14 @@ fun EditEventsScreen(navController: NavController) {
                 .padding(all = 16.dp)
         )
         eventNames.forEach {
+            var qualsLoaded by remember { mutableStateOf(false) }
+            var playoffsLoaded by remember { mutableStateOf(false) }
+
+            LaunchedEffect(it) {
+                qualsLoaded = settingsViewModel.checkQualsMatchLoadStatus(it)
+                playoffsLoaded = settingsViewModel.checkPlayoffMatchLoadStatus(it)
+            }
+
             UserInputs.OutlinedButtonTextBarInput(
                 text = it,
                 buttonText = "",
@@ -487,6 +496,36 @@ fun EditEventsScreen(navController: NavController) {
                     }
                 }
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                if (qualsLoaded) {
+                    Text(
+                        text = "Quals Matches: Loaded!",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                else {
+                    Text(
+                        text = "Quals Matches: Not Loaded.",
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+
+                if (playoffsLoaded) {
+                    Text(
+                        text = "Playoff Matches: Loaded!",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                else {
+                    Text(
+                        text = "Playoff Matches: Not Loaded.",
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
         }
     }
 }
