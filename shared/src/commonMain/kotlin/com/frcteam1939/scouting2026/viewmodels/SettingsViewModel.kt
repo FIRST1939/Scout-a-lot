@@ -7,9 +7,12 @@ import com.frcteam1939.scouting2026.data.entities.Event
 import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
+import com.frcteam1939.scouting2026.tba.models.TBAMatch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import kotlin.Boolean
 
 class SettingsViewModel(
@@ -54,5 +57,27 @@ class SettingsViewModel(
 
     fun deleteEvent(name: String) {
         eventsRepository.deleteEvent(name)
+    }
+
+    suspend fun checkQualsMatchLoadStatus(name: String): Boolean {
+        val jsonString = eventsRepository.getEventByName(name).first()?.matchInfo
+        val matchInfo = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
+        for (match in matchInfo) {
+            if (match.compLevel == "qm") {
+                return true
+            }
+        }
+        return false
+    }
+
+    suspend fun checkPlayoffMatchLoadStatus(name: String): Boolean {
+        val jsonString = eventsRepository.getEventByName(name).first()?.matchInfo
+        val matchInfo = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
+        for (match in matchInfo) {
+            if (match.compLevel == "f" || match.compLevel == "qf") {
+                return true
+            }
+        }
+        return false
     }
 }
