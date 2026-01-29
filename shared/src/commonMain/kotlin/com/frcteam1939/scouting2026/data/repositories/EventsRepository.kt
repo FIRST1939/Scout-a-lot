@@ -33,4 +33,10 @@ class EventsRepository(private val db: AppDatabase, private val applicationScope
             dao.deleteEvent(eventName)
         }
     }
+
+    fun updateEventMatchInfo(name: String, matchInfo: String) {
+        applicationScope.launch {
+            dao.updateEventMatchInfo(name, matchInfo)
+        }
+    }
 }
