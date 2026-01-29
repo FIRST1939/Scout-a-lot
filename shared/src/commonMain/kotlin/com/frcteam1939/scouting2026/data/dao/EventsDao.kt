@@ -20,4 +20,7 @@ interface EventsDao {
 
     @Query("DELETE FROM events WHERE name = :eventName")
     fun deleteEvent(eventName: String)
+
+    @Query("UPDATE events SET match_info = :matchInfo where name = :name")
+    fun updateEventMatchInfo(name: String, matchInfo: String)
 }
