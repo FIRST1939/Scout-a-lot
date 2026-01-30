@@ -36,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.getDatabase
 import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
@@ -104,8 +103,6 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
 @Composable
 //navigation controller
 fun ScoutingApp() {
-    val database: AppDatabase = remember { getDatabase() }
-
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -352,6 +349,11 @@ fun TeamConfirmationScreen(navController: NavController) {
 @Composable
 //main settings
 fun SettingsScreen(navController: NavController) {
+    val context = LocalContext.current
+    val database = remember(context) {
+        initAppContextForDB(context)
+        getDatabase()
+    }
     val settingsViewModel: SettingsViewModel = viewModel(
         factory = getViewModelFactory()
     )
