@@ -52,6 +52,7 @@ import android.content.Context
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -295,6 +296,13 @@ fun getSystemService(context: Context): BluetoothManager?{
 @Composable
 //this is scouting screen
 fun ScoutMatchesScreen(navController: NavController) {
+    val scoutingViewModel: ScoutingViewModel = viewModel(
+        factory = getViewModelFactory()
+    )
+    val settingsState by scoutingViewModel.settings.collectAsState()
+    val currentSettings = settingsState ?: return
+    val currentEvent = currentSettings.currentEvent
+
     var matchNumber by remember { mutableStateOf("") }
 
     Column(
@@ -303,15 +311,22 @@ fun ScoutMatchesScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val context = LocalContext.current
-        Text("Current Event: None Selected")
+        Text(
+            text = "Current Event: ${currentEvent.ifEmpty { "None Selected" }}",
+            modifier = Modifier.padding(all = 16.dp)
+        )
         Image(
             painter = painterResource(id = R.drawable.bunny),
             contentDescription = "bunny"
         )
         UserInputs.TextButtonInput(
             onClick = {
+                // Check if scouting is allowed to happen happen
                 var canStartScouting = true
-                if (matchNumber.toIntOrNull() == null) {
+                if (currentEvent.isEmpty()) {
+                    canStartScouting = false
+                    makeText(context, "Please select an event to start scouting!", Toast.LENGTH_SHORT).show()
+                } else if (matchNumber.toIntOrNull() == null) {
                     canStartScouting = false
                     makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT).show()
                 }
@@ -351,6 +366,7 @@ fun TeamConfirmationScreen(navController: NavController) {
                     onClick = {
                         noShowPopup = false
                         navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                        TODO("log robot no-shows")
                     },
                     text = "Robot no-show",
                     containerColor = MaterialTheme.colorScheme.background,
@@ -453,11 +469,6 @@ fun openFile(pickerInitialUri: Uri) {
 
 @Composable
 fun SettingsScreen(navController: NavController) {
-    val context = LocalContext.current
-    val database = remember(context) {
-        initAppContext(context)
-        getDatabase()
-    }
     val settingsViewModel: SettingsViewModel = viewModel(
         factory = getViewModelFactory()
     )
