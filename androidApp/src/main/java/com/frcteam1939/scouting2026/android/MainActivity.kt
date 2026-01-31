@@ -19,7 +19,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
@@ -31,12 +33,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.frcteam1939.scouting2026.data.getDatabase
-import com.frcteam1939.scouting2026.data.initAppContextForDB
+import com.frcteam1939.scouting2026.initAppContext
+import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
-import com.frcteam1939.scouting2026.viewmodels.viewModelFactory
+import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import android.net.Uri
 import android.content.Intent
@@ -47,16 +53,23 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.provider.Settings
 import androidx.core.content.ContextCompat.startActivity
+import kotlin.coroutines.CoroutineContext
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Give the context to the DB initializer
-        initAppContextForDB(this)
+        initAppContext(this)
         setContent {
             MyApplicationTheme {
                 ScoutingApp()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setActivity(this)
     }
 }
 
@@ -79,6 +92,8 @@ object AppRoutes {
     const val SELECT = "select"
     const val SAVED = "saved"
     const val SETTINGS = "settings"
+    const val EDIT_EVENTS = "edit events"
+    const val ADD_EVENT = "add event"
     const val OPERATOR = "operator"
 }
 
@@ -206,6 +221,12 @@ fun ScoutingApp() {
                     }
                     composable(AppRoutes.SETTINGS) {
                         SettingsScreen(navController = navController)
+                    }
+                    composable(AppRoutes.EDIT_EVENTS) {
+                        EditEventsScreen(navController = navController)
+                    }
+                    composable(AppRoutes.ADD_EVENT) {
+                        AddEventScreen(navController = navController)
                     }
                     composable(AppRoutes.OPERATOR) {
                         OperatorScreen(navController = navController)
@@ -395,11 +416,18 @@ fun SettingsScreen(navController: NavController) {
         getDatabase()
     }
     val settingsViewModel: SettingsViewModel = viewModel(
-        factory = viewModelFactory { SettingsViewModel(database.settingsDao()) }
+        factory = getViewModelFactory()
     )
     // This collects the StateFlow from the settings view model
     val settingsState by settingsViewModel.settings.collectAsState()
     val currentSettings = settingsState ?: return
+
+    // Get the event names
+    val eventNames by settingsViewModel
+        .getEventNames()
+        .collectAsState(initial = emptyList())
+    val eventNamesWithNoneOption = listOf("None Selected").plus(eventNames)
+    val selectedEvent = currentSettings.currentEvent.ifBlank { "None Selected" }
 
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -407,10 +435,15 @@ fun SettingsScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "1939 Scouting Tool - Settings",
+            text = "Settings:",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(all = 16.dp)
+            textAlign = TextAlign.Left,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
         )
+
+        // Select example setting
         UserInputs.SwitchTextBarInput(
             checked = currentSettings.exampleSetting,
             onCheckedChange = {
@@ -418,6 +451,8 @@ fun SettingsScreen(navController: NavController) {
             },
             text = "Example Setting (does nothing)"
         )
+
+        // Select robot assignment
         UserInputs.DropdownTextBarInput(
             options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
             selectedOption = currentSettings.deviceRobotAssignment,
@@ -426,21 +461,229 @@ fun SettingsScreen(navController: NavController) {
             },
             text = "Robot and Alliance Assignment"
         )
+
+        // Select current event
+        UserInputs.DropdownTextBarInput(
+            options = eventNamesWithNoneOption,
+            selectedOption = selectedEvent,
+            onOptionSelected = { selected ->
+                settingsViewModel.updateCurrentEvent(
+                    if (selected == "None Selected") "" else selected
+                )
+            },
+            text = "Current Event"
+        )
+
+        Text(
+            text = "Actions:",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Left,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
+        )
+
+        // Add event
         UserInputs.TextButtonInput(
-            onClick = {navController.navigate(AppRoutes.OPERATOR)},
+            onClick = { navController.navigate(AppRoutes.EDIT_EVENTS) },
+            text = "Edit Events",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(all = 4.dp),
+        )
+
+        // Navigate to operator settings
+        UserInputs.TextButtonInput(
+            onClick = { navController.navigate(AppRoutes.OPERATOR) },
             text = "Operator Settings",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(all = 30.dp),
+                .padding(all = 4.dp),
+        )
+    }
+}
+
+@Composable
+fun EditEventsScreen(navController: NavController) {
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = getViewModelFactory()
+    )
+    val eventNames by settingsViewModel
+        .getEventNames()
+        .collectAsState(initial = emptyList())
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        UserInputs.OutlinedButtonTextBarInput(
+            text = "Add Event",
+            buttonText = "",
+            icon = Icons.Default.Add,
+            onClick = {
+                navController.navigate(AppRoutes.ADD_EVENT)
+            }
+        )
+        UserInputs.OutlinedButtonTextBarInput(
+            text = "Refresh Match Info",
+            buttonText = "",
+            icon = Icons.Default.Refresh,
+            onClick = {
+                coroutineScope.launch {
+                    eventNames.forEach {
+                        val event = settingsViewModel.getEventByName(it)
+
+                        settingsViewModel.updateEventMatchInfo(
+                            // TODO: look into !!. operator -- do we need error handling?
+                            name = event!!.customEventName,
+                            code = event.eventCode,
+                            year = event.eventYear
+                        )
+                    }
+                }
+            }
+        )
+        Text(
+            text = "Your Events:",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Left,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
+        )
+        eventNames.forEach {
+            var qualsLoaded by remember { mutableStateOf(false) }
+            var playoffsLoaded by remember { mutableStateOf(false) }
+
+            LaunchedEffect(it) {
+                qualsLoaded = settingsViewModel.checkQualsMatchLoadStatus(it)
+                playoffsLoaded = settingsViewModel.checkPlayoffMatchLoadStatus(it)
+            }
+
+            UserInputs.OutlinedButtonTextBarInput(
+                text = it,
+                buttonText = "",
+                icon = Icons.Default.Delete,
+                onClick = {
+                    settingsViewModel.deleteEvent(it)
+                    if (it == settingsViewModel.settings.value?.currentEvent) {
+                        settingsViewModel.updateCurrentEvent("")
+                    }
+                }
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                if (qualsLoaded) {
+                    Text(
+                        text = "Quals Matches: Loaded!",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                else {
+                    Text(
+                        text = "Quals Matches: Not Loaded.",
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+
+                if (playoffsLoaded) {
+                    Text(
+                        text = "Playoff Matches: Loaded!",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                else {
+                    Text(
+                        text = "Playoff Matches: Not Loaded.",
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AddEventScreen(navController: NavController) {
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = getViewModelFactory()
+    )
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    var eventName by remember { mutableStateOf("") }
+    var eventCode by remember { mutableStateOf("") }
+    var eventYear by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Add Event:",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Left,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
+        )
+
+        // Prompt event name
+        UserInputs.TextboxInput(
+            value = eventName,
+            onValueChange = { eventName = it },
+            label = "Event Name",
+            singleLine = true
+        )
+
+        // Prompt event code
+        UserInputs.TextboxInput(
+            value = eventCode,
+            onValueChange = { eventCode = it },
+            label = "Event Code",
+            singleLine = true
+        )
+
+        // Prompt event year
+        UserInputs.TextboxInput(
+            value = eventYear,
+            onValueChange = { eventYear = it },
+            label = "Event Year",
+            singleLine = true,
+            forceNumberInput = true,
+            characterLimit = 4
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = {
+                coroutineScope.launch {
+                    val isValid = !eventName.isBlank()
+                                && !eventCode.isBlank()
+                                && !eventYear.isBlank()
+                                && settingsViewModel.checkEventValidity(eventCode, eventYear.toInt())?: false
+                    if (isValid) {
+                        settingsViewModel.createEvent(eventName, eventCode, eventYear.toInt())
+                        navController.popBackStack()
+                        makeText(context, "Event creation successful!", Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                        makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()
+                }
+            },
+            text = "Add Event"
         )
     }
 }
 
 @Composable
 //operator settings menu
-fun OperatorScreen(
-    navController: NavController
-) {
+fun OperatorScreen(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

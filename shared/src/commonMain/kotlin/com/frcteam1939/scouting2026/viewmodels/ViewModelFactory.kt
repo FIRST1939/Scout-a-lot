@@ -1,6 +1,20 @@
 package com.frcteam1939.scouting2026.viewmodels
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.frcteam1939.scouting2026.data.DataDependencyContainer
+import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
+import com.frcteam1939.scouting2026.data.repositories.EventsRepository
+import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 
-expect fun <T : ViewModel> viewModelFactory(creator: () -> T): ViewModelProvider.Factory
+expect class ViewModelFactory(
+    settingsRepository: SettingsRepository,
+    eventsRepository: EventsRepository,
+    eventCodesRepository: EventCodesRepository
+)
+
+fun getViewModelFactory(): ViewModelFactory {
+    return ViewModelFactory(
+        DataDependencyContainer.settingsRepository,
+        DataDependencyContainer.eventsRepository,
+        DataDependencyContainer.eventCodesRepository
+    )
+}

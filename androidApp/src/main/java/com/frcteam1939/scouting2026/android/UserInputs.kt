@@ -14,12 +14,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,6 +51,7 @@ object UserInputs {
                 if (forceNumberInput && input.toIntOrNull() == null) validUpdate = false
                 if (input.isEmpty()) validUpdate = true
                 if (validUpdate) onValueChange(input) },
+            modifier = Modifier.padding(all = 8.dp),
             keyboardOptions = keyboardOptions,
             singleLine = singleLine,
             label = { Text(label) },
@@ -227,6 +230,35 @@ object UserInputs {
                 checked = checked,
                 onCheckedChange = onCheckedChange
             )
+        }
+        Divider(thickness = 1.dp)
+    }
+
+    @Composable
+    fun OutlinedButtonTextBarInput(
+        text: String,
+        buttonText: String,
+        icon: ImageVector,
+        onClick: () -> Unit
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = text)
+            OutlinedButton(
+                onClick = { onClick() },
+            ) {
+                Text(text = buttonText)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = ""
+                )
+            }
         }
         Divider(thickness = 1.dp)
     }

@@ -1,15 +1,15 @@
-package com.frcteam1939.scouting2026
+package com.frcteam1939.scouting2026.tba
 
-import android.content.Context
+import com.frcteam1939.scouting2026.applicationContext
 import okio.IOException
 
-actual class TBAAuth (private val context: Context) {
+actual class TBAAuth actual constructor() {
     private val keyFile = "X-TBA-Auth-Key.txt"
 
     // Fetch private key from assets
     actual fun getTBAKey(): String {
         return try {
-            context.assets.open(keyFile)
+            applicationContext.assets.open(keyFile)
                 .bufferedReader()
                 .use { it.readText() }
         } catch (e: IOException) {
