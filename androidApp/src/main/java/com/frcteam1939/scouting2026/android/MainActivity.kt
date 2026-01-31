@@ -413,19 +413,6 @@ fun TeamConfirmationScreen(navController: NavController) {
         }
     }
 }
-const val PICK_PDF_FILE = 2
-@Composable
-fun openFile(pickerInitialUri: Uri) {
-    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-        addCategory(Intent.CATEGORY_OPENABLE)
-        type = "application/pdf"
-
-        // Optionally, specify a URI for the file that should appear in the
-        // system file picker when it loads.
-        putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-    }
-    //startActivityForResult(intent, PICK_PDF_FILE)
-}
 
 @Composable
 fun SyncScreen(navController: NavController) {
@@ -457,7 +444,6 @@ fun SyncScreen(navController: NavController) {
     }
 }
 
-
 const val PICK_PDF_FILE = 2
 @Composable
 fun openFile(pickerInitialUri: Uri) {
@@ -473,41 +459,10 @@ fun openFile(pickerInitialUri: Uri) {
 }
 
 @Composable
-fun SyncScreen(navController: NavController) {
-    fun startActivity(context: Intent) {}
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Sync",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(all = 16.dp)
-        )
-        UserInputs.TextButtonInput(
-            onClick = {
-                fun openBluetoothSettings() {
-                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                startActivity(intent)
-            }},
-            text = "Send"
-
-        )
-        TextButton(
-            onClick = {}
-        ) {
-            Text(text = "Recieve")
-        }
-    }
-}
-
-@Composable
-//main settings
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
     val database = remember(context) {
-        initAppContextForDB(context)
+        initAppContext(context)
         getDatabase()
     }
     val settingsViewModel: SettingsViewModel = viewModel(

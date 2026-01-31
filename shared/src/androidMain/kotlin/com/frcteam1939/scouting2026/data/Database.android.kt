@@ -1,8 +1,7 @@
 package com.frcteam1939.scouting2026.data
 
-import android.content.Context
 import androidx.room.Room
-import com.frcteam1939.scouting2026.applicationContext
+import com.frcteam1939.scouting2026.applicationContext as appContext
 
 actual fun getDatabase(): AppDatabase {
     val dbFile = appContext.getDatabasePath("scouting.db")
