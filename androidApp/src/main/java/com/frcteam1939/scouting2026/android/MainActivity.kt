@@ -56,7 +56,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Give the context to the DB initializer
+        // Give the context to the business logic
         initAppContext(this)
         setContent {
             MyApplicationTheme {
