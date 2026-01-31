@@ -83,7 +83,7 @@ class SettingsViewModel(
         val matchInfo = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
         for (match in matchInfo) {
             //TODO: add ALL playoff match types
-            if (match.compLevel == "f" || match.compLevel == "qf") {
+            if (match.compLevel == "f" || match.compLevel == "sf" || match.compLevel == "qf") {
                 return true
             }
         }
