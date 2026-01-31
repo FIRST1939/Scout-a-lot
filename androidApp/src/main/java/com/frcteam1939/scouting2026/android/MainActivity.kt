@@ -42,23 +42,16 @@ import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import android.net.Uri
 import android.content.Intent
 import android.provider.DocumentsContract
-import androidx.core.app.ActivityCompat.startActivityForResult
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.getSystemService
-import androidx.core.content.ContextCompat.startActivity
-import kotlin.coroutines.CoroutineContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
