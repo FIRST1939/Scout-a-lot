@@ -15,23 +15,23 @@ fun ScoutingAppPreview() {
     PreviewSurface { ScoutingApp() }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun ScoutMatchesScreenPreview() {
-    PreviewSurface { ScoutMatchesScreen(navController = rememberNavController()) }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun TeamConfirmationScreenPreview() {
-    PreviewSurface { TeamConfirmationScreen(navController = rememberNavController()) }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun SettingsScreenPreview() {
-    PreviewSurface { SettingsScreen(navController = rememberNavController()) }
-}
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+//@Composable
+//fun ScoutMatchesScreenPreview() {
+//    PreviewSurface { ScoutMatchesScreen(navController = rememberNavController()) }
+//}
+//
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+//@Composable
+//fun TeamConfirmationScreenPreview() {
+//    PreviewSurface { TeamConfirmationScreen(navController = rememberNavController()) }
+//}
+//
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+//@Composable
+//fun SettingsScreenPreview() {
+//    PreviewSurface { SettingsScreen(navController = rememberNavController()) }
+//}
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
