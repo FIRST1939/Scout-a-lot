@@ -37,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.frcteam1939.scouting2026.data.getDatabase
 import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
@@ -52,8 +51,13 @@ import android.content.Context
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.VideogameAsset
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 
 class MainActivity : ComponentActivity() {
@@ -75,6 +79,7 @@ class MainActivity : ComponentActivity() {
 }
 
 object AppRoutes {
+    //TODO: reformat names to not use spaces
     object MatchScouting {
         const val GRAPH = "match_scouting_graph"
         const val SCOUT_MATCHES = "scout matches"
@@ -265,8 +270,47 @@ fun ScoutingApp() {
                             )
                             TeamConfirmationScreen(navController = navController, scoutingViewModel = scoutingViewModel)
                         }
-                        composable(AppRoutes.MatchScouting.SCOUT_AUTO) {
-                            // TODO: auto scouting screen
+                        composable(AppRoutes.MatchScouting.SCOUT_AUTO) { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
+                            }
+                            val scoutingViewModel: ScoutingViewModel = viewModel(
+                                viewModelStoreOwner = parentEntry,
+                                factory = getViewModelFactory()
+                            )
+                            MatchScoutingScaffold(navController) { padding ->
+                                ScoutAutoScreen(
+                                    scoutingViewModel = scoutingViewModel
+                                )
+                            }
+                        }
+                        composable(AppRoutes.MatchScouting.SCOUT_TELEOP) { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
+                            }
+                            val scoutingViewModel: ScoutingViewModel = viewModel(
+                                viewModelStoreOwner = parentEntry,
+                                factory = getViewModelFactory()
+                            )
+                            MatchScoutingScaffold(navController) { padding ->
+                                ScoutTeleopScreen(
+                                    scoutingViewModel = scoutingViewModel
+                                )
+                            }
+                        }
+                        composable(AppRoutes.MatchScouting.SCOUT_ENDGAME) { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
+                            }
+                            val scoutingViewModel: ScoutingViewModel = viewModel(
+                                viewModelStoreOwner = parentEntry,
+                                factory = getViewModelFactory()
+                            )
+                            MatchScoutingScaffold(navController) { padding ->
+                                ScoutEndgameScreen(
+                                    scoutingViewModel = scoutingViewModel
+                                )
+                            }
                         }
                     }
                     composable(AppRoutes.PitScouting.SCOUT_PITS) {
@@ -472,6 +516,88 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
             )
         }
     }
+}
+
+@Composable
+fun MatchScoutingBottomBar(
+    navController: NavController,
+    currentRoute: String?
+) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primary
+    ) {
+        val items = listOf(
+            Triple(AppRoutes.MatchScouting.SCOUT_AUTO, "Auto", Icons.Default.FlashOn),
+            Triple(AppRoutes.MatchScouting.SCOUT_TELEOP, "Teleop", Icons.Default.VideogameAsset),
+            Triple(AppRoutes.MatchScouting.SCOUT_ENDGAME, "Endgame", Icons.Default.EmojiEvents),
+        )
+
+        items.forEach { (route, label, icon) ->
+            NavigationBarItem(
+                selected = currentRoute == route,
+                onClick = {
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(AppRoutes.MatchScouting.SCOUT_AUTO) {
+                            saveState = true
+                        }
+                    }
+                },
+                icon = { Icon(icon, contentDescription = label) },
+                label = { Text(label) },
+                colors = NavigationBarItemDefaults.colors(
+                    // TODO: fix this color bruh (shouldn't be an absolute color)
+                    selectedIconColor = Color(0xFF000000),
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun MatchScoutingScaffold(
+    navController: NavController,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
+
+    Scaffold(
+        bottomBar = {
+            if (currentRoute in listOf(
+                    AppRoutes.MatchScouting.SCOUT_AUTO,
+                    AppRoutes.MatchScouting.SCOUT_TELEOP,
+                    AppRoutes.MatchScouting.SCOUT_ENDGAME
+                )
+            ) {
+                MatchScoutingBottomBar(navController, currentRoute)
+            }
+        }
+    ) { innerPadding ->
+        content(innerPadding)
+    }
+}
+
+@Composable
+fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel) {
+    //TODO: add auto scouting screen
+    Text("Hi... this is the auto screen... yay!!")
+}
+
+@Composable
+fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel) {
+    //TODO: add teleop scouting screen
+    Text("Hi... this is the teleop screen... yay!!")
+}
+
+@Composable
+fun ScoutEndgameScreen(scoutingViewModel: ScoutingViewModel) {
+    //TODO: add endgame scouting screen
+    Text("Hi... this is the endgame screen... yay!!")
 }
 
 @Composable
