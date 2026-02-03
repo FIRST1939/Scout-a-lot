@@ -21,8 +21,8 @@ class SettingsViewModel(
 ) : ViewModel() {
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
 
-    fun updateExampleSetting(enabled: Boolean) {
-        settingsRepository.updateExampleSetting(enabled)
+    fun updatePlayoffsActive(enabled: Boolean) {
+        settingsRepository.updatePlayoffsActive(enabled)
     }
 
     fun updateDeviceRobotAssignment(assignment: String) {

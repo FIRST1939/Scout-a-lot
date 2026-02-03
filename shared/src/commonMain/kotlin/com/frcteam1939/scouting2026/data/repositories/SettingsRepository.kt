@@ -23,10 +23,10 @@ class SettingsRepository(private val db: AppDatabase, private val applicationSco
     val settings: StateFlow<AppSettings?> = dao.getSettings()
         .stateIn(applicationScope, SharingStarted.Lazily, null)
 
-    fun updateExampleSetting(enabled: Boolean) {
+    fun updatePlayoffsActive(enabled: Boolean) {
         applicationScope.launch {
             settings.value?.let {
-                dao.saveSettings(it.copy(exampleSetting = enabled))
+                dao.saveSettings(it.copy(playoffsActive = enabled))
             }
         }
     }
@@ -49,7 +49,7 @@ class SettingsRepository(private val db: AppDatabase, private val applicationSco
 
     suspend fun restoreDefaultSettings() {
         val defaultSettings = AppSettings(
-            exampleSetting = false,
+            playoffsActive = false,
             deviceRobotAssignment = "Red 1",
             currentEvent = ""
         )
