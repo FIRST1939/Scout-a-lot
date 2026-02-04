@@ -90,7 +90,9 @@ object AppRoutes {
     }
 
     object PitScouting {
+        const val GRAPH = "pit_scouting_graph"
         const val SCOUT_PITS = "scout pits"
+        const val SCOUT_PITS_FORM = "scout pits form"
     }
     const val MATCH_REPORTS = "match reports"
     const val TEAM_STATS = "team info"
@@ -313,8 +315,27 @@ fun ScoutingApp() {
                             }
                         }
                     }
-                    composable(AppRoutes.PitScouting.SCOUT_PITS) {
-                        // TODO: pit scouting screen & implementation
+                    navigation(startDestination = AppRoutes.PitScouting.SCOUT_PITS, route = AppRoutes.PitScouting.GRAPH) {
+                        composable(AppRoutes.PitScouting.SCOUT_PITS) { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry(AppRoutes.PitScouting.GRAPH)
+                            }
+                            val scoutingViewModel: ScoutingViewModel = viewModel(
+                                viewModelStoreOwner = parentEntry,
+                                factory = getViewModelFactory()
+                            )
+                            ScoutPitScreen(scoutingViewModel = scoutingViewModel)
+                        }
+                        composable(AppRoutes.PitScouting.SCOUT_PITS_FORM) { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry(AppRoutes.PitScouting.GRAPH)
+                            }
+                            val scoutingViewModel: ScoutingViewModel = viewModel(
+                                viewModelStoreOwner = parentEntry,
+                                factory = getViewModelFactory()
+                            )
+                            ScoutPitForm(scoutingViewModel = scoutingViewModel)
+                        }
                     }
                     composable(AppRoutes.MATCH_REPORTS) {
                         // TODO: match report generation
@@ -598,6 +619,16 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel) {
 fun ScoutEndgameScreen(scoutingViewModel: ScoutingViewModel) {
     //TODO: add endgame scouting screen
     Text("Hi... this is the endgame screen... yay!!")
+}
+
+@Composable
+fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel) {
+    
+}
+
+@Composable
+fun ScoutPitForm(scoutingViewModel: ScoutingViewModel) {
+
 }
 
 @Composable
