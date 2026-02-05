@@ -57,6 +57,7 @@ import androidx.compose.material.icons.filled.VideogameAsset
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 
@@ -121,6 +122,18 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object Settings : Screen(AppRoutes.Settings.SETTINGS, "Settings", Icons.Default.Settings)
 }
 
+// Get scoutingViewModel based on location
+@Composable
+fun getScoutingViewModel(backStackEntry: NavBackStackEntry, navController: NavController, route: String): ScoutingViewModel {
+    val parentEntry = remember(backStackEntry) {
+        navController.getBackStackEntry(route)
+    }
+    return viewModel(
+        viewModelStoreOwner = parentEntry,
+        factory = getViewModelFactory()
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 //navigation controller
@@ -175,7 +188,7 @@ fun ScoutingApp() {
             }
         }
     }
-    // List of items to show in the NavigationRail
+    // List of items to show in the Navigation Drawer
     val items = listOf(
         Screen.ScoutMatches,
         Screen.ScoutPits,
@@ -253,33 +266,15 @@ fun ScoutingApp() {
                 NavHost(navController = navController, startDestination = AppRoutes.MatchScouting.GRAPH) {
                     navigation(startDestination = AppRoutes.MatchScouting.SCOUT_MATCHES, route = AppRoutes.MatchScouting.GRAPH) {
                         composable(AppRoutes.MatchScouting.SCOUT_MATCHES) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
-                            }
-                            val scoutingViewModel: ScoutingViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
                             ScoutMatchesScreen(navController = navController, scoutingViewModel = scoutingViewModel)
                         }
                         composable(AppRoutes.MatchScouting.TEAM_CONFIRMATION) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
-                            }
-                            val scoutingViewModel: ScoutingViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
                             TeamConfirmationScreen(navController = navController, scoutingViewModel = scoutingViewModel)
                         }
                         composable(AppRoutes.MatchScouting.SCOUT_AUTO) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
-                            }
-                            val scoutingViewModel: ScoutingViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
                             MatchScoutingScaffold(navController) { padding ->
                                 ScoutAutoScreen(
                                     scoutingViewModel = scoutingViewModel
@@ -287,13 +282,7 @@ fun ScoutingApp() {
                             }
                         }
                         composable(AppRoutes.MatchScouting.SCOUT_TELEOP) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
-                            }
-                            val scoutingViewModel: ScoutingViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
                             MatchScoutingScaffold(navController) { padding ->
                                 ScoutTeleopScreen(
                                     scoutingViewModel = scoutingViewModel
@@ -301,15 +290,10 @@ fun ScoutingApp() {
                             }
                         }
                         composable(AppRoutes.MatchScouting.SCOUT_ENDGAME) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.MatchScouting.GRAPH)
-                            }
-                            val scoutingViewModel: ScoutingViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
                             MatchScoutingScaffold(navController) { padding ->
                                 ScoutEndgameScreen(
+                                    navController = navController,
                                     scoutingViewModel = scoutingViewModel
                                 )
                             }
@@ -317,23 +301,11 @@ fun ScoutingApp() {
                     }
                     navigation(startDestination = AppRoutes.PitScouting.SCOUT_PITS, route = AppRoutes.PitScouting.GRAPH) {
                         composable(AppRoutes.PitScouting.SCOUT_PITS) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.PitScouting.GRAPH)
-                            }
-                            val scoutingViewModel: ScoutingViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
                             ScoutPitScreen(scoutingViewModel = scoutingViewModel)
                         }
                         composable(AppRoutes.PitScouting.SCOUT_PITS_FORM) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.PitScouting.GRAPH)
-                            }
-                            val scoutingViewModel: ScoutingViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
                             ScoutPitForm(scoutingViewModel = scoutingViewModel)
                         }
                     }
@@ -446,10 +418,7 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
         //input for match selector
         UserInputs.TextboxInput(
             value = matchNumber.collectAsState().value,
-            onValueChange = {
-                println(it)
-                scoutingViewModel.changeMatchNumber(it)
-            },
+            onValueChange = { scoutingViewModel.changeMatchNumber(it) },
             label = "Match Number",
             singleLine = true,
             forceNumberInput = true,
@@ -466,7 +435,6 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
     LaunchedEffect(matchNumber) {
         teamNumber = scoutingViewModel.getCurrentTeam()
     }
-    println(teamNumber)
 
     var noShowPopup by remember { mutableStateOf(false) }
 
@@ -616,9 +584,22 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel) {
 }
 
 @Composable
-fun ScoutEndgameScreen(scoutingViewModel: ScoutingViewModel) {
+fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
     //TODO: add endgame scouting screen
-    Text("Hi... this is the endgame screen... yay!!")
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Hi... this is the endgame screen... yay!!")
+        UserInputs.TextButtonInput(
+            onClick = {
+                // TODO: add submission of collected match data
+                navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+            },
+            text = "Submit Match Data",
+        )
+    }
 }
 
 @Composable
