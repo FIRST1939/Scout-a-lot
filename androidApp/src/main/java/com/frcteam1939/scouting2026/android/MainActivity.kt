@@ -1,76 +1,73 @@
 package com.frcteam1939.scouting2026.android
 
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.provider.DocumentsContract
+import android.provider.Settings
 import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.*
-import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.composable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.VideogameAsset
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
+import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import kotlinx.coroutines.launch
-import android.net.Uri
-import android.content.Intent
-import android.provider.DocumentsContract
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Context
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material.icons.filled.VideogameAsset
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         // Give the context to the business logic
         initAppContext(this)
-        setContent {
-            MyApplicationTheme {
-                ScoutingApp()
-            }
-        }
+        setContent { MyApplicationTheme { ScoutingApp() } }
     }
 
     override fun onResume() {
@@ -80,7 +77,7 @@ class MainActivity : ComponentActivity() {
 }
 
 object AppRoutes {
-    //TODO: reformat names to not use spaces
+    // TODO: reformat names to not use spaces
     object MatchScouting {
         const val GRAPH = "match_scouting_graph"
         const val SCOUT_MATCHES = "scout matches"
@@ -113,7 +110,8 @@ object AppRoutes {
 
 // Properties specific to the Navigation Rail
 sealed class Screen(val route: String, val label: String, val icon: ImageVector) {
-    object ScoutMatches : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scout Matches", Icons.Default.Build)
+    object ScoutMatches :
+            Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scout Matches", Icons.Default.Build)
     object ScoutPits : Screen(AppRoutes.PitScouting.SCOUT_PITS, "Scout Pits", Icons.Default.Person)
     object MatchReports : Screen(AppRoutes.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
     object TeamStats : Screen(AppRoutes.TEAM_STATS, "Team Stats", Icons.Default.List)
@@ -124,19 +122,18 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
 
 // Get scoutingViewModel based on location
 @Composable
-fun getScoutingViewModel(backStackEntry: NavBackStackEntry, navController: NavController, route: String): ScoutingViewModel {
-    val parentEntry = remember(backStackEntry) {
-        navController.getBackStackEntry(route)
-    }
-    return viewModel(
-        viewModelStoreOwner = parentEntry,
-        factory = getViewModelFactory()
-    )
+fun getScoutingViewModel(
+        backStackEntry: NavBackStackEntry,
+        navController: NavController,
+        route: String
+): ScoutingViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-//navigation controller
+// navigation controller
 fun ScoutingApp() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -144,30 +141,40 @@ fun ScoutingApp() {
     val context = LocalContext.current
 
     // Create a launcher to handle the Bluetooth enable request
-    val enableBluetoothLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        // Logic for when the user clicks 'Allow' or 'Deny' on the system Bluetooth popup
-        if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(context, "Bluetooth is running..", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Bluetooth is off. Sync may not work..", Toast.LENGTH_SHORT).show()
-        }
-    }
+    val enableBluetoothLauncher =
+            rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                // Logic for when the user clicks 'Allow' or 'Deny' on the system Bluetooth popup
+                if (result.resultCode == Activity.RESULT_OK) {
+                    Toast.makeText(context, "Bluetooth is running..", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                                    context,
+                                    "Bluetooth is off. Sync may not work..",
+                                    Toast.LENGTH_SHORT
+                            )
+                            .show()
+                }
+            }
 
-    val bluetoothManager: BluetoothManager? = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+    val bluetoothManager: BluetoothManager? =
+            context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
     val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.adapter
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val isGranted = permissions[android.Manifest.permission.BLUETOOTH_CONNECT] ?: false
-        if (isGranted) {
-            // Now that we have permission, we can try to enable Bluetooth
-            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            enableBluetoothLauncher.launch(enableBtIntent)
-        } else {
-            Toast.makeText(context, "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
+    val permissionLauncher =
+            rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestMultiplePermissions()
+            ) { permissions ->
+                val isGranted = permissions[android.Manifest.permission.BLUETOOTH_CONNECT] ?: false
+                if (isGranted) {
+                    // Now that we have permission, we can try to enable Bluetooth
+                    val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                    enableBluetoothLauncher.launch(enableBtIntent)
+                } else {
+                    Toast.makeText(context, "Bluetooth permission denied", Toast.LENGTH_SHORT)
+                            .show()
+                }
+            }
     LaunchedEffect(Unit) {
         if (bluetoothAdapter != null) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -183,129 +190,185 @@ fun ScoutingApp() {
                     }
                 } catch (e: Exception) {
                     // Safety check for devices with restricted profiles
-                    Toast.makeText(context, "Could not open Bluetooth settings", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Could not open Bluetooth settings", Toast.LENGTH_SHORT)
+                            .show()
                 }
             }
         }
     }
     // List of items to show in the Navigation Drawer
-    val items = listOf(
-        Screen.ScoutMatches,
-        Screen.ScoutPits,
-        Screen.MatchReports,
-        Screen.TeamStats,
-        Screen.Sync,
-        Screen.EditForms,
-        Screen.Settings,
-    )
+    val items =
+            listOf(
+                    Screen.ScoutMatches,
+                    Screen.ScoutPits,
+                    Screen.MatchReports,
+                    Screen.TeamStats,
+                    Screen.Sync,
+                    Screen.EditForms,
+                    Screen.Settings,
+            )
     var selectedItem by remember { mutableIntStateOf(0) }
 
     ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet(
-                drawerContainerColor = MaterialTheme.colorScheme.primary,
-            ) {
-                Spacer(Modifier.height(12.dp))
-                items.forEachIndexed { index, screen ->
-                    NavigationDrawerItem(
-                        icon = { Icon(screen.icon, contentDescription = screen.label) },
-                        label = { Text(screen.label) },
-                        selected = index == selectedItem,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            selectedItem = index
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        colors = NavigationDrawerItemDefaults.colors(
-                            selectedContainerColor = MaterialTheme.colorScheme.secondary,
-                            selectedTextColor = MaterialTheme.colorScheme.onBackground,
-                            selectedIconColor = MaterialTheme.colorScheme.onBackground,
-                            unselectedContainerColor = MaterialTheme.colorScheme.primary,
-                            unselectedTextColor = MaterialTheme.colorScheme.secondary,
-                            unselectedIconColor = MaterialTheme.colorScheme.secondary,
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet(
+                        drawerContainerColor = MaterialTheme.colorScheme.primary,
+                ) {
+                    Spacer(Modifier.height(12.dp))
+                    items.forEachIndexed { index, screen ->
+                        NavigationDrawerItem(
+                                icon = { Icon(screen.icon, contentDescription = screen.label) },
+                                label = { Text(screen.label) },
+                                selected = index == selectedItem,
+                                onClick = {
+                                    scope.launch { drawerState.close() }
+                                    selectedItem = index
+                                    navController.navigate(screen.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                modifier =
+                                        Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                                colors =
+                                        NavigationDrawerItemDefaults.colors(
+                                                selectedContainerColor =
+                                                        MaterialTheme.colorScheme.secondary,
+                                                selectedTextColor =
+                                                        MaterialTheme.colorScheme.onBackground,
+                                                selectedIconColor =
+                                                        MaterialTheme.colorScheme.onBackground,
+                                                unselectedContainerColor =
+                                                        MaterialTheme.colorScheme.primary,
+                                                unselectedTextColor =
+                                                        MaterialTheme.colorScheme.secondary,
+                                                unselectedIconColor =
+                                                        MaterialTheme.colorScheme.secondary,
+                                        )
                         )
-                    )
+                    }
                 }
             }
-        }
     ) {
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("1939 Scouting Tool") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu"
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        titleContentColor = MaterialTheme.colorScheme.secondary,
-                        navigationIconContentColor = MaterialTheme.colorScheme.secondary
+                topBar = {
+                    TopAppBar(
+                            title = { Text("1939 Scouting Tool") },
+                            navigationIcon = {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                    Icon(
+                                            imageVector = Icons.Default.Menu,
+                                            contentDescription = "Menu"
+                                    )
+                                }
+                            },
+                            colors =
+                                    TopAppBarDefaults.topAppBarColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            titleContentColor = MaterialTheme.colorScheme.secondary,
+                                            navigationIconContentColor =
+                                                    MaterialTheme.colorScheme.secondary
+                                    )
                     )
-                )
-            }
+                }
         ) { innerPadding ->
             Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize().padding(innerPadding),
+                    color = MaterialTheme.colorScheme.background
             ) {
-                NavHost(navController = navController, startDestination = AppRoutes.MatchScouting.GRAPH) {
-                    navigation(startDestination = AppRoutes.MatchScouting.SCOUT_MATCHES, route = AppRoutes.MatchScouting.GRAPH) {
+                NavHost(
+                        navController = navController,
+                        startDestination = AppRoutes.MatchScouting.GRAPH
+                ) {
+                    navigation(
+                            startDestination = AppRoutes.MatchScouting.SCOUT_MATCHES,
+                            route = AppRoutes.MatchScouting.GRAPH
+                    ) {
                         composable(AppRoutes.MatchScouting.SCOUT_MATCHES) { backStackEntry ->
-                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
-                            ScoutMatchesScreen(navController = navController, scoutingViewModel = scoutingViewModel)
+                            val scoutingViewModel =
+                                    getScoutingViewModel(
+                                            backStackEntry,
+                                            navController,
+                                            AppRoutes.MatchScouting.GRAPH
+                                    )
+                            ScoutMatchesScreen(
+                                    navController = navController,
+                                    scoutingViewModel = scoutingViewModel
+                            )
                         }
                         composable(AppRoutes.MatchScouting.TEAM_CONFIRMATION) { backStackEntry ->
-                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
-                            TeamConfirmationScreen(navController = navController, scoutingViewModel = scoutingViewModel)
+                            val scoutingViewModel =
+                                    getScoutingViewModel(
+                                            backStackEntry,
+                                            navController,
+                                            AppRoutes.MatchScouting.GRAPH
+                                    )
+                            TeamConfirmationScreen(
+                                    navController = navController,
+                                    scoutingViewModel = scoutingViewModel
+                            )
                         }
                         composable(AppRoutes.MatchScouting.SCOUT_AUTO) { backStackEntry ->
-                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
+                            val scoutingViewModel =
+                                    getScoutingViewModel(
+                                            backStackEntry,
+                                            navController,
+                                            AppRoutes.MatchScouting.GRAPH
+                                    )
                             MatchScoutingScaffold(navController) { padding ->
-                                ScoutAutoScreen(
-                                    scoutingViewModel = scoutingViewModel
-                                )
+                                ScoutAutoScreen(scoutingViewModel = scoutingViewModel)
                             }
                         }
                         composable(AppRoutes.MatchScouting.SCOUT_TELEOP) { backStackEntry ->
-                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
+                            val scoutingViewModel =
+                                    getScoutingViewModel(
+                                            backStackEntry,
+                                            navController,
+                                            AppRoutes.MatchScouting.GRAPH
+                                    )
                             MatchScoutingScaffold(navController) { padding ->
-                                ScoutTeleopScreen(
-                                    scoutingViewModel = scoutingViewModel
-                                )
+                                ScoutTeleopScreen(scoutingViewModel = scoutingViewModel)
                             }
                         }
                         composable(AppRoutes.MatchScouting.SCOUT_ENDGAME) { backStackEntry ->
-                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.MatchScouting.GRAPH)
+                            val scoutingViewModel =
+                                    getScoutingViewModel(
+                                            backStackEntry,
+                                            navController,
+                                            AppRoutes.MatchScouting.GRAPH
+                                    )
                             MatchScoutingScaffold(navController) { padding ->
                                 ScoutEndgameScreen(
-                                    navController = navController,
-                                    scoutingViewModel = scoutingViewModel
+                                        navController = navController,
+                                        scoutingViewModel = scoutingViewModel
                                 )
                             }
                         }
                     }
-                    navigation(startDestination = AppRoutes.PitScouting.SCOUT_PITS, route = AppRoutes.PitScouting.GRAPH) {
+                    navigation(
+                            startDestination = AppRoutes.PitScouting.SCOUT_PITS,
+                            route = AppRoutes.PitScouting.GRAPH
+                    ) {
                         composable(AppRoutes.PitScouting.SCOUT_PITS) { backStackEntry ->
-                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
+                            val scoutingViewModel =
+                                    getScoutingViewModel(
+                                            backStackEntry,
+                                            navController,
+                                            AppRoutes.PitScouting.GRAPH
+                                    )
                             ScoutPitScreen(scoutingViewModel = scoutingViewModel)
                         }
                         composable(AppRoutes.PitScouting.SCOUT_PITS_FORM) { backStackEntry ->
-                            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
+                            val scoutingViewModel =
+                                    getScoutingViewModel(
+                                            backStackEntry,
+                                            navController,
+                                            AppRoutes.PitScouting.GRAPH
+                                    )
                             ScoutPitForm(scoutingViewModel = scoutingViewModel)
                         }
                     }
@@ -323,47 +386,59 @@ fun ScoutingApp() {
                         // TODO: add edit forms function
                         // this is where saved and select will be
                     }
-                    navigation(startDestination = AppRoutes.Settings.SETTINGS, route = AppRoutes.Settings.GRAPH) {
+                    navigation(
+                            startDestination = AppRoutes.Settings.SETTINGS,
+                            route = AppRoutes.Settings.GRAPH
+                    ) {
                         composable(AppRoutes.Settings.SETTINGS) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                            }
-                            val settingsViewModel: SettingsViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
+                            val parentEntry =
+                                    remember(backStackEntry) {
+                                        navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
+                                    }
+                            val settingsViewModel: SettingsViewModel =
+                                    viewModel(
+                                            viewModelStoreOwner = parentEntry,
+                                            factory = getViewModelFactory()
+                                    )
+                            SettingsScreen(
+                                    navController = navController,
+                                    settingsViewModel = settingsViewModel
                             )
-                            SettingsScreen(navController = navController, settingsViewModel = settingsViewModel)
                         }
                         composable(AppRoutes.Settings.EDIT_EVENTS) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                            }
-                            val settingsViewModel: SettingsViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
+                            val parentEntry =
+                                    remember(backStackEntry) {
+                                        navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
+                                    }
+                            val settingsViewModel: SettingsViewModel =
+                                    viewModel(
+                                            viewModelStoreOwner = parentEntry,
+                                            factory = getViewModelFactory()
+                                    )
+                            EditEventsScreen(
+                                    navController = navController,
+                                    settingsViewModel = settingsViewModel
                             )
-                            EditEventsScreen(navController = navController, settingsViewModel = settingsViewModel)
                         }
                         composable(AppRoutes.Settings.ADD_EVENT) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                            }
-                            val settingsViewModel: SettingsViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
+                            val parentEntry =
+                                    remember(backStackEntry) {
+                                        navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
+                                    }
+                            val settingsViewModel: SettingsViewModel =
+                                    viewModel(
+                                            viewModelStoreOwner = parentEntry,
+                                            factory = getViewModelFactory()
+                                    )
+                            AddEventScreen(
+                                    navController = navController,
+                                    settingsViewModel = settingsViewModel
                             )
-                            AddEventScreen(navController = navController, settingsViewModel = settingsViewModel)
                         }
                     }
-                    composable(AppRoutes.OPERATOR) {
-                        OperatorScreen(navController = navController)
-                    }
-                    composable(AppRoutes.SELECT) {
-                        SelectScreen(navController = navController)
-                    }
-                    composable(AppRoutes.SAVED) {
-                        SavedScreen(navController = navController)
-                    }
+                    composable(AppRoutes.OPERATOR) { OperatorScreen(navController = navController) }
+                    composable(AppRoutes.SELECT) { SelectScreen(navController = navController) }
+                    composable(AppRoutes.SAVED) { SavedScreen(navController = navController) }
                 }
             }
         }
@@ -372,7 +447,7 @@ fun ScoutingApp() {
 
 fun startActivityForResult(activity: Intent, intent2: Any) {}
 
-fun getSystemService(context: Context): BluetoothManager?{
+fun getSystemService(context: Context): BluetoothManager? {
     return context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
 }
 
@@ -385,44 +460,48 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
     val matchNumber = scoutingViewModel.matchNumber
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val context = LocalContext.current
         Text(
-            text = "Current Event: ${currentEvent.ifEmpty { "None Selected" }}",
-            modifier = Modifier.padding(all = 8.dp)
+                text = "Current Event: ${currentEvent.ifEmpty { "None Selected" }}",
+                modifier = Modifier.padding(all = 8.dp)
         )
-        Image(
-            painter = painterResource(id = R.drawable.bunny),
-            contentDescription = "bunny"
-        )
+        Image(painter = painterResource(id = R.drawable.bunny), contentDescription = "bunny")
         UserInputs.TextButtonInput(
-            onClick = {
-                // Check if scouting is allowed to happen happen
-                var canStartScouting = true
-                if (currentEvent.isEmpty()) {
-                    canStartScouting = false
-                    makeText(context, "Please select an event to start scouting!", Toast.LENGTH_SHORT).show()
-                } else if (matchNumber.value.toIntOrNull() == null) {
-                    canStartScouting = false
-                    makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT).show()
-                }
+                onClick = {
+                    // Check if scouting is allowed to happen happen
+                    var canStartScouting = true
+                    if (currentEvent.isEmpty()) {
+                        canStartScouting = false
+                        makeText(
+                                        context,
+                                        "Please select an event to start scouting!",
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                    } else if (matchNumber.value.toIntOrNull() == null) {
+                        canStartScouting = false
+                        makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT)
+                                .show()
+                    }
 
-                if (canStartScouting) navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
-            },
-            text = "Scout Match",
+                    if (canStartScouting)
+                            navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
+                },
+                text = "Scout Match",
         )
 
-        //input for match selector
+        // input for match selector
         UserInputs.TextboxInput(
-            value = matchNumber.collectAsState().value,
-            onValueChange = { scoutingViewModel.changeMatchNumber(it) },
-            label = "Match Number",
-            singleLine = true,
-            forceNumberInput = true,
-            characterLimit = 3
+                value = matchNumber.collectAsState().value,
+                onValueChange = { scoutingViewModel.changeMatchNumber(it) },
+                label = "Match Number",
+                singleLine = true,
+                forceNumberInput = true,
+                characterLimit = 3
         )
     }
 }
@@ -432,116 +511,124 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
     // TODO: add photo capability
     val matchNumber by scoutingViewModel.matchNumber.collectAsState()
     var teamNumber by remember { mutableStateOf("") }
-    LaunchedEffect(matchNumber) {
-        teamNumber = scoutingViewModel.getCurrentTeam()
-    }
+    LaunchedEffect(matchNumber) { teamNumber = scoutingViewModel.getCurrentTeam() }
 
     var noShowPopup by remember { mutableStateOf(false) }
 
-    if(noShowPopup) {
+    if (noShowPopup) {
         AlertDialog(
-            onDismissRequest = { noShowPopup = false },
-            title = { Text("Why did the robot not show up?", color = MaterialTheme.colorScheme.onPrimary) },
-            containerColor = MaterialTheme.colorScheme.primary,
+                onDismissRequest = { noShowPopup = false },
+                title = {
+                    Text(
+                            "Why did the robot not show up?",
+                            color = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
 
-            // Robot no-showed
-            confirmButton = {
-                UserInputs.TextButtonInput(
-                    onClick = {
-                        noShowPopup = false
-                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
-                        TODO("log robot no-shows")
-                    },
-                    text = "Robot no-show",
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
-            },
+                // Robot no-showed
+                confirmButton = {
+                    UserInputs.TextButtonInput(
+                            onClick = {
+                                noShowPopup = false
+                                navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                                TODO("log robot no-shows")
+                            },
+                            text = "Robot no-show",
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                },
 
-            // Robot not part of this match
-            dismissButton = {
-                UserInputs.TextButtonInput(
-                    onClick = {
-                        noShowPopup = false
-                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
-                    },
-                    text = "Team not in match",
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
-            },
+                // Robot not part of this match
+                dismissButton = {
+                    UserInputs.TextButtonInput(
+                            onClick = {
+                                noShowPopup = false
+                                navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                            },
+                            text = "Team not in match",
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                },
         )
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.missing_image),
-            contentDescription = "no robot image available",
-            modifier = Modifier.padding(all = 50.dp)
+                painter = painterResource(id = R.drawable.missing_image),
+                contentDescription = "no robot image available",
+                modifier = Modifier.padding(all = 50.dp)
         )
-        Text(text = "You're scouting team $teamNumber", style = MaterialTheme.typography.headlineLarge)
+        Text(
+                text = "You're scouting team $teamNumber",
+                style = MaterialTheme.typography.headlineLarge
+        )
         Text(text = "Can you locate this robot on the field?")
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             // Yes button
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO) },
-                text = "Yes",
-                modifier = Modifier.padding(all = 25.dp),
-                containerColor = MaterialTheme.colorScheme.primary
+                    onClick = { navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO) },
+                    text = "Yes",
+                    modifier = Modifier.padding(all = 25.dp),
+                    containerColor = MaterialTheme.colorScheme.primary
             )
 
             // No button
             UserInputs.TextButtonInput(
-                onClick = { noShowPopup = true },
-                text = "No",
-                modifier = Modifier.padding(all = 25.dp),
+                    onClick = { noShowPopup = true },
+                    text = "No",
+                    modifier = Modifier.padding(all = 25.dp),
             )
         }
     }
 }
 
 @Composable
-fun MatchScoutingBottomBar(
-    navController: NavController,
-    currentRoute: String?
-) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.primary
-    ) {
-        val items = listOf(
-            Triple(AppRoutes.MatchScouting.SCOUT_AUTO, "Auto", Icons.Default.FlashOn),
-            Triple(AppRoutes.MatchScouting.SCOUT_TELEOP, "Teleop", Icons.Default.VideogameAsset),
-            Triple(AppRoutes.MatchScouting.SCOUT_ENDGAME, "Endgame", Icons.Default.EmojiEvents),
-        )
+fun MatchScoutingBottomBar(navController: NavController, currentRoute: String?) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
+        val items =
+                listOf(
+                        Triple(AppRoutes.MatchScouting.SCOUT_AUTO, "Auto", Icons.Default.FlashOn),
+                        Triple(
+                                AppRoutes.MatchScouting.SCOUT_TELEOP,
+                                "Teleop",
+                                Icons.Default.VideogameAsset
+                        ),
+                        Triple(
+                                AppRoutes.MatchScouting.SCOUT_ENDGAME,
+                                "Endgame",
+                                Icons.Default.EmojiEvents
+                        ),
+                )
 
         items.forEach { (route, label, icon) ->
             NavigationBarItem(
-                selected = currentRoute == route,
-                onClick = {
-                    navController.navigate(route) {
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(AppRoutes.MatchScouting.SCOUT_AUTO) {
-                            saveState = true
+                    selected = currentRoute == route,
+                    onClick = {
+                        navController.navigate(route) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(AppRoutes.MatchScouting.SCOUT_AUTO) { saveState = true }
                         }
-                    }
-                },
-                icon = { Icon(icon, contentDescription = label) },
-                label = { Text(label) },
-                colors = NavigationBarItemDefaults.colors(
-                    // TODO: fix this color bruh (shouldn't be an absolute color)
-                    selectedIconColor = Color(0xFF000000),
-                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                )
+                    },
+                    icon = { Icon(icon, contentDescription = label) },
+                    label = { Text(label) },
+                    colors =
+                            NavigationBarItemDefaults.colors(
+                                    // TODO: fix this color bruh (shouldn't be an absolute color)
+                                    selectedIconColor = Color(0xFF000000),
+                                    unselectedIconColor =
+                                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    unselectedTextColor =
+                                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                            )
             )
         }
     }
@@ -549,111 +636,102 @@ fun MatchScoutingBottomBar(
 
 @Composable
 fun MatchScoutingScaffold(
-    navController: NavController,
-    content: @Composable (PaddingValues) -> Unit
+        navController: NavController,
+        content: @Composable (PaddingValues) -> Unit
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
     Scaffold(
-        bottomBar = {
-            if (currentRoute in listOf(
-                    AppRoutes.MatchScouting.SCOUT_AUTO,
-                    AppRoutes.MatchScouting.SCOUT_TELEOP,
-                    AppRoutes.MatchScouting.SCOUT_ENDGAME
-                )
-            ) {
-                MatchScoutingBottomBar(navController, currentRoute)
+            bottomBar = {
+                if (currentRoute in
+                                listOf(
+                                        AppRoutes.MatchScouting.SCOUT_AUTO,
+                                        AppRoutes.MatchScouting.SCOUT_TELEOP,
+                                        AppRoutes.MatchScouting.SCOUT_ENDGAME
+                                )
+                ) {
+                    MatchScoutingBottomBar(navController, currentRoute)
+                }
             }
-        }
-    ) { innerPadding ->
-        content(innerPadding)
-    }
+    ) { innerPadding -> content(innerPadding) }
 }
 
 @Composable
 fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel) {
-    //TODO: add auto scouting screen
+    // TODO: add auto scouting screen
     Text("Hi... this is the auto screen... yay!!")
 }
 
 @Composable
 fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel) {
-    //TODO: add teleop scouting screen
+    // TODO: add teleop scouting screen
     Text("Hi... this is the teleop screen... yay!!")
 }
 
 @Composable
 fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
-    //TODO: add endgame scouting screen
+    // TODO: add endgame scouting screen
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Hi... this is the endgame screen... yay!!")
         UserInputs.TextButtonInput(
-            onClick = {
-                // TODO: add submission of collected match data
-                navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
-            },
-            text = "Submit Match Data",
+                onClick = {
+                    // TODO: add submission of collected match data
+                    navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                },
+                text = "Submit Match Data",
         )
     }
 }
 
-@Composable
-fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel) {
-    
-}
+@Composable fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel) {}
 
-@Composable
-fun ScoutPitForm(scoutingViewModel: ScoutingViewModel) {
-
-}
+@Composable fun ScoutPitForm(scoutingViewModel: ScoutingViewModel) {}
 
 @Composable
 fun SyncScreen(navController: NavController) {
     fun startActivity(context: Intent) {}
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Sync",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(all = 16.dp)
+                text = "Sync",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(all = 16.dp)
         )
         UserInputs.TextButtonInput(
-            onClick = {
-                fun openBluetoothSettings() {
-                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                startActivity(intent)
-            }},
-            text = "Send"
-
+                onClick = {
+                    fun openBluetoothSettings() {
+                        val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                        startActivity(intent)
+                    }
+                },
+                text = "Send"
         )
-        TextButton(
-            onClick = {}
-        ) {
-            Text(text = "Recieve")
-        }
+        TextButton(onClick = {}) { Text(text = "Recieve") }
     }
 }
 
 const val PICK_PDF_FILE = 2
+
 @Composable
 fun openFile(pickerInitialUri: Uri) {
-    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-        addCategory(Intent.CATEGORY_OPENABLE)
-        type = "application/pdf"
+    val intent =
+            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/pdf"
 
-        // Optionally, specify a URI for the file that should appear in the
-        // system file picker when it loads.
-        putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-    }
-    //startActivityForResult(intent, PICK_PDF_FILE)
+                // Optionally, specify a URI for the file that should appear in the
+                // system file picker when it loads.
+                putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+            }
+    // startActivityForResult(intent, PICK_PDF_FILE)
 }
 
 @Composable
@@ -663,132 +741,112 @@ fun SettingsScreen(navController: NavController, settingsViewModel: SettingsView
     val currentSettings = settingsState ?: return
 
     // Get the event names
-    val eventNames by settingsViewModel
-        .getEventNames()
-        .collectAsState(initial = emptyList())
+    val eventNames by settingsViewModel.getEventNames().collectAsState(initial = emptyList())
     val eventNamesWithNoneOption = listOf("None Selected").plus(eventNames)
     val selectedEvent = currentSettings.currentEvent.ifBlank { "None Selected" }
 
-    Column (
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Settings:",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Left,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
+                text = "Settings:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+                modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
         )
 
         // Select match scouting type
         UserInputs.SwitchTextBarInput(
-            checked = currentSettings.playoffsActive,
-            onCheckedChange = {
-                settingsViewModel.updatePlayoffsActive(it)
-            },
-            text = "Scouting playoffs"
+                checked = currentSettings.playoffsActive,
+                onCheckedChange = { settingsViewModel.updatePlayoffsActive(it) },
+                text = "Scouting playoffs"
         )
 
         // Select robot assignment
         UserInputs.DropdownTextBarInput(
-            options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
-            selectedOption = currentSettings.deviceRobotAssignment,
-            onOptionSelected = {
-                settingsViewModel.updateDeviceRobotAssignment(it)
-            },
-            text = "Robot and Alliance Assignment"
+                options = listOf("Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"),
+                selectedOption = currentSettings.deviceRobotAssignment,
+                onOptionSelected = { settingsViewModel.updateDeviceRobotAssignment(it) },
+                text = "Robot and Alliance Assignment"
         )
 
         // Select current event
         UserInputs.DropdownTextBarInput(
-            options = eventNamesWithNoneOption,
-            selectedOption = selectedEvent,
-            onOptionSelected = { selected ->
-                settingsViewModel.updateCurrentEvent(
-                    if (selected == "None Selected") "" else selected
-                )
-            },
-            text = "Current Event"
+                options = eventNamesWithNoneOption,
+                selectedOption = selectedEvent,
+                onOptionSelected = { selected ->
+                    settingsViewModel.updateCurrentEvent(
+                            if (selected == "None Selected") "" else selected
+                    )
+                },
+                text = "Current Event"
         )
 
         Text(
-            text = "Actions:",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Left,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
+                text = "Actions:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+                modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
         )
 
         // Add event
         UserInputs.TextButtonInput(
-            onClick = { navController.navigate(AppRoutes.Settings.EDIT_EVENTS) },
-            text = "Edit Events",
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(all = 4.dp),
+                onClick = { navController.navigate(AppRoutes.Settings.EDIT_EVENTS) },
+                text = "Edit Events",
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(all = 4.dp),
         )
 
         // Navigate to operator settings
         UserInputs.TextButtonInput(
-            onClick = { navController.navigate(AppRoutes.OPERATOR) },
-            text = "Operator Settings",
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(all = 4.dp),
+                onClick = { navController.navigate(AppRoutes.OPERATOR) },
+                text = "Operator Settings",
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(all = 4.dp),
         )
     }
 }
 
 @Composable
 fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsViewModel) {
-    val eventNames by settingsViewModel
-        .getEventNames()
-        .collectAsState(initial = emptyList())
+    val eventNames by settingsViewModel.getEventNames().collectAsState(initial = emptyList())
     val coroutineScope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         UserInputs.OutlinedButtonTextBarInput(
-            text = "Add Event",
-            buttonText = "",
-            icon = Icons.Default.Add,
-            onClick = {
-                navController.navigate(AppRoutes.Settings.ADD_EVENT)
-            }
+                text = "Add Event",
+                buttonText = "",
+                icon = Icons.Default.Add,
+                onClick = { navController.navigate(AppRoutes.Settings.ADD_EVENT) }
         )
         UserInputs.OutlinedButtonTextBarInput(
-            text = "Refresh Match Info",
-            buttonText = "",
-            icon = Icons.Default.Refresh,
-            onClick = {
-                // TODO: I don't think this works... it kinda breaks everything
-                coroutineScope.launch {
-                    eventNames.forEach {
-                        val event = settingsViewModel.getEventByName(it) ?: return@forEach
+                text = "Refresh Match Info",
+                buttonText = "",
+                icon = Icons.Default.Refresh,
+                onClick = {
+                    // TODO: I don't think this works... it kinda breaks everything
+                    coroutineScope.launch {
+                        eventNames.forEach {
+                            val event = settingsViewModel.getEventByName(it) ?: return@forEach
 
-                        settingsViewModel.updateEventMatchInfo(
-                            name = event.customEventName,
-                            code = event.eventCode,
-                            year = event.eventYear
-                        )
+                            settingsViewModel.updateEventMatchInfo(
+                                    name = event.customEventName,
+                                    code = event.eventCode,
+                                    year = event.eventYear
+                            )
+                        }
                     }
                 }
-            }
         )
         Text(
-            text = "Your Events:",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Left,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
+                text = "Your Events:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+                modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
         )
         eventNames.forEach {
             var qualsLoaded by remember { mutableStateOf(false) }
@@ -800,43 +858,38 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
             }
 
             UserInputs.OutlinedButtonTextBarInput(
-                text = it,
-                buttonText = "",
-                icon = Icons.Default.Delete,
-                onClick = {
-                    settingsViewModel.deleteEvent(it)
-                    if (it == settingsViewModel.settings.value?.currentEvent) {
-                        settingsViewModel.updateCurrentEvent("")
+                    text = it,
+                    buttonText = "",
+                    icon = Icons.Default.Delete,
+                    onClick = {
+                        settingsViewModel.deleteEvent(it)
+                        if (it == settingsViewModel.settings.value?.currentEvent) {
+                            settingsViewModel.updateCurrentEvent("")
+                        }
                     }
-                }
             )
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 if (qualsLoaded) {
+                    Text(text = "Quals Matches: Loaded!", color = MaterialTheme.colorScheme.primary)
+                } else {
                     Text(
-                        text = "Quals Matches: Loaded!",
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                else {
-                    Text(
-                        text = "Quals Matches: Not Loaded.",
-                        color = MaterialTheme.colorScheme.tertiary
+                            text = "Quals Matches: Not Loaded.",
+                            color = MaterialTheme.colorScheme.tertiary
                     )
                 }
 
                 if (playoffsLoaded) {
                     Text(
-                        text = "Playoff Matches: Loaded!",
-                        color = MaterialTheme.colorScheme.primary
+                            text = "Playoff Matches: Loaded!",
+                            color = MaterialTheme.colorScheme.primary
                     )
-                }
-                else {
+                } else {
                     Text(
-                        text = "Playoff Matches: Not Loaded.",
-                        color = MaterialTheme.colorScheme.tertiary
+                            text = "Playoff Matches: Not Loaded.",
+                            color = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }
@@ -854,133 +907,130 @@ fun AddEventScreen(navController: NavController, settingsViewModel: SettingsView
     var eventYear by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Add Event:",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Left,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
+                text = "Add Event:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+                modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
         )
 
         // Prompt event name
         UserInputs.TextboxInput(
-            value = eventName,
-            onValueChange = { eventName = it },
-            label = "Event Name",
-            singleLine = true
+                value = eventName,
+                onValueChange = { eventName = it },
+                label = "Event Name",
+                singleLine = true
         )
 
         // Prompt event code
         UserInputs.TextboxInput(
-            value = eventCode,
-            onValueChange = { eventCode = it },
-            label = "Event Code",
-            singleLine = true
+                value = eventCode,
+                onValueChange = { eventCode = it },
+                label = "Event Code",
+                singleLine = true
         )
 
         // Prompt event year
         UserInputs.TextboxInput(
-            value = eventYear,
-            onValueChange = { eventYear = it },
-            label = "Event Year",
-            singleLine = true,
-            forceNumberInput = true,
-            characterLimit = 4
+                value = eventYear,
+                onValueChange = { eventYear = it },
+                label = "Event Year",
+                singleLine = true,
+                forceNumberInput = true,
+                characterLimit = 4
         )
 
         UserInputs.TextButtonInput(
-            onClick = {
-                coroutineScope.launch {
-                    val isValid = !eventName.isBlank()
-                                && !eventCode.isBlank()
-                                && !eventYear.isBlank()
-                                && settingsViewModel.checkEventValidity(eventCode, eventYear.toInt())?: false
-                    if (isValid) {
-                        settingsViewModel.createEvent(eventName, eventCode, eventYear.toInt())
-                        navController.navigate(AppRoutes.Settings.EDIT_EVENTS)
-                        makeText(context, "Event creation successful!", Toast.LENGTH_SHORT).show()
+                onClick = {
+                    coroutineScope.launch {
+                        val isValid =
+                                !eventName.isBlank() &&
+                                        !eventCode.isBlank() &&
+                                        !eventYear.isBlank() &&
+                                        settingsViewModel.checkEventValidity(
+                                                eventCode,
+                                                eventYear.toInt()
+                                        )
+                                                ?: false
+                        if (isValid) {
+                            settingsViewModel.createEvent(eventName, eventCode, eventYear.toInt())
+                            navController.navigate(AppRoutes.Settings.EDIT_EVENTS)
+                            makeText(context, "Event creation successful!", Toast.LENGTH_SHORT)
+                                    .show()
+                        } else makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()
                     }
-                    else
-                        makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()
-                }
-            },
-            text = "Add Event"
+                },
+                text = "Add Event"
         )
     }
 }
 
 @Composable
-//operator settings menu
+// operator settings menu
 fun OperatorScreen(navController: NavController) {
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("This is for operators.. One pint! 😂😂", style= MaterialTheme.typography.headlineMedium)
-        Column(
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+                "This is for operators.. One pint! 😂😂",
+                style = MaterialTheme.typography.headlineMedium
+        )
+        Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
         ) {
             UserInputs.TextButtonInput(
-                onClick = {},
-                text = "Create a set",
-                modifier = Modifier.padding(all = 10.dp),
+                    onClick = {},
+                    text = "Create a set",
+                    modifier = Modifier.padding(all = 10.dp),
             )
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.SELECT) },
-                text = "Edit Forms",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                    onClick = { navController.navigate(AppRoutes.SELECT) },
+                    text = "Edit Forms",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Text(text = "Selected: sigmaboi2026 (match scout)")
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.SAVED) },
-                text = "Saved Sets",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                    onClick = { navController.navigate(AppRoutes.SAVED) },
+                    text = "Saved Sets",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
-        UserInputs.TextButtonInput(
-            onClick = { navController.popBackStack() },
-            text = "Go Back"
-        )
+        UserInputs.TextButtonInput(onClick = { navController.popBackStack() }, text = "Go Back")
     }
 }
 
 @Composable
-//shows all created sets to manage
-fun SavedScreen(
-    navController: NavController
-) {
+// shows all created sets to manage
+fun SavedScreen(navController: NavController) {
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("You can see and manage saved ones . . at one pint", style= MaterialTheme.typography.headlineMedium)
-        UserInputs.TextButtonInput(
-            onClick = { navController.popBackStack() },
-            text = "Go Back"
+        Text(
+                "You can see and manage saved ones . . at one pint",
+                style = MaterialTheme.typography.headlineMedium
         )
+        UserInputs.TextButtonInput(onClick = { navController.popBackStack() }, text = "Go Back")
     }
 }
 
 @Composable
-//this is where you select a set that the scouter will use
+// this is where you select a set that the scouter will use
 fun SelectScreen(navController: NavController) {
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("You will select here. . at one pint")
-        UserInputs.TextButtonInput(
-            onClick = { navController.popBackStack() },
-            text = "Go Back"
-        )
+        UserInputs.TextButtonInput(onClick = { navController.popBackStack() }, text = "Go Back")
     }
 }
