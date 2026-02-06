@@ -51,10 +51,12 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         // Give the context to the business logic
         initAppContext(this)
@@ -235,7 +237,10 @@ fun ScoutingApp() {
                     .padding(innerPadding),
                 color = MaterialTheme.colorScheme.background
             ) {
-                NavHost(navController = navController, startDestination = AppRoutes.MatchScouting.SCOUT_MATCHES) {
+                NavHost(
+                    navController = navController,
+                    startDestination = AppRoutes.MatchScouting.SCOUT_MATCHES
+                ) {
                     composable(AppRoutes.MatchScouting.SCOUT_MATCHES) {
                         ScoutMatchesScreen(navController = navController)
                     }
