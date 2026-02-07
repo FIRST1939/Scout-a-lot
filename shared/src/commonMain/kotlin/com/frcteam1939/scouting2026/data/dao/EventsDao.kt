@@ -19,8 +19,8 @@ interface EventsDao {
     suspend fun createEvent(event: Event)
 
     @Query("DELETE FROM events WHERE name = :eventName")
-    fun deleteEvent(eventName: String)
+    suspend fun deleteEvent(eventName: String)
 
     @Query("UPDATE events SET match_info = :matchInfo where name = :name")
-    fun updateEventMatchInfo(name: String, matchInfo: String)
+    suspend fun updateEventMatchInfo(name: String, matchInfo: String)
 }
