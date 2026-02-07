@@ -31,7 +31,6 @@ class SettingsViewModel(
 
     fun updateCurrentEvent(customEventName: String) {
         settingsRepository.updateCurrentEvent(customEventName)
-
     }
 
     fun getEventNames(): Flow<List<String>> {
