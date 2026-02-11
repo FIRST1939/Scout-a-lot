@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f99a7c47a46c2d40e0f0e701149cffcd",
+    "identityHash": "68a9b243455b0dc8a7e07e1c79323bf4",
     "entities": [
       {
         "tableName": "app_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `exampleSetting` INTEGER NOT NULL, `deviceRobotAssignment` TEXT NOT NULL, `currentEvent` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `playoffsActive` INTEGER NOT NULL, `deviceRobotAssignment` TEXT NOT NULL, `currentEvent` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,8 +15,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "exampleSetting",
-            "columnName": "exampleSetting",
+            "fieldPath": "playoffsActive",
+            "columnName": "playoffsActive",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -137,7 +137,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f99a7c47a46c2d40e0f0e701149cffcd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '68a9b243455b0dc8a7e07e1c79323bf4')"
     ]
   }
 }
