@@ -52,6 +52,7 @@ import android.content.Context
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.compose.navigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,8 +84,14 @@ object AppRoutes {
     object PitScouting {
         const val SCOUT_PITS = "scout pits"
     }
+
     const val MATCH_REPORTS = "match reports"
-    const val TEAM_STATS = "team info"
+
+    object TeamStats {
+        const val GRAPH = "team_info_graph"
+        const val TEAM_STATS = "team info"
+    }
+
     const val SYNC = "sync"
     const val EDIT_FORMS = "edit forms"
     const val SELECT = "select"
@@ -100,7 +107,7 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object ScoutMatches : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scout Matches", Icons.Default.Build)
     object ScoutPits : Screen(AppRoutes.PitScouting.SCOUT_PITS, "Scout Pits", Icons.Default.Person)
     object MatchReports : Screen(AppRoutes.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
-    object TeamStats : Screen(AppRoutes.TEAM_STATS, "Team Stats", Icons.Default.List)
+    object TeamStats : Screen(AppRoutes.TeamStats.TEAM_STATS, "Team Stats", Icons.Default.List)
     object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
     object EditForms : Screen(AppRoutes.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.SETTINGS, "Settings", Icons.Default.Settings)
@@ -251,8 +258,10 @@ fun ScoutingApp() {
                     composable(AppRoutes.MATCH_REPORTS) {
                         // TODO: match report generation
                     }
-                    composable(AppRoutes.TEAM_STATS) {
-                        // TODO: team stats page (all teams)
+                    navigation(startDestination = AppRoutes.TeamStats.TEAM_STATS, route = AppRoutes.TeamStats.GRAPH) {
+                        composable(AppRoutes.TeamStats.TEAM_STATS) {
+                            SelectStatsScreen(navController = navController)
+                        }
                     }
                     composable(AppRoutes.SYNC) {
                         // TODO: device & data synchronization
@@ -406,7 +415,55 @@ fun TeamConfirmationScreen(navController: NavController) {
         }
     }
 }
+@Composable
+fun SelectStatsScreen(navController: NavController) {
 
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Team Stats",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(all = 16.dp)
+        )
+
+        Text(
+            text = "Teams for event: okok... at one pint 😢",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(all = 16.dp)
+        )
+
+    }
+
+
+
+
+
+}
+
+@Composable
+fun ViewStatsScreen(navController: NavController) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Stats for tem: bint 😂😂 hes back ( *︾▽︾)",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(all = 16.dp)
+        )
+        Text(
+            text = "Rookie year: ",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(all = 16.dp),
+        )
+
+
+    }
+}
 @Composable
 fun SyncScreen(navController: NavController) {
     fun startActivity(context: Intent) {}
