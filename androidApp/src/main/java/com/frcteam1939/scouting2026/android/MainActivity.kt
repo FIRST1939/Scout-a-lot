@@ -1,5 +1,6 @@
 package com.frcteam1939.scouting2026.android
 
+import android.Manifest
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
@@ -42,6 +43,7 @@ import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
+import com.frcteam1939.scouting2026.storage.exportTextFile
 import kotlinx.coroutines.launch
 import android.net.Uri
 import android.content.Intent
@@ -53,6 +55,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.compose.navigation
+import android.os.Build
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,31 +130,60 @@ fun ScoutingApp() {
     ) { result ->
         // Logic for when the user clicks 'Allow' or 'Deny' on the system Bluetooth popup
         if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(context, "Bluetooth is running..", Toast.LENGTH_SHORT).show()
+            makeText(context, "Bluetooth is running..", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Bluetooth is off. Sync may not work..", Toast.LENGTH_SHORT).show()
+            makeText(context, "Bluetooth is off. Sync may not work..", Toast.LENGTH_SHORT).show()
         }
     }
 
     val bluetoothManager: BluetoothManager? = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
     val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.adapter
-    val permissionLauncher = rememberLauncherForActivityResult(
+    
+    val storagePermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val isGranted = permissions[android.Manifest.permission.BLUETOOTH_CONNECT] ?: false
+        val allGranted = permissions.entries.all { it.value }
+        if (allGranted) {
+            makeText(context, "Storage permissions granted", Toast.LENGTH_SHORT).show()
+        } else {
+            makeText(context, "Storage permissions denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val bluetoothPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val isGranted = permissions[Manifest.permission.BLUETOOTH_CONNECT] ?: false
         if (isGranted) {
             // Now that we have permission, we can try to enable Bluetooth
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             enableBluetoothLauncher.launch(enableBtIntent)
         } else {
-            Toast.makeText(context, "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
+            makeText(context, "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
         }
     }
+    
     LaunchedEffect(Unit) {
+        // Request Storage Permissions
+        val storagePermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_AUDIO
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
+        storagePermissionLauncher.launch(storagePermissions)
+
+        // Request Bluetooth Permissions
         if (bluetoothAdapter != null) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 // Android 12+ (API 31+): Must request BLUETOOTH_CONNECT via dialog
-                permissionLauncher.launch(arrayOf(android.Manifest.permission.BLUETOOTH_CONNECT))
+                bluetoothPermissionLauncher.launch(arrayOf(Manifest.permission.BLUETOOTH_CONNECT))
             } else {
                 // Android 11 and lower: Permissions are granted automatically if in Manifest.
                 // Just check if BT is on, and if not, show the "Enable Bluetooth" system dialog.
@@ -162,7 +194,7 @@ fun ScoutingApp() {
                     }
                 } catch (e: Exception) {
                     // Safety check for devices with restricted profiles
-                    Toast.makeText(context, "Could not open Bluetooth settings", Toast.LENGTH_SHORT).show()
+                    makeText(context, "Could not open Bluetooth settings", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -491,6 +523,15 @@ fun SyncScreen(navController: NavController) {
         ) {
             Text(text = "Recieve")
         }
+        val context = LocalContext.current
+        TextButton(
+            onClick = {exportTextFile(
+                context = context,
+                fileName = "sigma.txt",
+                content = "This is a test file."
+            )}
+        ) {
+            Text(text = "Export") }
     }
 }
 
