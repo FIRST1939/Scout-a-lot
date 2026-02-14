@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.frcteam1939.scouting2026.data.dao.EventCodesDao
 import com.frcteam1939.scouting2026.data.dao.EventsDao
+import com.frcteam1939.scouting2026.data.dao.ScoutedDataDao
 import com.frcteam1939.scouting2026.data.dao.SettingsDao
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.entities.Event
@@ -17,6 +18,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventsDao(): EventsDao
 
     abstract fun eventCodesDao(): EventCodesDao
+    abstract fun scoutedDataDao(): ScoutedDataDao
 }
 
 expect fun getDatabase(): AppDatabase
