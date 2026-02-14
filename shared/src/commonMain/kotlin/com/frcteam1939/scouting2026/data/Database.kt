@@ -10,8 +10,9 @@ import com.frcteam1939.scouting2026.data.dao.SettingsDao
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.entities.Event
 import com.frcteam1939.scouting2026.data.entities.EventCodes
+import com.frcteam1939.scouting2026.data.entities.ScoutedData
 
-@Database(entities = [AppSettings::class, Event::class, EventCodes::class], version = 1)
+@Database(entities = [AppSettings::class, Event::class, EventCodes::class, ScoutedData::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun settingsDao(): SettingsDao
