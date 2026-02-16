@@ -1,6 +1,8 @@
 package com.frcteam1939.scouting2026.viewmodels
 
+// android ViewModel import can be replaced with a general ViewModel class later, im too lazy
 import androidx.lifecycle.ViewModel
+
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
