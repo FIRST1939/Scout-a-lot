@@ -3,6 +3,7 @@ package com.frcteam1939.scouting2026.viewmodels
 import androidx.lifecycle.ViewModel
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
+import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 import com.frcteam1939.scouting2026.tba.models.TBAMatch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.serialization.json.Json
 class ScoutingViewModel(
     private val settingsRepository: SettingsRepository,
     private val eventsRepository: EventsRepository,
+    private val scoutedDataRepository: ScoutedDataRepository,
 ) : ViewModel() {
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
     val alliance: String?

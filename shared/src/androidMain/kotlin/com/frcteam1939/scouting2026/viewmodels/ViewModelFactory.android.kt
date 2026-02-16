@@ -6,11 +6,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
+import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 
 actual class ViewModelFactory actual constructor(
     private val settingsRepository: SettingsRepository,
     private val eventsRepository: EventsRepository,
-    private val eventCodesRepository: EventCodesRepository
+    private val eventCodesRepository: EventCodesRepository,
+    private val scoutedDataRepository: ScoutedDataRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -20,7 +22,7 @@ actual class ViewModelFactory actual constructor(
                 SettingsViewModel(settingsRepository, eventsRepository, eventCodesRepository) as T
             }
             modelClass.isAssignableFrom(ScoutingViewModel::class.java) -> {
-                ScoutingViewModel(settingsRepository, eventsRepository) as T
+                ScoutingViewModel(settingsRepository, eventsRepository, scoutedDataRepository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.simpleName}")
         }
