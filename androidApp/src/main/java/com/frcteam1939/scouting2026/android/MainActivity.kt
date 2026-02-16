@@ -51,6 +51,7 @@ import android.content.Context
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.ArrowForward
@@ -748,7 +749,27 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
 
 @Composable
 fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
-
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        UserInputs.TextButtonInput(
+            onClick = {
+                navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+            },
+            text = "Back",
+            modifier = Modifier.padding(all = 16.dp)
+        )
+        UserInputs.TextButtonInput(
+            onClick = {
+                navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+            },
+            text = "Save",
+            modifier = Modifier.padding(all = 16.dp),
+            containerColor = MaterialTheme.colorScheme.primary,
+        )
+    }
 }
 
 @Composable
