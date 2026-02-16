@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ScoutedDataDao {
-    @Query("SELECT * FROM scouted_data WHERE team = :team AND form_name = :formName AND form_type = 'pit'")
+    @Query("SELECT * FROM scouted_data WHERE team = :team AND form_name = :formName AND form_type = 'pit' LIMIT 1")
     fun getPitData(team: String, formName: String): Flow<ScoutedData>
-    // TODO: could get two ScoutedData objects -- test for this later
+    // TODO: if multiple ScoutedData objects exist, only returns 1 -- fix this
 
     @Query("UPDATE scouted_data SET scouted_data = :scoutedData WHERE team = :team AND form_name = :formName AND form_type = 'pit'")
     fun updatePitData(scoutedData: String, team: String, formName: String)

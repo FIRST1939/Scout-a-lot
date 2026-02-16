@@ -768,7 +768,6 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
             buttonText = "",
             icon = Icons.Default.Refresh,
             onClick = {
-                // TODO: I don't think this works... it kinda breaks everything
                 coroutineScope.launch {
                     eventNames.forEach {
                         val event = settingsViewModel.getEventByName(it) ?: return@forEach
