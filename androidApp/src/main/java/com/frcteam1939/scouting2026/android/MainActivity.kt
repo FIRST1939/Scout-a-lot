@@ -118,8 +118,20 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object MatchReports : Screen(AppRoutes.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
     object TeamStats : Screen(AppRoutes.TEAM_STATS, "Team Stats", Icons.Default.List)
     object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
-    object EditForms : Screen(AppRoutes.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
+    object EditForms : Screen(AppRoutes.EditForms.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.Settings.SETTINGS, "Settings", Icons.Default.Settings)
+}
+
+// Get settingsViewModel based on location
+@Composable
+fun getSettingsViewModel(backStackEntry: NavBackStackEntry, navController: NavController, route: String): SettingsViewModel {
+    val parentEntry = remember(backStackEntry) {
+        navController.getBackStackEntry(route)
+    }
+    return viewModel(
+        viewModelStoreOwner = parentEntry,
+        factory = getViewModelFactory()
+    )
 }
 
 // Get scoutingViewModel based on location
@@ -319,39 +331,22 @@ fun ScoutingApp() {
                         // TODO: device & data synchronization
                         SyncScreen(navController = navController)
                     }
-                    composable(AppRoutes.EDIT_FORMS) {
-                        // TODO: add edit forms function
-                        // this is where saved and select will be
+                    navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
+                        composable(AppRoutes.EditForms.EDIT_FORMS) { backStackEntry ->
+
+                        }
                     }
                     navigation(startDestination = AppRoutes.Settings.SETTINGS, route = AppRoutes.Settings.GRAPH) {
                         composable(AppRoutes.Settings.SETTINGS) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                            }
-                            val settingsViewModel: SettingsViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                             SettingsScreen(navController = navController, settingsViewModel = settingsViewModel)
                         }
                         composable(AppRoutes.Settings.EDIT_EVENTS) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                            }
-                            val settingsViewModel: SettingsViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                             EditEventsScreen(navController = navController, settingsViewModel = settingsViewModel)
                         }
                         composable(AppRoutes.Settings.ADD_EVENT) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                            }
-                            val settingsViewModel: SettingsViewModel = viewModel(
-                                viewModelStoreOwner = parentEntry,
-                                factory = getViewModelFactory()
-                            )
+                            val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                             AddEventScreen(navController = navController, settingsViewModel = settingsViewModel)
                         }
                     }
