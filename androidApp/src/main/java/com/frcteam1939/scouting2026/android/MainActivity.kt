@@ -51,6 +51,9 @@ import android.content.Context
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.VideogameAsset
@@ -60,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
+import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +102,14 @@ object AppRoutes {
     const val MATCH_REPORTS = "match reports"
     const val TEAM_STATS = "team info"
     const val SYNC = "sync"
-    const val EDIT_FORMS = "edit forms"
+
+    object EditForms {
+        const val GRAPH = "edit_forms_graph"
+        const val EDIT_FORMS = "edit forms"
+        const val CREATE_FORM = "create form"
+        const val ASSIGN_FORMS = "assign forms"
+    }
+
     const val SELECT = "select"
     const val SAVED = "saved"
 
@@ -137,6 +148,17 @@ fun getSettingsViewModel(backStackEntry: NavBackStackEntry, navController: NavCo
 // Get scoutingViewModel based on location
 @Composable
 fun getScoutingViewModel(backStackEntry: NavBackStackEntry, navController: NavController, route: String): ScoutingViewModel {
+    val parentEntry = remember(backStackEntry) {
+        navController.getBackStackEntry(route)
+    }
+    return viewModel(
+        viewModelStoreOwner = parentEntry,
+        factory = getViewModelFactory()
+    )
+}
+
+@Composable
+fun getEditFormsViewModel(backStackEntry: NavBackStackEntry, navController: NavController, route: String): EditFormsViewModel {
     val parentEntry = remember(backStackEntry) {
         navController.getBackStackEntry(route)
     }
@@ -333,7 +355,16 @@ fun ScoutingApp() {
                     }
                     navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
                         composable(AppRoutes.EditForms.EDIT_FORMS) { backStackEntry ->
-
+                            val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                            EditFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                        }
+                        composable(AppRoutes.EditForms.CREATE_FORM) { backStackEntry ->
+                            val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                            CreateFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                        }
+                        composable(AppRoutes.EditForms.ASSIGN_FORMS) { backStackEntry ->
+                            val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                            AssignFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
                         }
                     }
                     navigation(startDestination = AppRoutes.Settings.SETTINGS, route = AppRoutes.Settings.GRAPH) {
@@ -649,6 +680,118 @@ fun openFile(pickerInitialUri: Uri) {
         putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
     }
     //startActivityForResult(intent, PICK_PDF_FILE)
+}
+
+@Composable
+fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+    Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(bottom = 50.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Pit Forms:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 16.dp)
+            )
+            UserInputs.OutlinedButtonTextBarInput(
+                text = "Create Pit Form",
+                buttonText = "",
+                icon = Icons.Default.Add,
+                onClick = {
+                    navController.navigate(AppRoutes.EditForms.CREATE_FORM)
+                }
+            )
+        }
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(bottom = 50.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Match Forms:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 16.dp)
+            )
+            UserInputs.OutlinedButtonTextBarInput(
+                text = "Create Match Form",
+                buttonText = "",
+                icon = Icons.Default.Add,
+                onClick = {
+                    navController.navigate(AppRoutes.EditForms.CREATE_FORM)
+                }
+            )
+        }
+
+        UserInputs.OutlinedButtonTextBarInput(
+            text = "Assign Forms to Events",
+            buttonText = "",
+            icon = Icons.Default.ArrowForward,
+            onClick = {
+                navController.navigate(AppRoutes.EditForms.ASSIGN_FORMS)
+            }
+        )
+    }
+}
+
+@Composable
+fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+
+}
+
+@Composable
+fun AssignFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+    // Get the event names
+    val eventNames by editFormsViewModel
+        .getEventNames()
+        .collectAsState(initial = emptyList())
+
+    Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        eventNames.forEach { eventName ->
+            Column(
+                modifier = Modifier.fillMaxSize().padding(bottom = 32.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = eventName,
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Left,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 16.dp)
+                )
+                UserInputs.DropdownTextBarInput(
+                    options = listOf("None Selected", "Example form 1", "Example form 2", "Example form 3"),
+                    selectedOption = "None Selected",
+                    onOptionSelected = {},
+                    text = "Pit Form:"
+                )
+                UserInputs.DropdownTextBarInput(
+                    options = listOf("None Selected", "Example form 1", "Example form 2", "Example form 3"),
+                    selectedOption = "None Selected",
+                    onOptionSelected = {},
+                    text = "Match Form:"
+                )
+            }
+        }
+    }
 }
 
 @Composable
