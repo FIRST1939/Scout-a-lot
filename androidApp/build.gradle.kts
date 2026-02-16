@@ -52,5 +52,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.room.runtime)
     implementation(libs.material)
+    implementation(libs.androidx.foundation)
     debugImplementation(libs.compose.ui.tooling)
 }
