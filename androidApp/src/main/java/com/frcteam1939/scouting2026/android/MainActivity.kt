@@ -705,7 +705,6 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
             )
             UserInputs.OutlinedButtonTextBarInput(
                 text = "Create Pit Form",
-                buttonText = "",
                 icon = Icons.Default.Add,
                 onClick = {
                     navController.navigate(AppRoutes.EditForms.CREATE_FORM)
@@ -728,7 +727,6 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
             )
             UserInputs.OutlinedButtonTextBarInput(
                 text = "Create Match Form",
-                buttonText = "",
                 icon = Icons.Default.Add,
                 onClick = {
                     navController.navigate(AppRoutes.EditForms.CREATE_FORM)
@@ -738,7 +736,6 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
 
         UserInputs.OutlinedButtonTextBarInput(
             text = "Assign Forms to Events",
-            buttonText = "",
             icon = Icons.Default.ArrowForward,
             onClick = {
                 navController.navigate(AppRoutes.EditForms.ASSIGN_FORMS)
@@ -749,25 +746,96 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
 
 @Composable
 fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
-    Row(
-        modifier = Modifier.fillMaxSize(),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        UserInputs.TextButtonInput(
-            onClick = {
-                navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
-            },
-            text = "Back",
-            modifier = Modifier.padding(all = 16.dp)
-        )
-        UserInputs.TextButtonInput(
-            onClick = {
-                navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
-            },
-            text = "Save",
-            modifier = Modifier.padding(all = 16.dp),
+    var nameFormPopup by remember { mutableStateOf(false) }
+    var formName by remember { mutableStateOf("") }
+
+    if(nameFormPopup) {
+        AlertDialog(
+            onDismissRequest = { nameFormPopup = false },
+            title = { Text("Please name this form:", color = MaterialTheme.colorScheme.onPrimary) },
             containerColor = MaterialTheme.colorScheme.primary,
+
+            confirmButton = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    UserInputs.TextboxInput(
+                        value = formName,
+                        onValueChange = { formName = it },
+                        label = "Form Name",
+                        singleLine = true
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Keep editing button
+                        UserInputs.TextButtonInput(
+                            onClick = {
+                                nameFormPopup = false
+                            },
+                            text = "Keep Editing",
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(all = 16.dp)
+                        )
+                        // Save button
+                        UserInputs.TextButtonInput(
+                            onClick = {
+                                if (formName.isNotBlank()) {
+                                    // TODO: save form name
+                                    formName = ""
+                                    nameFormPopup = false
+                                    navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+                                }
+                            },
+                            text = "Save",
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(all = 16.dp)
+                        )
+
+                    }
+                }
+            },
+
+            dismissButton = {
+            }
+        )
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            UserInputs.TextButtonInput(
+                onClick = {
+                    navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+                },
+                text = "Back",
+                modifier = Modifier.padding(all = 16.dp)
+            )
+            UserInputs.TextButtonInput(
+                onClick = {
+                    nameFormPopup = true
+                },
+                text = "Save",
+                modifier = Modifier.padding(all = 16.dp),
+                containerColor = MaterialTheme.colorScheme.primary,
+            )
+        }
+        UserInputs.OutlinedButtonInput(
+            onClick = { /* TODO: add data field creation */ },
+            icon = Icons.Default.Add,
+            buttonText = "Add data field"
         )
     }
 }
@@ -939,7 +1007,6 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
     ) {
         UserInputs.OutlinedButtonTextBarInput(
             text = "Add Event",
-            buttonText = "",
             icon = Icons.Default.Add,
             onClick = {
                 navController.navigate(AppRoutes.Settings.ADD_EVENT)
@@ -947,7 +1014,6 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
         )
         UserInputs.OutlinedButtonTextBarInput(
             text = "Refresh Match Info",
-            buttonText = "",
             icon = Icons.Default.Refresh,
             onClick = {
                 coroutineScope.launch {
@@ -982,7 +1048,6 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
 
             UserInputs.OutlinedButtonTextBarInput(
                 text = it,
-                buttonText = "",
                 icon = Icons.Default.Delete,
                 onClick = {
                     settingsViewModel.deleteEvent(it)
