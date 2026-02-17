@@ -41,8 +41,9 @@ class SettingsViewModel(
         return eventsRepository.getEventByName(name).first()
     }
 
+    // This should be updated every year
     suspend fun checkEventValidity(code: String, year: Int): Boolean? {
-        if (year >= 1992 && year <= 2026) {
+        if (year in 1992..2026) {
             val eventCodes = eventCodesRepository.getEventCodes(year).first()?.eventCodes
             return eventCodes?.contains(code)
             // returns null if the event codes for that year don't exist
