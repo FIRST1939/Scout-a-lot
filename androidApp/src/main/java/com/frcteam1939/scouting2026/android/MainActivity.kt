@@ -778,6 +778,11 @@ fun AssignFormsScreen(navController: NavController, editFormsViewModel: EditForm
     val eventNames by editFormsViewModel
         .getEventNames()
         .collectAsState(initial = emptyList())
+    val pitFormNames by editFormsViewModel.getPitFormNames().collectAsState(initial = emptyList())
+    val pitFormNamesWithNoneOption = listOf("None Selected").plus(pitFormNames)
+
+    val matchFormNames by editFormsViewModel.getMatchFormNames().collectAsState(initial = emptyList())
+    val matchFormNamesWithNoneOption = listOf("None Selected").plus(matchFormNames)
 
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
@@ -785,6 +790,14 @@ fun AssignFormsScreen(navController: NavController, editFormsViewModel: EditForm
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         eventNames.forEach { eventName ->
+            var selectedPitForm by remember { mutableStateOf("None Selected") }
+            var selectedMatchForm by remember { mutableStateOf("None Selected") }
+
+            LaunchedEffect(eventName) {
+                selectedPitForm = editFormsViewModel.getPitFormByEvent(eventName)?.ifBlank { "None Selected" } ?: "None Selected"
+                selectedMatchForm = editFormsViewModel.getMatchFormByEvent(eventName)?.ifBlank { "None Selected" } ?: "None Selected"
+            }
+
             Column(
                 modifier = Modifier.fillMaxSize().padding(bottom = 32.dp),
                 verticalArrangement = Arrangement.Top,
@@ -799,15 +812,25 @@ fun AssignFormsScreen(navController: NavController, editFormsViewModel: EditForm
                         .padding(all = 16.dp)
                 )
                 UserInputs.DropdownTextBarInput(
-                    options = listOf("None Selected", "Example form 1", "Example form 2", "Example form 3"),
-                    selectedOption = "None Selected",
-                    onOptionSelected = {},
+                    options = pitFormNamesWithNoneOption,
+                    selectedOption = selectedPitForm,
+                    onOptionSelected = { selected ->
+                        editFormsViewModel.updateEventPitForm(
+                            eventName = eventName,
+                            pitFormName = if (selected == "None Selected") "" else selected
+                        )
+                    },
                     text = "Pit Form:"
                 )
                 UserInputs.DropdownTextBarInput(
-                    options = listOf("None Selected", "Example form 1", "Example form 2", "Example form 3"),
-                    selectedOption = "None Selected",
-                    onOptionSelected = {},
+                    options = matchFormNamesWithNoneOption,
+                    selectedOption = selectedMatchForm,
+                    onOptionSelected = { selected ->
+                        editFormsViewModel.updateEventMatchForm(
+                            eventName = eventName,
+                            matchFormName = if (selected == "None Selected") "" else selected
+                        )
+                    },
                     text = "Match Form:"
                 )
             }
