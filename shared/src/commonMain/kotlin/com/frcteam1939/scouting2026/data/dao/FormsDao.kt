@@ -15,6 +15,12 @@ interface FormsDao {
     @Query("SELECT * FROM forms WHERE form_name = :formName AND form_type = 'match'")
     fun getMatchForm(formName: String): Flow<Form>
 
+    @Query("SELECT form_name FROM forms WHERE form_type = 'pit'")
+    fun getPitFormNames(): Flow<List<String>>
+
+    @Query("SELECT form_name FROM forms WHERE form_type = 'match'")
+    fun getMatchFormNames(): Flow<List<String>>
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun createForm(form: Form)
 
