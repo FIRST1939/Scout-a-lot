@@ -39,4 +39,16 @@ class EventsRepository(private val db: AppDatabase, private val applicationScope
             dao.updateEventMatchInfo(name, matchInfo)
         }
     }
+
+    fun updateEventPitForm(eventName: String, pitFormName: String) {
+        applicationScope.launch {
+            dao.updateEventPitForm(eventName, pitFormName)
+        }
+    }
+
+    fun updateEventMatchForm(eventName: String, matchFormName: String) {
+        applicationScope.launch {
+            dao.updateEventMatchForm(eventName, matchFormName)
+        }
+    }
 }

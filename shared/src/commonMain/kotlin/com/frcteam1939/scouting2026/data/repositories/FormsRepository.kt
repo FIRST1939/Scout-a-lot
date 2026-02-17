@@ -20,6 +20,14 @@ class FormsRepository(private val db: AppDatabase, private val applicationScope:
         return dao.getMatchForm(formName)
     }
 
+    fun getPitFormNames(): Flow<List<String>> {
+        return dao.getPitFormNames()
+    }
+
+    fun getMatchFormNames(): Flow<List<String>> {
+        return dao.getMatchFormNames()
+    }
+
     fun createForm(formName: String, formType: String, formContent: JsonArray) {
         val formContentString = Json.encodeToString(formContent)
 
