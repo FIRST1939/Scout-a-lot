@@ -23,4 +23,10 @@ interface EventsDao {
 
     @Query("UPDATE events SET match_info = :matchInfo where name = :name")
     fun updateEventMatchInfo(name: String, matchInfo: String)
+
+    @Query("UPDATE events SET pit_form_name = :pitFormName where name = :name")
+    fun updateEventPitForm(name: String, pitFormName: String)
+
+    @Query("UPDATE events SET match_form_name = :matchFormName where name = :name")
+    fun updateEventMatchForm(name: String, matchFormName: String)
 }
