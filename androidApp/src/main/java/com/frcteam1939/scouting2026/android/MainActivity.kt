@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -27,6 +26,7 @@ class MainActivity : ComponentActivity() {
         initAppContext(this)
         setContent { MyApplicationTheme { ScoutingApp() } }
     }
+
     override fun onResume() {
         super.onResume()
         setActivity(this)
@@ -35,7 +35,9 @@ class MainActivity : ComponentActivity() {
 
 // Get scoutingViewModel based on location
 @Composable
-fun getScoutingViewModel(backStackEntry: NavBackStackEntry, navController: NavController, route: String): ScoutingViewModel {
+fun getScoutingViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): ScoutingViewModel {
     val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
     return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }
@@ -46,7 +48,6 @@ fun ScoutingApp() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     // Initialize Bluetooth
     InitBT()
