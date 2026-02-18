@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android
+package com.frcteam1939.scouting2026.android.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
