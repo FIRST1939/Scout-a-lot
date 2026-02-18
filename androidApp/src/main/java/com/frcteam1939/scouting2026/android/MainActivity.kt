@@ -5,29 +5,19 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -38,9 +28,7 @@ import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
-import kotlinx.coroutines.launch
 import com.frcteam1939.scouting2026.android.ui.AppRoutes
-import com.frcteam1939.scouting2026.android.ui.Screen
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
@@ -56,7 +44,6 @@ import com.frcteam1939.scouting2026.android.ui.screens.SelectScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
-import kotlinx.coroutines.CoroutineScope
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -255,108 +242,6 @@ fun ScoutingApp() {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun MainScreenScaffold(
-    navController: NavController,
-    drawerState: DrawerState,
-    scope: CoroutineScope,
-    content: @Composable () -> Unit
-) {
-    // List of items to show in the Navigation Drawer
-    val items =
-        listOf(
-            Screen.ScoutMatches,
-            Screen.ScoutPits,
-            Screen.MatchReports,
-            Screen.TeamStats,
-            Screen.Sync,
-            Screen.EditForms,
-            Screen.Settings,
-        )
-    var selectedItem by remember { mutableIntStateOf(0) }
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet(
-                drawerContainerColor = MaterialTheme.colorScheme.primary,
-            ) {
-                Spacer(Modifier.height(12.dp))
-                items.forEachIndexed { index, screen ->
-                    NavigationDrawerItem(
-                        icon = { Icon(screen.icon, contentDescription = screen.label) },
-                        label = { Text(screen.label) },
-                        selected = index == selectedItem,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            selectedItem = index
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        modifier =
-                            Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        colors =
-                            NavigationDrawerItemDefaults.colors(
-                                selectedContainerColor =
-                                    MaterialTheme.colorScheme.secondary,
-                                selectedTextColor =
-                                    MaterialTheme.colorScheme.onBackground,
-                                selectedIconColor =
-                                    MaterialTheme.colorScheme.onBackground,
-                                unselectedContainerColor =
-                                    MaterialTheme.colorScheme.primary,
-                                unselectedTextColor =
-                                    MaterialTheme.colorScheme.secondary,
-                                unselectedIconColor =
-                                    MaterialTheme.colorScheme.secondary,
-                            )
-                    )
-                }
-            }
-        }
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("1939 Scouting Tool") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu"
-                            )
-                        }
-                    },
-                    colors =
-                        TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            titleContentColor = MaterialTheme.colorScheme.secondary,
-                            navigationIconContentColor =
-                                MaterialTheme.colorScheme.secondary
-                        )
-                )
-            }
-        ) { innerPadding ->
-            Surface(Modifier.padding(innerPadding)) { content() }
-        }
-    }
-}
-
-fun startActivityForResult(activity: Intent, intent2: Any) {
-    // TODO()
-}
-
-fun getSystemService(context: Context): BluetoothManager? {
-    return context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-}
-const val PICK_PDF_FILE = 2
-
-@Composable
 fun InitBT() {
     val context = LocalContext.current
     // Create a launcher to handle the Bluetooth enable request
@@ -415,18 +300,4 @@ fun InitBT() {
             }
         }
     }
-}
-
-@Composable
-fun openFile(pickerInitialUri: Uri) {
-    val intent =
-            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/pdf"
-
-                // Optionally, specify a URI for the file that should appear in the
-                // system file picker when it loads.
-                putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-            }
-    // startActivityForResult(intent, PICK_PDF_FILE)
 }
