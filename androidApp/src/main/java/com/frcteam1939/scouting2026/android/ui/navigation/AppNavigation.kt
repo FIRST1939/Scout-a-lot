@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.ui
+package com.frcteam1939.scouting2026.android.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
