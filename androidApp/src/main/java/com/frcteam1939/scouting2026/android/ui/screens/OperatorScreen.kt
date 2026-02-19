@@ -37,13 +37,13 @@ fun OperatorScreen(navController: NavController) {
                 modifier = Modifier.padding(all = 10.dp),
             )
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.SELECT) },
+                onClick = { navController.navigate(AppRoutes.Settings.SELECT) },
                 text = "Edit Forms",
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Text(text = "Selected: sigmaboi2026 (match scout)")
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.SAVED) },
+                onClick = { navController.navigate(AppRoutes.Settings.SAVED) },
                 text = "Saved Sets",
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )

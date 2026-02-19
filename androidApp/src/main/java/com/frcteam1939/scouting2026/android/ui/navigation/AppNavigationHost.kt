@@ -9,6 +9,7 @@ import androidx.navigation.navigation
 import com.frcteam1939.scouting2026.android.getScoutingViewModel
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.navigation.MainScreenScaffold
+import com.frcteam1939.scouting2026.android.ui.navigation.SubScreenScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
@@ -145,9 +146,12 @@ fun AppNavigationHost(
                 val settingsViewModel: SettingsViewModel = viewModel(
                     viewModelStoreOwner = parentEntry, factory = getViewModelFactory()
                 )
-                EditEventsScreen(
-                    navController = navController, settingsViewModel = settingsViewModel
-                )
+                SubScreenScaffold(navController = navController) {
+                    EditEventsScreen(
+                        navController = navController, settingsViewModel = settingsViewModel
+                    )
+                }
+
             }
             composable(AppRoutes.Settings.ADD_EVENT) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
@@ -156,19 +160,28 @@ fun AppNavigationHost(
                 val settingsViewModel: SettingsViewModel = viewModel(
                     viewModelStoreOwner = parentEntry, factory = getViewModelFactory()
                 )
-                AddEventScreen(
-                    navController = navController, settingsViewModel = settingsViewModel
-                )
+                SubScreenScaffold(navController = navController) {
+                    AddEventScreen(
+                        navController = navController, settingsViewModel = settingsViewModel
+                    )
+                }
+            }
+            composable(AppRoutes.Settings.OPERATOR) {
+                SubScreenScaffold(navController = navController) {
+                    OperatorScreen(navController = navController)
+                }
+            }
+            composable(AppRoutes.Settings.SELECT) {
+                SubScreenScaffold(navController = navController) {
+                    SelectScreen(navController = navController)
+                }
+            }
+            composable(AppRoutes.Settings.SAVED) {
+                SubScreenScaffold(navController = navController) {
+                    SavedScreen(navController = navController)
+                }
             }
         }
-        composable(AppRoutes.OPERATOR) {
-                OperatorScreen(navController = navController)
-        }
-        composable(AppRoutes.SELECT) {
-                SelectScreen(navController = navController)
-        }
-        composable(AppRoutes.SAVED) {
-                SavedScreen(navController = navController)
-        }
+
     }
 }

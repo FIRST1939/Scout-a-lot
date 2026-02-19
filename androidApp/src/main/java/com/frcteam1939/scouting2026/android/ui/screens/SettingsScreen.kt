@@ -99,7 +99,7 @@ fun SettingsScreen(navController: NavController, settingsViewModel: SettingsView
 
         // Navigate to operator settings
         UserInputs.TextButtonInput(
-            onClick = { navController.navigate(AppRoutes.OPERATOR) },
+            onClick = { navController.navigate(AppRoutes.Settings.OPERATOR) },
             text = "Operator Settings",
             modifier = Modifier.align(Alignment.CenterHorizontally).padding(all = 4.dp),
         )
