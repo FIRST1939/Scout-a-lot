@@ -18,6 +18,10 @@ class EventsRepository(private val db: AppDatabase, private val applicationScope
         return dao.getEventByName(eventName)
     }
 
+    fun getEventsByFormName(formName: String): Flow<List<String>> {
+        return dao.getEventsByFormName(formName)
+    }
+
     fun createEvent(event: Event) {
         applicationScope.launch {
             try {
