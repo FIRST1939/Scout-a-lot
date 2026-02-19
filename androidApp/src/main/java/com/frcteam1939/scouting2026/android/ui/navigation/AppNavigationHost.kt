@@ -162,19 +162,13 @@ fun AppNavigationHost(
             }
         }
         composable(AppRoutes.OPERATOR) {
-            MainScreenScaffold(navController, drawerState, scope) {
                 OperatorScreen(navController = navController)
-            }
         }
         composable(AppRoutes.SELECT) {
-            MainScreenScaffold(navController, drawerState, scope) {
                 SelectScreen(navController = navController)
-            }
         }
         composable(AppRoutes.SAVED) {
-            MainScreenScaffold(navController, drawerState, scope) {
                 SavedScreen(navController = navController)
-            }
         }
     }
 }

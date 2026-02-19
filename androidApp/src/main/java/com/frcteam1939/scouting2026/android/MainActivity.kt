@@ -24,7 +24,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Give the context to the business logic
         initAppContext(this)
-        setContent { MyApplicationTheme { ScoutingApp() } }
+        setContent {
+            MyApplicationTheme {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    ScoutingApp()
+                }
+            }
+        }
     }
 
     override fun onResume() {
