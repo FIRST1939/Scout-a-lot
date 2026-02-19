@@ -48,6 +48,18 @@ class EditFormsViewModel(
         formsRepository.createForm(formName, formType, formContent)
     }
 
+    suspend fun deleteForm(formName: String, formType: String) {
+        println("events by form name ($formName): ${eventsRepository.getEventsByFormName(formName).first()}")
+        eventsRepository.getEventsByFormName(formName).first().forEach { eventName ->
+            when (formType) {
+                "pit" -> eventsRepository.updateEventPitForm(eventName, pitFormName = "")
+                "match" -> eventsRepository.updateEventMatchForm(eventName,  matchFormName = "")
+            }
+        }
+
+        formsRepository.deleteForm(formName)
+    }
+
     suspend fun saveForm(formName: String, formType: String) {
         val formContent = buildJsonArray {}
 
@@ -62,6 +74,5 @@ class EditFormsViewModel(
         } else {
             createForm(formName, formType, formContent)
         }
-
     }
 }
