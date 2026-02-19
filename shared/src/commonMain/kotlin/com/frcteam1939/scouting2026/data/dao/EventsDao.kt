@@ -15,6 +15,9 @@ interface EventsDao {
     @Query("SELECT * FROM events WHERE name = :eventName")
     fun getEventByName(eventName: String): Flow<Event?>
 
+    @Query("SELECT name FROM events WHERE pit_form_name = :formName OR match_form_name = :formName")
+    fun getEventsByFormName(formName: String): Flow<List<String>>
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun createEvent(event: Event)
 
