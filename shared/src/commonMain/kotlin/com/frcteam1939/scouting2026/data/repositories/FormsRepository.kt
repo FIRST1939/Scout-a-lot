@@ -46,19 +46,14 @@ class FormsRepository(private val db: AppDatabase, private val applicationScope:
         }
     }
 
-    fun updatePitFormContent(formContent: JsonArray, formName: String) {
+    fun updateFormContent(formName: String, formType: String, formContent: JsonArray) {
         val formContentString = Json.encodeToString(formContent)
 
         applicationScope.launch {
-            dao.updatePitForm(formContentString, formName)
-        }
-    }
-
-    fun updateMatchFormContent(formContent: JsonArray, formName: String) {
-        val formContentString = Json.encodeToString(formContent)
-
-        applicationScope.launch {
-            dao.updateMatchForm(formContentString, formName)
+            when (formType) {
+                "pit" -> dao.updatePitForm(formContentString, formName)
+                "match" -> dao.updateMatchForm(formContentString, formName)
+            }
         }
     }
 }
