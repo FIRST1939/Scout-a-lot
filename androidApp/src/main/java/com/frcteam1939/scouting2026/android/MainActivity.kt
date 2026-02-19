@@ -685,6 +685,8 @@ fun openFile(pickerInitialUri: Uri) {
 
 @Composable
 fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
@@ -710,6 +712,17 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                     navController.navigate(AppRoutes.EditForms.CREATE_FORM)
                 }
             )
+            editFormsViewModel.getPitFormNames().collectAsState(initial = emptyList()).value.forEach { formName ->
+                UserInputs.OutlinedButtonTextBarInput(
+                    text = formName,
+                    icon = Icons.Default.Delete,
+                    onClick = {
+                        coroutineScope.launch {
+                            editFormsViewModel.deleteForm(formName, formType = "pit")
+                        }
+                    }
+                )
+            }
         }
 
         Column(
@@ -732,6 +745,17 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                     navController.navigate(AppRoutes.EditForms.CREATE_FORM)
                 }
             )
+            editFormsViewModel.getMatchFormNames().collectAsState(initial = emptyList()).value.forEach { formName ->
+                UserInputs.OutlinedButtonTextBarInput(
+                    text = formName,
+                    icon = Icons.Default.Delete,
+                    onClick = {
+                        coroutineScope.launch {
+                            editFormsViewModel.deleteForm(formName, formType = "match")
+                        }
+                    }
+                )
+            }
         }
 
         UserInputs.OutlinedButtonTextBarInput(
