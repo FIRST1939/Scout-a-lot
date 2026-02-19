@@ -746,6 +746,9 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
 
 @Composable
 fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+    val coroutineScope = rememberCoroutineScope()
+    val formType = "pit" // Placeholder until match forms are implemented... TODO: implement match forms
+
     var nameFormPopup by remember { mutableStateOf(false) }
     var formName by remember { mutableStateOf("") }
 
@@ -785,8 +788,9 @@ fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditForm
                         UserInputs.TextButtonInput(
                             onClick = {
                                 if (formName.isNotBlank()) {
-                                    // TODO: save form name
-                                    formName = ""
+                                    coroutineScope.launch {
+                                        editFormsViewModel.saveForm(formName, formType)
+                                    }
                                     nameFormPopup = false
                                     navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
                                 }
@@ -867,7 +871,7 @@ fun AssignFormsScreen(navController: NavController, editFormsViewModel: EditForm
             }
 
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 32.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -879,28 +883,32 @@ fun AssignFormsScreen(navController: NavController, editFormsViewModel: EditForm
                         .fillMaxWidth()
                         .padding(all = 16.dp)
                 )
-                UserInputs.DropdownTextBarInput(
-                    options = pitFormNamesWithNoneOption,
-                    selectedOption = selectedPitForm,
-                    onOptionSelected = { selected ->
-                        editFormsViewModel.updateEventPitForm(
-                            eventName = eventName,
-                            pitFormName = if (selected == "None Selected") "" else selected
-                        )
-                    },
-                    text = "Pit Form:"
-                )
-                UserInputs.DropdownTextBarInput(
-                    options = matchFormNamesWithNoneOption,
-                    selectedOption = selectedMatchForm,
-                    onOptionSelected = { selected ->
-                        editFormsViewModel.updateEventMatchForm(
-                            eventName = eventName,
-                            matchFormName = if (selected == "None Selected") "" else selected
-                        )
-                    },
-                    text = "Match Form:"
-                )
+                key(selectedPitForm) {
+                    UserInputs.DropdownTextBarInput(
+                        options = pitFormNamesWithNoneOption,
+                        selectedOption = selectedPitForm,
+                        onOptionSelected = { selected ->
+                            editFormsViewModel.updateEventPitForm(
+                                eventName = eventName,
+                                pitFormName = if (selected == "None Selected") "" else selected
+                            )
+                        },
+                        text = "Pit Form:"
+                    )
+                }
+                key(selectedMatchForm) {
+                    UserInputs.DropdownTextBarInput(
+                        options = matchFormNamesWithNoneOption,
+                        selectedOption = selectedMatchForm,
+                        onOptionSelected = { selected ->
+                            editFormsViewModel.updateEventMatchForm(
+                                eventName = eventName,
+                                matchFormName = if (selected == "None Selected") "" else selected
+                            )
+                        },
+                        text = "Match Form:"
+                    )
+                }
             }
         }
     }
