@@ -46,7 +46,7 @@ fun MainScreenScaffold(
     )
 
     val currentRoute = navController.currentBackStackEntry?.destination?.route
-    val selectedItem = items.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
+    val selectedItem = items.indexOfFirst { it.route == currentRoute }
 
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
