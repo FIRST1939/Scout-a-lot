@@ -56,6 +56,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.compose.navigation
 import android.os.Build
+import com.frcteam1939.scouting2026.storage.readTextFile
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -498,6 +499,7 @@ fun ViewStatsScreen(navController: NavController) {
 }
 @Composable
 fun SyncScreen(navController: NavController) {
+    var fileContent by remember { mutableStateOf("") } // State to store the read text
     fun startActivity(context: Intent) {}
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -512,9 +514,10 @@ fun SyncScreen(navController: NavController) {
         UserInputs.TextButtonInput(
             onClick = {
                 fun openBluetoothSettings() {
-                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                startActivity(intent)
-            }},
+                    val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                    startActivity(intent)
+                }
+            },
             text = "Send"
 
         )
@@ -525,17 +528,40 @@ fun SyncScreen(navController: NavController) {
         }
         val context = LocalContext.current
         TextButton(
-            onClick = {exportTextFile(
-                context = context,
-                fileName = "sigma.txt",
-                content = "This is a test file."
-            )}
+            onClick = {
+                exportTextFile(
+                    fileName = "bogosbinter.txt",
+                    content = "Did you get the photos printed? Bogos binted? Bogos BINTed? BINT BINT BINT BRAK  DOMER"
+                )
+                makeText(context, "done✅done✅done✅done⚠️⚠️", Toast.LENGTH_SHORT).show()
+            }
         ) {
-            Text(text = "Export") }
+            Text(text = "Export")
+        }
+        TextButton(
+            onClick = {
+                val content = readTextFile("bogosbinter.txt")
+                fileContent = content ?: "File not found or empty"
+            }
+        ) {
+            Text(text = "Show Data")
+        }
+
+        if (fileContent.isNotEmpty()) {
+            Card(
+                modifier = Modifier.padding(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Text(
+                    text = fileContent,
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
     }
 }
 
-const val PICK_PDF_FILE = 2
 @Composable
 fun openFile(pickerInitialUri: Uri) {
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
