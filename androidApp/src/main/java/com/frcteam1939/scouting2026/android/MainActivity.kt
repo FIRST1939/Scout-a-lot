@@ -2,7 +2,7 @@ package com.frcteam1939.scouting2026.android
 
 import android.Manifest
 import android.app.Activity
-import AppNavigationHost
+import com.frcteam1939.scouting2026.android.ui.navigation.AppNavigationHost
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

@@ -1,15 +1,16 @@
+package com.frcteam1939.scouting2026.android.ui.navigation
+
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.frcteam1939.scouting2026.android.getScoutingViewModel
-import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
-import com.frcteam1939.scouting2026.android.ui.navigation.MainScreenScaffold
-import com.frcteam1939.scouting2026.android.ui.navigation.SubScreenScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
@@ -42,10 +43,12 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MainScreenScaffold(navController, drawerState, scope) {
-                    ScoutMatchesScreen(
-                        navController = navController, scoutingViewModel = scoutingViewModel
-                    )
+                MainScreenScaffold(navController, drawerState, scope) { padding ->
+                    ScoutingScaffold(navController = navController, modifier = Modifier.padding(padding)) {
+                        ScoutMatchesScreen(
+                            navController = navController, scoutingViewModel = scoutingViewModel
+                        )
+                    }
                 }
             }
             composable(AppRoutes.MatchScouting.TEAM_CONFIRMATION) { backStackEntry ->
@@ -90,8 +93,10 @@ fun AppNavigationHost(
             composable(AppRoutes.PitScouting.SCOUT_PITS) { backStackEntry ->
                 val scoutingViewModel =
                     getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
-                MainScreenScaffold(navController, drawerState, scope) {
-                    ScoutPitScreen(scoutingViewModel = scoutingViewModel)
+                MainScreenScaffold(navController, drawerState, scope) { padding ->
+                    ScoutingScaffold(navController = navController, modifier = Modifier.padding(padding)) {
+                        ScoutPitScreen(scoutingViewModel = scoutingViewModel)
+                    }
                 }
             }
             composable(AppRoutes.PitScouting.SCOUT_PITS_FORM) { backStackEntry ->
@@ -133,10 +138,11 @@ fun AppNavigationHost(
                 val settingsViewModel: SettingsViewModel = viewModel(
                     viewModelStoreOwner = parentEntry, factory = getViewModelFactory()
                 )
-                MainScreenScaffold(navController, drawerState, scope) {
-                    SettingsScreen(
-                        navController = navController, settingsViewModel = settingsViewModel
-                    )
+
+                MainScreenScaffold(navController, drawerState, scope) { padding ->
+                    ScoutingScaffold(navController = navController, modifier = Modifier.padding(padding)) {
+                        SettingsScreen(navController, settingsViewModel)
+                    }
                 }
             }
             composable(AppRoutes.Settings.EDIT_EVENTS) { backStackEntry ->
