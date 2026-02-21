@@ -3,15 +3,15 @@ package com.frcteam1939.scouting2026.android.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.frcteam1939.scouting2026.android.getDataViewModel
-import com.frcteam1939.scouting2026.android.getEditFormsViewModel
-import com.frcteam1939.scouting2026.android.getScoutingViewModel
-import com.frcteam1939.scouting2026.android.getSettingsViewModel
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.AssignFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
@@ -36,6 +36,9 @@ import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
+import com.frcteam1939.scouting2026.viewmodels.DataViewModel
+import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
+import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import kotlinx.coroutines.CoroutineScope
@@ -211,4 +214,36 @@ fun AppNavigationHost(
             }
         }
     }
+}
+
+@Composable
+fun getScoutingViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): ScoutingViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+@Composable
+fun getEditFormsViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): EditFormsViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+@Composable
+fun getSettingsViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): SettingsViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+@Composable
+fun getDataViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): DataViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }
