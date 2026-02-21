@@ -22,7 +22,7 @@ object AppRoutes {
         MATCH_REPORTS to "Match Reports",
         TEAM_STATS to "Team Stats",
         SYNC to "Sync",
-        EDIT_FORMS to "Edit Forms",
+        EditForms.EDIT_FORMS to "Edit Forms",
         Settings.SELECT to "Select",
         Settings.SAVED to "Saved",
         Settings.SETTINGS to "Settings",
@@ -47,7 +47,13 @@ object AppRoutes {
     const val MATCH_REPORTS = "match_reports"
     const val TEAM_STATS = "team_info"
     const val SYNC = "sync"
-    const val EDIT_FORMS = "edit_forms"
+
+    object EditForms {
+        const val GRAPH = "edit_forms_graph"
+        const val EDIT_FORMS = "edit forms"
+        const val CREATE_FORM = "create form"
+        const val ASSIGN_FORMS = "assign forms"
+    }
 
     object Settings {
         const val GRAPH = "settings_graph"
@@ -69,6 +75,6 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object MatchReports : Screen(AppRoutes.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
     object TeamStats : Screen(AppRoutes.TEAM_STATS, "Team Stats", Icons.Default.List)
     object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
-    object EditForms : Screen(AppRoutes.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
+    object EditForms : Screen(AppRoutes.EditForms.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.Settings.SETTINGS, "Settings", Icons.Default.Settings)
 }

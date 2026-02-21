@@ -38,6 +38,13 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
     val currentSettings = settingsState ?: return
     val currentEvent = currentSettings.currentEvent
     val matchNumber = scoutingViewModel.matchNumber
+    var currentForm by remember { mutableStateOf("") }
+
+    LaunchedEffect(currentEvent) {
+        if (currentEvent.isNotEmpty()) {
+            currentForm = scoutingViewModel.getCurrentForm(currentEvent, formType = "match")
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -49,32 +56,35 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
             text = "Current Event: ${currentEvent.ifEmpty { "None Selected" }}",
             modifier = Modifier.padding(all = 8.dp)
         )
-        Image(painter = painterResource(id = R.drawable.bunny), contentDescription = "bunny")
+        Text(
+            text = "Current Form: ${currentForm.ifEmpty { "None Selected" }}",
+            modifier = Modifier.padding(all = 8.dp)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.bunny),
+            contentDescription = "bunny"
+        )
         UserInputs.TextButtonInput(
             onClick = {
-                // Check if scouting is allowed to happen happen
+                // Check if scouting is allowed to happen
                 var canStartScouting = true
                 if (currentEvent.isEmpty()) {
                     canStartScouting = false
-                    makeText(
-                        context,
-                        "Please select an event to start scouting!",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    makeText(context, "Please select an event to start scouting!", Toast.LENGTH_SHORT).show()
+                } else if (currentForm.isEmpty()) {
+                    canStartScouting = false
+                    makeText(context, "Please select a match form to start scouting!", Toast.LENGTH_SHORT).show()
                 } else if (matchNumber.value.toIntOrNull() == null) {
                     canStartScouting = false
-                    makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT)
-                        .show()
+                    makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT).show()
                 }
 
-                if (canStartScouting)
-                    navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
+                if (canStartScouting) navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
             },
             text = "Scout Match",
         )
 
-        // input for match selector
+        //input for match selector
         UserInputs.TextboxInput(
             value = matchNumber.collectAsState().value,
             onValueChange = { scoutingViewModel.changeMatchNumber(it) },
@@ -85,6 +95,7 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
         )
     }
 }
+
 
 @Composable
 fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
