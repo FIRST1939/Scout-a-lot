@@ -18,6 +18,10 @@ class EventsRepository(private val db: AppDatabase, private val applicationScope
         return dao.getEventByName(eventName)
     }
 
+    fun getEventsByFormName(formName: String): Flow<List<String>> {
+        return dao.getEventsByFormName(formName)
+    }
+
     fun createEvent(event: Event) {
         applicationScope.launch {
             try {
@@ -37,6 +41,18 @@ class EventsRepository(private val db: AppDatabase, private val applicationScope
     fun updateEventMatchInfo(name: String, matchInfo: String) {
         applicationScope.launch {
             dao.updateEventMatchInfo(name, matchInfo)
+        }
+    }
+
+    fun updateEventPitForm(eventName: String, pitFormName: String) {
+        applicationScope.launch {
+            dao.updateEventPitForm(eventName, pitFormName)
+        }
+    }
+
+    fun updateEventMatchForm(eventName: String, matchFormName: String) {
+        applicationScope.launch {
+            dao.updateEventMatchForm(eventName, matchFormName)
         }
     }
 }

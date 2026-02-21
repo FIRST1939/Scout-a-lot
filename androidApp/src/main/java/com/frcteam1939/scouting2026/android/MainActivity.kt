@@ -33,6 +33,8 @@ import androidx.navigation.compose.navigation
 import android.os.Build
 import com.frcteam1939.scouting2026.storage.readTextFile
 import com.frcteam1939.scouting2026.android.sync.bluetooth.InitBT
+import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
+import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +66,24 @@ fun getScoutingViewModel(
     return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }
 
+@Composable
+fun getEditFormsViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): EditFormsViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+@Composable
+fun getSettingsViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): SettingsViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 // navigation controller
 fun ScoutingApp() {

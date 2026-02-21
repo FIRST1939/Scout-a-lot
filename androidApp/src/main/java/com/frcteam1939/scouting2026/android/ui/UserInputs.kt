@@ -234,11 +234,30 @@ object UserInputs {
     }
 
     @Composable
+    fun OutlinedButtonInput(
+        onClick: () -> Unit,
+        icon: ImageVector,
+        modifier: Modifier = Modifier,
+        buttonText: String = ""
+    ) {
+        OutlinedButton(
+            onClick = { onClick() },
+            modifier = modifier
+        ) {
+            Text(text = buttonText)
+            Icon(
+                imageVector = icon,
+                contentDescription = ""
+            )
+        }
+    }
+
+    @Composable
     fun OutlinedButtonTextBarInput(
         text: String,
-        buttonText: String,
         icon: ImageVector,
-        onClick: () -> Unit
+        onClick: () -> Unit,
+        buttonText: String = ""
     ) {
         Divider(thickness = 1.dp)
         Row(
@@ -287,7 +306,6 @@ object UserInputs {
             Box(modifier = Modifier.weight(1f)) {
                 OutlinedButton(
                     onClick = { expanded = true },
-
                 ) {
                     Text(
                         text = selectedOption,

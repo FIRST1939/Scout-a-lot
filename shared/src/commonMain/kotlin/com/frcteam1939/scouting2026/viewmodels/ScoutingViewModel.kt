@@ -1,8 +1,11 @@
 package com.frcteam1939.scouting2026.viewmodels
 
+// android ViewModel import can be replaced with a general ViewModel class later, im too lazy
 import androidx.lifecycle.ViewModel
+
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
+import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 import com.frcteam1939.scouting2026.tba.models.TBAMatch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +17,7 @@ import kotlinx.serialization.json.Json
 class ScoutingViewModel(
     private val settingsRepository: SettingsRepository,
     private val eventsRepository: EventsRepository,
+    private val scoutedDataRepository: ScoutedDataRepository,
 ) : ViewModel() {
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
     val alliance: String?
@@ -25,6 +29,15 @@ class ScoutingViewModel(
 
     fun changeMatchNumber(newMatchNumber: String) {
         _matchNumber.value = newMatchNumber
+    }
+
+    suspend fun getCurrentForm(currentEvent: String, formType: String): String {
+        val event = eventsRepository.getEventByName(currentEvent).first() ?: return "None Selected"
+        return when (formType) {
+            "pit" -> event.pitForm
+            "match" -> event.matchForm
+            else -> "ERROR: Invalid form type"
+        }
     }
 
     suspend fun getCurrentTeam(): String {

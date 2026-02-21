@@ -1,5 +1,6 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
@@ -10,9 +11,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.frcteam1939.scouting2026.android.getEditFormsViewModel
 import com.frcteam1939.scouting2026.android.getScoutingViewModel
+import com.frcteam1939.scouting2026.android.getSettingsViewModel
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
+import com.frcteam1939.scouting2026.android.ui.screens.AssignFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.CreateFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
@@ -124,23 +130,31 @@ fun AppNavigationHost(
                 SyncScreen(navController = navController)
             }
         }
-        composable(AppRoutes.EDIT_FORMS) {
-            MainScreenScaffold(navController, drawerState, scope) {
-                // TODO: add edit forms function
-                // this is where saved and select will be
+        navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
+            composable(AppRoutes.EditForms.EDIT_FORMS) { backStackEntry ->
+                val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                MainScreenScaffold(navController, drawerState, scope) { padding ->
+                    EditFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                }
+            }
+            composable(AppRoutes.EditForms.CREATE_FORM) { backStackEntry ->
+                val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                SubScreenScaffold(navController = navController) {
+                    CreateFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                }
+            }
+            composable(AppRoutes.EditForms.ASSIGN_FORMS) { backStackEntry ->
+                val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                SubScreenScaffold(navController = navController) {
+                    AssignFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                }
             }
         }
         navigation(
             startDestination = AppRoutes.Settings.SETTINGS, route = AppRoutes.Settings.GRAPH
         ) {
             composable(AppRoutes.Settings.SETTINGS) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                }
-                val settingsViewModel: SettingsViewModel = viewModel(
-                    viewModelStoreOwner = parentEntry, factory = getViewModelFactory()
-                )
-
+                val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) { padding ->
                     ScoutingScaffold(navController = navController, modifier = Modifier.padding(padding)) {
                         SettingsScreen(navController, settingsViewModel)
@@ -148,12 +162,7 @@ fun AppNavigationHost(
                 }
             }
             composable(AppRoutes.Settings.EDIT_EVENTS) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                }
-                val settingsViewModel: SettingsViewModel = viewModel(
-                    viewModelStoreOwner = parentEntry, factory = getViewModelFactory()
-                )
+                val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                 SubScreenScaffold(navController = navController) {
                     EditEventsScreen(
                         navController = navController, settingsViewModel = settingsViewModel
@@ -162,12 +171,7 @@ fun AppNavigationHost(
 
             }
             composable(AppRoutes.Settings.ADD_EVENT) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(AppRoutes.Settings.GRAPH)
-                }
-                val settingsViewModel: SettingsViewModel = viewModel(
-                    viewModelStoreOwner = parentEntry, factory = getViewModelFactory()
-                )
+                val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                 SubScreenScaffold(navController = navController) {
                     AddEventScreen(
                         navController = navController, settingsViewModel = settingsViewModel
