@@ -26,6 +26,8 @@ import com.frcteam1939.scouting2026.android.ui.screens.SelectScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
+import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
+import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import kotlinx.coroutines.CoroutineScope
@@ -113,7 +115,7 @@ fun AppNavigationHost(
         }
         composable(AppRoutes.TEAM_STATS) {
             MainScreenScaffold(navController, drawerState, scope) {
-                // TODO: team stats page (all teams)
+                TeamStatsMainScreen(navController)
             }
         }
         composable(AppRoutes.SYNC) {
