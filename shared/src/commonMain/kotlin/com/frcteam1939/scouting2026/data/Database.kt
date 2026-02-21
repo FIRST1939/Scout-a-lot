@@ -1,7 +1,9 @@
 package com.frcteam1939.scouting2026.data
 
 import androidx.room.Database
+import androidx.room.ConstructedBy
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import com.frcteam1939.scouting2026.data.dao.EventCodesDao
 import com.frcteam1939.scouting2026.data.dao.EventsDao
@@ -19,7 +21,6 @@ import com.frcteam1939.scouting2026.data.entities.Form
 abstract class AppDatabase : RoomDatabase() {
     abstract fun settingsDao(): SettingsDao
     abstract fun eventsDao(): EventsDao
-
     abstract fun eventCodesDao(): EventCodesDao
     abstract fun scoutedDataDao(): ScoutedDataDao
     abstract fun formsDao(): FormsDao
