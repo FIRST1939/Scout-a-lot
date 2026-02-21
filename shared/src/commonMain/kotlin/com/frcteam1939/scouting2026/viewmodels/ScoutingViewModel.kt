@@ -34,8 +34,8 @@ class ScoutingViewModel(
     suspend fun getCurrentForm(currentEvent: String, formType: String): String {
         val event = eventsRepository.getEventByName(currentEvent).first() ?: return "None Selected"
         return when (formType) {
-            "pit" -> event.pitForm.ifBlank { "None Selected" }
-            "match" -> event.matchForm.ifBlank { "None Selected" }
+            "pit" -> event.pitForm
+            "match" -> event.matchForm
             else -> "ERROR: Invalid form type"
         }
     }

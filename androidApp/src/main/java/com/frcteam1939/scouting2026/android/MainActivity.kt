@@ -410,9 +410,13 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
     val currentSettings = settingsState ?: return
     val currentEvent = currentSettings.currentEvent
     val matchNumber = scoutingViewModel.matchNumber
+    var currentForm by remember { mutableStateOf("") }
 
-    // TODO: broken, wrap this in a suspend function
-    // val currentForm = scoutingViewModel.getCurrentForm(currentEvent, formType = "match")
+    LaunchedEffect(currentEvent) {
+        if (currentEvent.isNotEmpty()) {
+            currentForm = scoutingViewModel.getCurrentForm(currentEvent, formType = "match")
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -422,6 +426,10 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
         val context = LocalContext.current
         Text(
             text = "Current Event: ${currentEvent.ifEmpty { "None Selected" }}",
+            modifier = Modifier.padding(all = 8.dp)
+        )
+        Text(
+            text = "Current Form: ${currentForm.ifEmpty { "None Selected" }}",
             modifier = Modifier.padding(all = 8.dp)
         )
         Image(
@@ -435,6 +443,9 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
                 if (currentEvent.isEmpty()) {
                     canStartScouting = false
                     makeText(context, "Please select an event to start scouting!", Toast.LENGTH_SHORT).show()
+                } else if (currentForm.isEmpty()) {
+                    canStartScouting = false
+                    makeText(context, "Please select a match form to start scouting!", Toast.LENGTH_SHORT).show()
                 } else if (matchNumber.value.toIntOrNull() == null) {
                     canStartScouting = false
                     makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT).show()
