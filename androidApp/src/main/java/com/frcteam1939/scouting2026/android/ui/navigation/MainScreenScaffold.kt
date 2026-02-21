@@ -65,13 +65,15 @@ fun MainScreenScaffold(
                         label = { Text(screen.label) },
                         selected = index == selectedItem,
                         onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                            if (screen.route != currentRoute) {
+                                scope.launch { drawerState.close() }
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
