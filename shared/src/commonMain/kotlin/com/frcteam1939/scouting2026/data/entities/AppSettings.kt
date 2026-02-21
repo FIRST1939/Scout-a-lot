@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "app_settings")
 data class AppSettings(
     @PrimaryKey val id: Int = 1,  // Always 1
-    val exampleSetting: Boolean,
+    val playoffsActive: Boolean,
     val deviceRobotAssignment: String,
     val currentEvent: String
 )

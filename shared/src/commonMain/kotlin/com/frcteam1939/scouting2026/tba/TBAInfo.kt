@@ -47,6 +47,9 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
     }
 
     suspend fun pullEventMatches(eventKey: String): String {
-        return this.pullFromTBA("/event/${eventKey}/matches/simple")
+        val jsonString = this.pullFromTBA("/event/${eventKey}/matches/simple")
+        return jsonString.ifBlank {
+            "[]"
+        }
     }
 }
