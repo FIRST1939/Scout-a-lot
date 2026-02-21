@@ -31,6 +31,15 @@ class ScoutingViewModel(
         _matchNumber.value = newMatchNumber
     }
 
+    suspend fun getCurrentForm(currentEvent: String, formType: String): String {
+        val event = eventsRepository.getEventByName(currentEvent).first() ?: return "None Selected"
+        return when (formType) {
+            "pit" -> event.pitForm.ifBlank { "None Selected" }
+            "match" -> event.matchForm.ifBlank { "None Selected" }
+            else -> "ERROR: Invalid form type"
+        }
+    }
+
     suspend fun getCurrentTeam(): String {
         val event = eventsRepository.getEventByName(settings.value?.currentEvent ?: "")
         val jsonString = event.first()?.matchInfo

@@ -411,6 +411,9 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
     val currentEvent = currentSettings.currentEvent
     val matchNumber = scoutingViewModel.matchNumber
 
+    // TODO: broken, wrap this in a suspend function
+    // val currentForm = scoutingViewModel.getCurrentForm(currentEvent, formType = "match")
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
@@ -427,7 +430,7 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
         )
         UserInputs.TextButtonInput(
             onClick = {
-                // Check if scouting is allowed to happen happen
+                // Check if scouting is allowed to happen
                 var canStartScouting = true
                 if (currentEvent.isEmpty()) {
                     canStartScouting = false
