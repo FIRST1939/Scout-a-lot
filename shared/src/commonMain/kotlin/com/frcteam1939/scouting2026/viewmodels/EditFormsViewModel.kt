@@ -3,7 +3,11 @@ package com.frcteam1939.scouting2026.viewmodels
 import androidx.lifecycle.ViewModel
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.FormsRepository
+import com.frcteam1939.scouting2026.showAlert
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.buildJsonArray
@@ -12,6 +16,14 @@ class EditFormsViewModel(
     private val eventsRepository: EventsRepository,
     private val formsRepository: FormsRepository
 ) : ViewModel() {
+
+    private val _editingFormName = MutableStateFlow("")
+    val editingFormName: StateFlow<String> = _editingFormName.asStateFlow()
+
+    fun changeEditingFormName(newEditingFormName: String) {
+        _editingFormName.value = newEditingFormName
+    }
+
     fun getEventNames(): Flow<List<String>> {
         return eventsRepository.getEventNames()
     }
@@ -70,7 +82,17 @@ class EditFormsViewModel(
         }
 
         if (formName in existingFormNames) {
-            updateForm(formName, formType, formContent)
+            // making sure we're not creating a form with an existing name
+            if (editingFormName.value != "") {
+                updateForm(formName, formType, formContent)
+            } else {
+                // TODO: fix this nonsense!! form content should not be deleted
+                showAlert(
+                    title = "Form Name Already Exists",
+                    message = "Could not save form... and what you were just editing has been deleted." +
+                            " Sorry!!! Please bug someone to fix this!!!"
+                )
+            }
         } else {
             createForm(formName, formType, formContent)
         }

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -63,17 +64,23 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                 text = "Create Pit Form",
                 icon = Icons.Default.Add,
                 onClick = {
+                    editFormsViewModel.changeEditingFormName("")
                     navController.navigate(AppRoutes.EditForms.EDIT_PIT_FORM)
                 }
             )
             editFormsViewModel.getPitFormNames().collectAsState(initial = emptyList()).value.forEach { formName ->
-                UserInputs.OutlinedButtonTextBarInput(
+                UserInputs.DoubleOutlinedButtonTextBarInput(
                     text = formName,
-                    icon = Icons.Default.Delete,
-                    onClick = {
+                    iconOne = Icons.Default.Delete,
+                    onButtonOneClick = {
                         coroutineScope.launch {
                             editFormsViewModel.deleteForm(formName, formType = "pit")
                         }
+                    },
+                    iconTwo = Icons.Default.Edit,
+                    onButtonTwoClick = {
+                        editFormsViewModel.changeEditingFormName(formName)
+                        navController.navigate(AppRoutes.EditForms.EDIT_PIT_FORM)
                     }
                 )
             }
@@ -128,7 +135,8 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
     val context = LocalContext.current
 
     var nameFormPopup by remember { mutableStateOf(false) }
-    var formName by remember { mutableStateOf("") }
+    val editingFormName = editFormsViewModel.editingFormName.collectAsState().value
+    var newFormName by remember { mutableStateOf(editingFormName) }
 
     if(nameFormPopup) {
         AlertDialog(
@@ -142,8 +150,8 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     UserInputs.TextboxInput(
-                        value = formName,
-                        onValueChange = { formName = it },
+                        value = newFormName,
+                        onValueChange = { newFormName = it },
                         label = "Form Name",
                         singleLine = true
                     )
@@ -165,11 +173,12 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                         // Save button
                         UserInputs.TextButtonInput(
                             onClick = {
-                                if (formName.isNotBlank()) {
+                                if (newFormName.isNotBlank()) {
                                     coroutineScope.launch {
-                                        editFormsViewModel.saveForm(formName, formType = "pit")
+                                        editFormsViewModel.saveForm(newFormName, formType = "pit")
                                     }
                                     nameFormPopup = false
+                                    editFormsViewModel.changeEditingFormName("")
                                     navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
                                 } else {
                                     makeText(context, "Please name this form!", Toast.LENGTH_SHORT).show()
@@ -201,14 +210,23 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = formName.ifBlank { "Unnamed Pit Form" },
+                text = newFormName.ifBlank { "Unnamed Pit Form" },
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(all = 16.dp)
             )
+            // Saves form if it exists, else opens the name form prompt
             UserInputs.TextButtonInput(
                 onClick = {
-                    nameFormPopup = true
+                    if (editingFormName.isBlank()) {
+                        nameFormPopup = true
+                    } else {
+                        coroutineScope.launch {
+                            editFormsViewModel.saveForm(editingFormName, formType = "pit")
+                        }
+                        editFormsViewModel.changeEditingFormName("")
+                        navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+                    }
                 },
                 text = "Save",
                 modifier = Modifier.padding(all = 16.dp),

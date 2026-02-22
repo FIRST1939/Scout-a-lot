@@ -281,6 +281,50 @@ object UserInputs {
         Divider(thickness = 1.dp)
     }
 
+    // Buttons are enumerated starting from the right
+    @Composable
+    fun DoubleOutlinedButtonTextBarInput(
+        text: String,
+        iconOne: ImageVector,
+        onButtonOneClick: () -> Unit,
+        buttonOneText: String = "",
+        iconTwo: ImageVector,
+        onButtonTwoClick: () -> Unit,
+        buttonTwoText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = text)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { onButtonTwoClick() },
+                ) {
+                    Text(text = buttonTwoText)
+                    Icon(
+                        imageVector = iconTwo,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonOneClick() },
+                ) {
+                    Text(text = buttonOneText)
+                    Icon(
+                        imageVector = iconOne,
+                        contentDescription = ""
+                    )
+                }
+            }
+        }
+        Divider(thickness = 1.dp)
+    }
+
     @Composable
     fun DropdownTextBarInput(
         options: List<String>,
