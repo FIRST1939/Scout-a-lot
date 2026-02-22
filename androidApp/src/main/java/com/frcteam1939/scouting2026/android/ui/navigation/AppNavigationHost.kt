@@ -16,9 +16,10 @@ import com.frcteam1939.scouting2026.android.getScoutingViewModel
 import com.frcteam1939.scouting2026.android.getSettingsViewModel
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.AssignFormsScreen
-import com.frcteam1939.scouting2026.android.ui.screens.CreateFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.EditMatchFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.EditPitFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
@@ -131,10 +132,16 @@ fun AppNavigationHost(
                     EditFormsScreen(navController, editFormsViewModel = editFormsViewModel)
                 }
             }
-            composable(AppRoutes.EditForms.CREATE_FORM) { backStackEntry ->
+            composable(AppRoutes.EditForms.EDIT_PIT_FORM) { backStackEntry ->
                 val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
                 SubScreenScaffold(navController) {
-                    CreateFormsScreen(navController, editFormsViewModel)
+                    EditPitFormsScreen(navController, editFormsViewModel)
+                }
+            }
+            composable(AppRoutes.EditForms.EDIT_MATCH_FORM) { backStackEntry ->
+                val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                SubScreenScaffold(navController) {
+                    EditMatchFormsScreen(navController, editFormsViewModel)
                 }
             }
             composable(AppRoutes.EditForms.ASSIGN_FORMS) { backStackEntry ->

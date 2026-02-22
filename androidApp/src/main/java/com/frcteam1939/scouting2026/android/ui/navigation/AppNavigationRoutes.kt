@@ -23,6 +23,9 @@ object AppRoutes {
         TEAM_STATS to "Team Stats",
         SYNC to "Sync",
         EditForms.EDIT_FORMS to "Edit Forms",
+        EditForms.EDIT_PIT_FORM to "Edit Pit Form",
+        EditForms.EDIT_MATCH_FORM to "Edit Match Form",
+        EditForms.ASSIGN_FORMS to "Assign Forms to Events",
         Settings.SELECT to "Select",
         Settings.SAVED to "Saved",
         Settings.SETTINGS to "Settings",
@@ -50,9 +53,10 @@ object AppRoutes {
 
     object EditForms {
         const val GRAPH = "edit_forms_graph"
-        const val EDIT_FORMS = "edit forms"
-        const val CREATE_FORM = "create form"
-        const val ASSIGN_FORMS = "assign forms"
+        const val EDIT_FORMS = "edit_forms"
+        const val EDIT_PIT_FORM = "create_pit_form"
+        const val EDIT_MATCH_FORM = "create_match_form"
+        const val ASSIGN_FORMS = "assign_forms"
     }
 
     object Settings {

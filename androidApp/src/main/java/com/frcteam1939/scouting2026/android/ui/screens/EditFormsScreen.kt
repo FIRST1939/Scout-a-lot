@@ -1,5 +1,7 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
+import android.widget.Toast
+import android.widget.Toast.makeText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -60,7 +63,7 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                 text = "Create Pit Form",
                 icon = Icons.Default.Add,
                 onClick = {
-                    navController.navigate(AppRoutes.EditForms.CREATE_FORM)
+                    navController.navigate(AppRoutes.EditForms.EDIT_PIT_FORM)
                 }
             )
             editFormsViewModel.getPitFormNames().collectAsState(initial = emptyList()).value.forEach { formName ->
@@ -93,7 +96,7 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                 text = "Create Match Form",
                 icon = Icons.Default.Add,
                 onClick = {
-                    navController.navigate(AppRoutes.EditForms.CREATE_FORM)
+                    navController.navigate(AppRoutes.EditForms.EDIT_MATCH_FORM)
                 }
             )
             editFormsViewModel.getMatchFormNames().collectAsState(initial = emptyList()).value.forEach { formName ->
@@ -120,9 +123,9 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
 }
 
 @Composable
-fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    val formType = "pit" // Placeholder until match forms are implemented... TODO: implement match forms
+    val context = LocalContext.current
 
     var nameFormPopup by remember { mutableStateOf(false) }
     var formName by remember { mutableStateOf("") }
@@ -164,10 +167,12 @@ fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditForm
                             onClick = {
                                 if (formName.isNotBlank()) {
                                     coroutineScope.launch {
-                                        editFormsViewModel.saveForm(formName, formType)
+                                        editFormsViewModel.saveForm(formName, formType = "pit")
                                     }
                                     nameFormPopup = false
                                     navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+                                } else {
+                                    makeText(context, "Please name this form!", Toast.LENGTH_SHORT).show()
                                 }
                             },
                             text = "Save",
@@ -195,11 +200,10 @@ fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditForm
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            UserInputs.TextButtonInput(
-                onClick = {
-                    navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
-                },
-                text = "Back",
+            Text(
+                text = formName.ifBlank { "Unnamed Pit Form" },
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(all = 16.dp)
             )
             UserInputs.TextButtonInput(
@@ -217,6 +221,12 @@ fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditForm
             buttonText = "Add data field"
         )
     }
+}
+
+@Composable
+fun EditMatchFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+    // TODO: implement match forms
+    Text("Edit Match Forms Screen coming soon... not done yet!! bark bark bint bint 67")
 }
 
 @Composable
