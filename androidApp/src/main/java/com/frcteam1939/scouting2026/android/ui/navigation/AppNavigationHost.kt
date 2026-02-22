@@ -42,7 +42,7 @@ import kotlinx.coroutines.CoroutineScope
 fun AppNavigationHost(
     navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope
 ) {
-    NavHost(navController = navController, startDestination = AppRoutes.MatchScouting.GRAPH) {
+    NavHost(navController, startDestination = AppRoutes.MatchScouting.GRAPH) {
         navigation(
             startDestination = AppRoutes.MatchScouting.SCOUT_MATCHES,
             route = AppRoutes.MatchScouting.GRAPH
@@ -51,11 +51,9 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MainScreenScaffold(navController, drawerState, scope) { padding ->
-                    ScoutingScaffold(navController = navController, modifier = Modifier.padding(padding)) {
-                        ScoutMatchesScreen(
-                            navController = navController, scoutingViewModel = scoutingViewModel
-                        )
+                MainScreenScaffold(navController, drawerState, scope) {
+                    ScoutingScaffold(navController) {
+                        ScoutMatchesScreen(navController, scoutingViewModel)
                     }
                 }
             }
@@ -63,16 +61,14 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                TeamConfirmationScreen(
-                    navController = navController, scoutingViewModel = scoutingViewModel
-                )
+                TeamConfirmationScreen(navController, scoutingViewModel)
             }
             composable(AppRoutes.MatchScouting.SCOUT_AUTO) { backStackEntry ->
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
                 MatchScoutingScaffold(navController) { _ ->
-                    ScoutAutoScreen(scoutingViewModel = scoutingViewModel)
+                    ScoutAutoScreen(scoutingViewModel)
                 }
             }
             composable(AppRoutes.MatchScouting.SCOUT_TELEOP) { backStackEntry ->
@@ -80,7 +76,7 @@ fun AppNavigationHost(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
                 MatchScoutingScaffold(navController) { _ ->
-                    ScoutTeleopScreen(scoutingViewModel = scoutingViewModel)
+                    ScoutTeleopScreen(scoutingViewModel)
                 }
             }
             composable(AppRoutes.MatchScouting.SCOUT_ENDGAME) { backStackEntry ->
@@ -88,9 +84,7 @@ fun AppNavigationHost(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
                 MatchScoutingScaffold(navController) { _ ->
-                    ScoutEndgameScreen(
-                        navController = navController, scoutingViewModel = scoutingViewModel
-                    )
+                    ScoutEndgameScreen(navController, scoutingViewModel)
                 }
             }
         }
@@ -101,9 +95,9 @@ fun AppNavigationHost(
             composable(AppRoutes.PitScouting.SCOUT_PITS) { backStackEntry ->
                 val scoutingViewModel =
                     getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
-                MainScreenScaffold(navController, drawerState, scope) { padding ->
-                    ScoutingScaffold(navController = navController, modifier = Modifier.padding(padding)) {
-                        ScoutPitScreen(scoutingViewModel = scoutingViewModel)
+                MainScreenScaffold(navController, drawerState, scope) {
+                    ScoutingScaffold(navController) {
+                        ScoutPitScreen(scoutingViewModel)
                     }
                 }
             }
@@ -111,7 +105,7 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.PitScouting.GRAPH
                 )
-                ScoutPitForm(scoutingViewModel = scoutingViewModel)
+                ScoutPitForm(scoutingViewModel)
             }
         }
         composable(AppRoutes.MATCH_REPORTS) {
@@ -127,26 +121,26 @@ fun AppNavigationHost(
         composable(AppRoutes.SYNC) {
             // TODO: device & data synchronization
             MainScreenScaffold(navController, drawerState, scope) {
-                SyncScreen(navController = navController)
+                SyncScreen(navController)
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
             composable(AppRoutes.EditForms.EDIT_FORMS) { backStackEntry ->
                 val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
-                MainScreenScaffold(navController, drawerState, scope) { padding ->
-                    EditFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                MainScreenScaffold(navController, drawerState, scope) {
+                    EditFormsScreen(navController, editFormsViewModel = editFormsViewModel)
                 }
             }
             composable(AppRoutes.EditForms.CREATE_FORM) { backStackEntry ->
                 val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
-                SubScreenScaffold(navController = navController) {
-                    CreateFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                SubScreenScaffold(navController) {
+                    CreateFormsScreen(navController, editFormsViewModel)
                 }
             }
             composable(AppRoutes.EditForms.ASSIGN_FORMS) { backStackEntry ->
                 val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
-                SubScreenScaffold(navController = navController) {
-                    AssignFormsScreen(navController = navController, editFormsViewModel = editFormsViewModel)
+                SubScreenScaffold(navController) {
+                    AssignFormsScreen(navController, editFormsViewModel)
                 }
             }
         }
@@ -155,45 +149,40 @@ fun AppNavigationHost(
         ) {
             composable(AppRoutes.Settings.SETTINGS) { backStackEntry ->
                 val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
-                MainScreenScaffold(navController, drawerState, scope) { padding ->
-                    ScoutingScaffold(navController = navController, modifier = Modifier.padding(padding)) {
+                MainScreenScaffold(navController, drawerState, scope) {
+                    ScoutingScaffold(navController) {
                         SettingsScreen(navController, settingsViewModel)
                     }
                 }
             }
             composable(AppRoutes.Settings.EDIT_EVENTS) { backStackEntry ->
                 val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
-                SubScreenScaffold(navController = navController) {
-                    EditEventsScreen(
-                        navController = navController, settingsViewModel = settingsViewModel
-                    )
+                SubScreenScaffold(navController) {
+                    EditEventsScreen(navController, settingsViewModel)
                 }
 
             }
             composable(AppRoutes.Settings.ADD_EVENT) { backStackEntry ->
                 val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
-                SubScreenScaffold(navController = navController) {
-                    AddEventScreen(
-                        navController = navController, settingsViewModel = settingsViewModel
-                    )
+                SubScreenScaffold(navController) {
+                    AddEventScreen(navController, settingsViewModel)
                 }
             }
             composable(AppRoutes.Settings.OPERATOR) {
-                SubScreenScaffold(navController = navController) {
-                    OperatorScreen(navController = navController)
+                SubScreenScaffold(navController) {
+                    OperatorScreen(navController)
                 }
             }
             composable(AppRoutes.Settings.SELECT) {
-                SubScreenScaffold(navController = navController) {
-                    SelectScreen(navController = navController)
+                SubScreenScaffold(navController) {
+                    SelectScreen(navController)
                 }
             }
             composable(AppRoutes.Settings.SAVED) {
-                SubScreenScaffold(navController = navController) {
-                    SavedScreen(navController = navController)
+                SubScreenScaffold(navController) {
+                    SavedScreen(navController)
                 }
             }
         }
-
     }
 }

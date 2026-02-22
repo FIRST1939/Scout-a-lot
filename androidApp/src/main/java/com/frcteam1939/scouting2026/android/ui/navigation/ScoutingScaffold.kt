@@ -19,13 +19,11 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 @OptIn(ExperimentalMaterial3Api::class)
 fun ScoutingScaffold(
     navController: NavController,
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     val currentRoute = navController.currentBackStackEntry?.destination?.route
 
     Scaffold(
-        modifier = modifier,
         bottomBar = {
             NavigationBar(windowInsets = WindowInsets(0, 0, 0, 0)) {
                 val items = listOf(

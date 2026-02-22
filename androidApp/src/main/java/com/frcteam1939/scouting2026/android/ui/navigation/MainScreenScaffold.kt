@@ -16,6 +16,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,7 +34,7 @@ fun MainScreenScaffold(
     navController: NavController,
     drawerState: DrawerState,
     scope: CoroutineScope,
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable () -> Unit,
 ) {
     // List of items to show in the Navigation Drawer
     val items = listOf(
@@ -103,7 +104,7 @@ fun MainScreenScaffold(
                 )
             }
             ) { innerPadding ->
-            content(innerPadding)
+            Surface(Modifier.padding(innerPadding)) { content() }
         }
     }
 }
