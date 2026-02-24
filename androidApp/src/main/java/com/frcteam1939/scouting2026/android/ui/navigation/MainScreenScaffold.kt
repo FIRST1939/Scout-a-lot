@@ -1,6 +1,5 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,9 +12,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
@@ -41,7 +37,7 @@ fun MainScreenScaffold(
 ) {
     // List of items to show in the Navigation Drawer
     val items = listOf(
-        Screen.Scouting,
+        Screen.ScoutMatches,
         Screen.MatchReports,
         Screen.TeamStats,
         Screen.Sync,
@@ -66,7 +62,13 @@ fun MainScreenScaffold(
                             )
                         },
                         label = { Text(screen.label) },
-                        selected = index == selectedItem,
+                        selected = run {
+                            if (screen == Screen.ScoutMatches) {
+                                PackedScreen.ScoutAndSettings.screens.any { it.route == currentRoute }
+                            } else {
+                                index == selectedItem
+                            }
+                        },
                         onClick = {
                             if (screen.route != currentRoute) {
                                 scope.launch { drawerState.close() }

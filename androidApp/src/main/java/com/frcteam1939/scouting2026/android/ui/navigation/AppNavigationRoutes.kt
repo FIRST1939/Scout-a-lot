@@ -85,7 +85,6 @@ object AppRoutes {
 
 // Properties specific to the Navigation Rail
 sealed class Screen(val route: String, val label: String, val icon: ImageVector) {
-    object Scouting : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scouting", Icons.Default.Build)
     object ScoutMatches : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scout Matches", Icons.Default.Build)
     object ScoutPits : Screen(AppRoutes.PitScouting.SCOUT_PITS, "Scout Pits", Icons.Default.Person)
     object MatchReports : Screen(AppRoutes.MatchReports.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
@@ -93,4 +92,8 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
     object EditForms : Screen(AppRoutes.EditForms.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.Settings.SETTINGS, "Settings", Icons.Default.Settings)
+}
+
+sealed class PackedScreen(val screens: List<Screen>) {
+    object ScoutAndSettings : PackedScreen(listOf(Screen.ScoutMatches,Screen.ScoutPits,Screen.Settings))
 }
