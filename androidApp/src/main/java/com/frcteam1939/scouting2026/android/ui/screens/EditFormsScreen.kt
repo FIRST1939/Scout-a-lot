@@ -2,7 +2,6 @@ package com.frcteam1939.scouting2026.android.ui.screens
 
 import android.widget.Toast
 import android.widget.Toast.makeText
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +37,7 @@ import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
 
 @Composable
@@ -67,6 +67,8 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                 icon = Icons.Default.Add,
                 onClick = {
                     editFormsViewModel.changeEditingFormName("")
+                    editFormsViewModel.changeCurrentPage(1)
+                    editFormsViewModel.resetFormContent()
                     navController.navigate(AppRoutes.EditForms.EDIT_PIT_FORM)
                 }
             )
@@ -82,6 +84,8 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                     iconTwo = Icons.Default.Edit,
                     onButtonTwoClick = {
                         editFormsViewModel.changeEditingFormName(formName)
+                        editFormsViewModel.changeCurrentPage(1)
+                        editFormsViewModel.resetFormContent()
                         navController.navigate(AppRoutes.EditForms.EDIT_PIT_FORM)
                     }
                 )
@@ -139,6 +143,7 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
     var nameFormPopup by remember { mutableStateOf(false) }
     val editingFormName = editFormsViewModel.editingFormName.collectAsState().value
     var newFormName by remember { mutableStateOf(editingFormName) }
+    val pitFormContent by editFormsViewModel.formContentPage1.collectAsState()
 
     if(nameFormPopup) {
         AlertDialog(
@@ -233,6 +238,9 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                 containerColor = MaterialTheme.colorScheme.primary,
             )
         }
+        pitFormContent.forEach { field ->
+            Text("Yayyyy this is a field of type: ${field.type}")
+        }
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         Row(
             modifier = Modifier.fillMaxWidth().padding(all = 16.dp),
@@ -249,14 +257,14 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                 horizontalArrangement = Arrangement.End
             ) {
                 UserInputs.DropdownInput(
-                    options = listOf("None Selected"),
-                    selectedOption = "None Selected",
+                    options = editFormsViewModel.getFieldTypes(),
+                    selectedOption = "Textbox",
                     onOptionSelected = {
-
+                        editFormsViewModel.changeSelectedFieldTypeToAdd(it)
                     }
                 )
                 UserInputs.OutlinedButtonInput(
-                    onClick = { /* TODO: add data field creation */ },
+                    onClick = { editFormsViewModel.addField() },
                     icon = Icons.Default.Add,
                     modifier = Modifier.padding(horizontal = 8.dp),
                     containerColor = MaterialTheme.colorScheme.primary,
