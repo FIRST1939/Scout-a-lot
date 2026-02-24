@@ -13,10 +13,10 @@ sealed class FormField {
 }
 
 @Serializable
-@SerialName("textbox")
+@SerialName("Textbox")
 data class Textbox(
     override val id: Int,
-    override val type: String = "textbox",
+    override val type: String = "Textbox",
     override val label: String,
     override val required: Boolean = false,
     override val leadsTo: List<String> = emptyList(),

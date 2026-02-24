@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
+import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldCTemplate
+import com.frcteam1939.scouting2026.data.structuring.FormFieldManager
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
@@ -239,7 +241,10 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
             )
         }
         pitFormContent.forEach { field ->
-            Text("Yayyyy this is a field of type: ${field.type}")
+            Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+            when (field.type) {
+                FormFieldManager.FieldTypes.TEXTBOX -> TextboxFieldCTemplate(editFormsViewModel)
+            }
         }
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         Row(

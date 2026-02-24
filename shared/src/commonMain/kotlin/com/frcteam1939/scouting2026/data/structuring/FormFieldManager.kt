@@ -8,7 +8,7 @@ object FormFieldManager {
         val FIELD_LIST: List<String> = listOf(
             this.TEXTBOX
         )
-        const val TEXTBOX = "Textbox"
+        const val TEXTBOX: String = "Textbox"
     }
 
     fun getTextBoxJson(id: Int, label: String, required: Boolean = false, leadsTo: List<String> = emptyList(), singleLine: Boolean = false, forceNumberInput: Boolean = false, characterLimit: Int = 2500): Textbox {

@@ -332,6 +332,61 @@ object UserInputs {
     }
 
     @Composable
+    fun TripleOutlinedButtonTextBarInput(
+        text: String,
+        iconOne: ImageVector,
+        onButtonOneClick: () -> Unit,
+        buttonOneText: String = "",
+        iconTwo: ImageVector,
+        onButtonTwoClick: () -> Unit,
+        buttonTwoText: String = "",
+        iconThree: ImageVector,
+        onButtonThreeClick: () -> Unit,
+        buttonThreeText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = text)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { onButtonThreeClick() },
+                ) {
+                    Text(text = buttonThreeText)
+                    Icon(
+                        imageVector = iconThree,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonTwoClick() },
+                ) {
+                    Text(text = buttonTwoText)
+                    Icon(
+                        imageVector = iconTwo,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonOneClick() },
+                ) {
+                    Text(text = buttonOneText)
+                    Icon(
+                        imageVector = iconOne,
+                        contentDescription = ""
+                    )
+                }
+            }
+        }
+        Divider(thickness = 1.dp)
+    }
+
+    @Composable
     fun DropdownInput(
         options: List<String>,
         selectedOption: String,
