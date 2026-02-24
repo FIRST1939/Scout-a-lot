@@ -54,8 +54,8 @@ data class Checkbox(
     override val label: String,
     override val required: Boolean = false,
     override val leadsTo: List<String> = emptyList(),
-    val options: List<String>,
-    val maxSelected: Int,
+    val options: List<String> = emptyList(),
+    val maxSelected: Int = 10000,
     val minSelected: Int = 0
 ) : FormField()
 
@@ -67,8 +67,8 @@ data class Counter(
     override val label: String,
     override val required: Boolean = false,
     override val leadsTo: List<String> = emptyList(),
-    val minVal: Int,
-    val maxVal: Int,
+    val minVal: Int = 0,
+    val maxVal: Int = 10000,
     val step: Int = 1
 ) : FormField()
 
@@ -80,7 +80,7 @@ data class Dropdown(
     override val label: String,
     override val required: Boolean = false,
     override val leadsTo: List<String> = emptyList(),
-    val options: List<String>
+    val options: List<String> = emptyList()
 ) : FormField()
 
 @Serializable
@@ -88,7 +88,7 @@ data class Dropdown(
 data class RebuiltHubScoring(
     override val id: Int,
     override val type: String = "RebuiltHubScoring",
-    override val label: String,
+    override val label: String = "Cycle Result",
     override val required: Boolean = false,
     override val leadsTo: List<String> = emptyList(),
 ) : FormField()

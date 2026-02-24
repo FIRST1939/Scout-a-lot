@@ -81,6 +81,32 @@ class EditFormsViewModel(
                 id = newID,
                 label = "Unnamed Textbox"
             )
+            FormFieldManager.FieldTypes.RADIOBUTTON -> FormFieldManager.getRadioButtonJson(
+                id = newID,
+                label = "Unnamed Radiobutton",
+                options = emptyList()
+            )
+            FormFieldManager.FieldTypes.SWITCH -> FormFieldManager.getSwitchJson(
+                id = newID,
+                label = "Unnamed Switch"
+            )
+            FormFieldManager.FieldTypes.CHECKBOX -> FormFieldManager.getCheckboxJson(
+                id = newID,
+                label = "Unnamed Checkbox",
+            )
+            FormFieldManager.FieldTypes.COUNTER -> FormFieldManager.getCounterJson(
+                id = newID,
+                label = "Unnamed Counter",
+            )
+            FormFieldManager.FieldTypes.DROPDOWN -> FormFieldManager.getDropdownJson(
+                id = newID,
+                label = "Unnamed Dropdown",
+            )
+            FormFieldManager.FieldTypes.REBUILT_HUB_SCORING -> FormFieldManager.getRebuiltHubScoringJson(
+                id = newID,
+                label = "Cycle Result",
+            )
+
             else -> throw IllegalArgumentException("Invalid field type: ${selectedFieldTypeToAdd.value}")
         }
 

@@ -244,6 +244,12 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
             Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
             when (field.type) {
                 FormFieldManager.FieldTypes.TEXTBOX -> TextboxFieldCTemplate(editFormsViewModel)
+                FormFieldManager.FieldTypes.RADIOBUTTON -> Text("This is a radio button at one pint 😀")
+                FormFieldManager.FieldTypes.SWITCH -> Text("This is a switch at one pint 🙄")
+                FormFieldManager.FieldTypes.CHECKBOX -> Text("This is a checkbox at one pint 😋")
+                FormFieldManager.FieldTypes.COUNTER -> Text("This is a counter at one pint 😨")
+                FormFieldManager.FieldTypes.DROPDOWN -> Text("This is a dropdown at one pint 😎")
+                FormFieldManager.FieldTypes.REBUILT_HUB_SCORING -> Text("This is a rebuilt hub scoring at one bint 😮🎉🎉🎉")
             }
         }
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
