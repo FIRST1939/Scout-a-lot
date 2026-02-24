@@ -38,7 +38,7 @@ fun FieldTopbar(
 }
 
 @Composable
-fun TextboxFieldCTemplate(editFormsViewModel: EditFormsViewModel) {
+fun TextboxFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Top

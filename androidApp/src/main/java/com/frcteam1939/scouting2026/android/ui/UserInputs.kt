@@ -143,11 +143,11 @@ object UserInputs {
     @Composable
     fun CounterInput(
         value: Int,
+        modifier: Modifier = Modifier,
         minVal: Int = 0,
         maxVal: Int = Int.MAX_VALUE,
         step: Int = 1,
-        onValueChange: (Int) -> Unit,
-        modifier: Modifier = Modifier
+        onValueChange: (Int) -> Unit
     ) {
         require(minVal <= maxVal) { "minVal must be <= maxVal" }
         require(step > 0) { "step must be > 0" }

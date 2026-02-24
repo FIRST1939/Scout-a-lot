@@ -243,7 +243,7 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
         pitFormContent.forEach { field ->
             Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
             when (field.type) {
-                FormFieldManager.FieldTypes.TEXTBOX -> TextboxFieldCTemplate(editFormsViewModel)
+                FormFieldManager.FieldTypes.TEXTBOX -> TextboxFieldCTemplate(editFormsViewModel, field.id)
             }
         }
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
