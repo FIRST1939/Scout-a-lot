@@ -25,3 +25,70 @@ data class Textbox(
     val characterLimit: Int = 2500
 ) : FormField()
 
+@Serializable
+@SerialName("RadioButton")
+data class RadioButton(
+    override val id: Int,
+    override val type: String = "RadioButton",
+    override val label: String,
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+    val options: List<String>
+) : FormField()
+
+@Serializable
+@SerialName("Switch")
+data class Switch(
+    override val id: Int,
+    override val type: String = "Switch",
+    override val label: String,
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+) : FormField()
+
+@Serializable
+@SerialName("Checkbox")
+data class Checkbox(
+    override val id: Int,
+    override val type: String = "Checkbox",
+    override val label: String,
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+    val options: List<String>,
+    val maxSelected: Int,
+    val minSelected: Int = 0
+) : FormField()
+
+@Serializable
+@SerialName("Counter")
+data class Counter(
+    override val id: Int,
+    override val type: String = "Counter",
+    override val label: String,
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+    val minVal: Int,
+    val maxVal: Int,
+    val step: Int = 1
+) : FormField()
+
+@Serializable
+@SerialName("Dropdown")
+data class Dropdown(
+    override val id: Int,
+    override val type: String = "Dropdown",
+    override val label: String,
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+    val options: List<String>
+) : FormField()
+
+@Serializable
+@SerialName("RebuiltHubScoring")
+data class RebuiltHubScoring(
+    override val id: Int,
+    override val type: String = "RebuiltHubScoring",
+    override val label: String,
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+) : FormField()
