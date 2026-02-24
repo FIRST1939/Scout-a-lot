@@ -113,6 +113,10 @@ class EditFormsViewModel(
         changeFormContent(newFormContent = formContentPage1.value.plus(field), page = currentPage.value)
     }
 
+    fun updateFieldParameter(id: Int, parameter: String, value: String) {
+
+    }
+
     fun getEventNames(): Flow<List<String>> {
         return eventsRepository.getEventNames()
     }
