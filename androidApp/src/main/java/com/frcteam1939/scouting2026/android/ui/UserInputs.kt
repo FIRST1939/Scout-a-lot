@@ -238,16 +238,22 @@ object UserInputs {
         onClick: () -> Unit,
         icon: ImageVector,
         modifier: Modifier = Modifier,
-        buttonText: String = ""
+        buttonText: String = "",
+        containerColor: Color = MaterialTheme.colorScheme.background,
+        iconColor: Color = MaterialTheme.colorScheme.primary
     ) {
         OutlinedButton(
             onClick = { onClick() },
-            modifier = modifier
+            modifier = modifier,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = containerColor
+            )
         ) {
             Text(text = buttonText)
             Icon(
                 imageVector = icon,
-                contentDescription = ""
+                contentDescription = "",
+                tint = iconColor
             )
         }
     }
@@ -323,6 +329,47 @@ object UserInputs {
             }
         }
         Divider(thickness = 1.dp)
+    }
+
+    @Composable
+    fun DropdownInput(
+        options: List<String>,
+        selectedOption: String,
+        onOptionSelected: (String) -> Unit
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        var selectedOption by remember { mutableStateOf(selectedOption) }
+
+        Box {
+            OutlinedButton(
+                onClick = { expanded = true },
+            ) {
+                Text(
+                    text = selectedOption,
+                    maxLines = 1
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown arrow"
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                content = {
+                    options.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                onOptionSelected(option)
+                                selectedOption = option
+                                expanded = false // Close the menu
+                            },
+                        )
+                    }
+                }
+            )
+        }
     }
 
     @Composable

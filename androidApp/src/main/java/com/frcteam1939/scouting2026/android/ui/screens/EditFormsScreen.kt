@@ -2,6 +2,7 @@ package com.frcteam1939.scouting2026.android.ui.screens
 
 import android.widget.Toast
 import android.widget.Toast.makeText
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -231,11 +233,38 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                 containerColor = MaterialTheme.colorScheme.primary,
             )
         }
-        UserInputs.OutlinedButtonInput(
-            onClick = { /* TODO: add data field creation */ },
-            icon = Icons.Default.Add,
-            buttonText = "Add data field"
-        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(all = 16.dp),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Add Data Field:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+            )
+            Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.End
+            ) {
+                UserInputs.DropdownInput(
+                    options = listOf("None Selected"),
+                    selectedOption = "None Selected",
+                    onOptionSelected = {
+
+                    }
+                )
+                UserInputs.OutlinedButtonInput(
+                    onClick = { /* TODO: add data field creation */ },
+                    icon = Icons.Default.Add,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    iconColor = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
     }
 }
 
