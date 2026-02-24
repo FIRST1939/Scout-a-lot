@@ -22,9 +22,9 @@ data class TBAMatch(
     @SerialName("time")
     val time: Int,
     @SerialName("predicted_time")
-    val predictedTime: Int,
+    val predictedTime: Int?,
     @SerialName("actual_time")
-    val actualTime: Int
+    val actualTime: Int?
 )
 
 @Serializable
