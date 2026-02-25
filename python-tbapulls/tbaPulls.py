@@ -209,6 +209,13 @@ def getautonFuelOPR(event, year=THISYEAR):
     #TODO Need to make a matrix of alliance-teams (2* matchcount rows)
     
     #TODO need to make a result matrix
+    allianceResult = []
+    for match in autonresults:
+        print(match[0])
+        allianceResult.append(match[-2]) #blue
+        allianceResult.append(match[-1]) #red
+    
+    print(allianceResult)
     
     #TODO Then the linear algebra happens
     
