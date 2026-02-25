@@ -171,13 +171,18 @@ def getautonbyteam(event, year=THISYEAR):
     
     for match in autonresults:
         for team in match[1]:
-            
             if team not in teamdict:
                 teamdict[team] = []
             
             teamdict[team].append(match[3])
-    
-    print(teamdict)
+            
+        for team in match[2]:
+            if team not in teamdict:
+                teamdict[team] = []
+            
+            teamdict[team].append(match[4])
+
+    return teamdict
     
         
 #TODO Analyze Auton Data
