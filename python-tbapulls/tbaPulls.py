@@ -11,6 +11,7 @@ import json
 from time import sleep
 from datetime import date
 from pprint import pprint
+import numpy as np
 
 URL = 'http://www.thebluealliance.com/api/v3/'
 
@@ -144,6 +145,10 @@ def get_event_matches(event, year=THISYEAR):
     return result
 
 def getautons(event, year=THISYEAR):
+    '''
+    results are formatted as a list of 
+    [key, [b1, b2, b3], [r1, r2, r3], bautonhub, rautonhub]
+    '''
     matchlist = get_event_matches(event, year)
     if matchlist == []:
         return #Event hasn't sent any data yet
@@ -161,10 +166,7 @@ def getautons(event, year=THISYEAR):
     return result
 
 def getautonbyteam(event, year=THISYEAR):
-    '''
-    autonresults are formatted as a list of 
-    [key, [b1, b2, b3], [r1, r2, r3], bautonhub, rautonhub]
-    '''
+
     autonresults = getautons(event, year)
     
     teamdict = {}
@@ -183,8 +185,33 @@ def getautonbyteam(event, year=THISYEAR):
             teamdict[team].append(match[4])
 
     return teamdict
+
+def getautonFuelOPR(event, year=THISYEAR):
+    '''
+    
+    Parameters
+    ----------
+    event : TYPE
+        DESCRIPTION.
+    year : TYPE, optional
+        DESCRIPTION. The default is THISYEAR.
+
+    Returns
+    -------
+    component OPRs?
+
+    '''
+    autonresults = getautons(event, year)
+    
+    matchcount = len(autonresults)
+    print(matchcount)
+    
+    #TODO Need to make a matrix of alliance-teams (2* matchcount rows)
+    
+    #TODO need to make a result matrix
+    
+    #TODO Then the linear algebra happens
     
         
-#TODO Analyze Auton Data
-#TODO Auto OPRs?
+
 
