@@ -158,8 +158,26 @@ def getautons(event, year=THISYEAR):
                            match['score_breakdown']['red']['hubScore']['autoPoints']]
             
             result.append(interesting)
-    pprint(result)            
-    #return result
+    return result
+
+def getautonbyteam(event, year=THISYEAR):
+    '''
+    autonresults are formatted as a list of 
+    [key, [b1, b2, b3], [r1, r2, r3], bautonhub, rautonhub]
+    '''
+    autonresults = getautons(event, year)
+    
+    teamdict = {}
+    
+    for match in autonresults:
+        for team in match[1]:
+            
+            if team not in teamdict:
+                teamdict[team] = []
+            
+            teamdict[team].append(match[3])
+    
+    print(teamdict)
     
         
 #TODO Analyze Auton Data
