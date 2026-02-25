@@ -145,7 +145,23 @@ def get_event_matches(event, year=THISYEAR):
 
 def getautons(event, year=THISYEAR):
     matchlist = get_event_matches(event, year)
-    pprint(matchlist[7])
+    if matchlist == []:
+        return #Event hasn't sent any data yet
+    
+    result = []
+    for match in matchlist:
+        #quals match that has played
+        if match['comp_level'] == 'qm' and match['actual_time'] > 0: 
+            interesting = [match['key'], match['alliances']['blue']['team_keys'], 
+                           match['alliances']['red']['team_keys'],
+                           match['score_breakdown']['blue']['hubScore']['autoPoints'], 
+                           match['score_breakdown']['red']['hubScore']['autoPoints']]
+            
+            result.append(interesting)
+    pprint(result)            
+    #return result
+    
+        
 #TODO Analyze Auton Data
 #TODO Auto OPRs?
 
