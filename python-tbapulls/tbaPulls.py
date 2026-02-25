@@ -144,6 +144,32 @@ def get_event_matches(event, year=THISYEAR):
     result = get_request(fullurl)
     return result
 
+
+def get_event_teams_simple(event, year=THISYEAR):
+    '''
+
+    @param event:
+    @param year:
+    @return: schema
+            [
+              {
+                "key": "string",
+                "team_number": 0,
+                "nickname": "string",
+                "name": "string",
+                "city": "string",
+                "state_prov": "string",
+                "country": "string"
+              }
+            ]
+    '''
+    event_key = str(year) + event
+    fullurl = URL + 'event/' + event_key + '/teams/simple'
+    print(fullurl)
+    result = get_request(fullurl)
+    return result
+
+
 def getautons(event, year=THISYEAR):
     '''
     results are formatted as a list of 
@@ -202,6 +228,15 @@ def getautonFuelOPR(event, year=THISYEAR):
 
     '''
     autonresults = getautons(event, year)
+    messyteamlist = get_event_teams_simple(event, year)
+    
+    teamlist = []
+    for team in messyteamlist:
+        teamlist.append(team['key'])
+        
+    teamlist.sort()
+        
+    print(teamlist)
     
     matchcount = len(autonresults)
     print(matchcount)
@@ -214,6 +249,8 @@ def getautonFuelOPR(event, year=THISYEAR):
         print(match[0])
         allianceResult.append(match[-2]) #blue
         allianceResult.append(match[-1]) #red
+        
+    #This comes out with matches in ASCIIbetical order but it doesn't matter if I'm consistent
     
     print(allianceResult)
     
