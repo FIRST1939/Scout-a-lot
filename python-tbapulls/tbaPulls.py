@@ -235,13 +235,34 @@ def getautonFuelOPR(event, year=THISYEAR):
         teamlist.append(team['key'])
         
     teamlist.sort()
+    teamcount = len(teamlist)
         
     print(teamlist)
     
     matchcount = len(autonresults)
     print(matchcount)
     
+    emptymatch = [0] * teamcount
+    
     #TODO Need to make a matrix of alliance-teams (2* matchcount rows)
+    alliancemtx = []
+    for match in autonresults:
+        blue = emptymatch.copy()
+        for team in match[1]:
+            idx = teamlist.index(team)
+            blue[idx] = 1
+        alliancemtx.append(blue)
+        
+        red = emptymatch.copy()
+        for team in match[1]:
+            idx = teamlist.index(team)
+            red[idx] = 1
+        alliancemtx.append(red)
+        
+    print(len(alliancemtx))
+        
+            
+            
     
     #TODO need to make a result matrix
     allianceResult = []
