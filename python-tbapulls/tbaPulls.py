@@ -161,19 +161,7 @@ def getautons(event, year=THISYEAR):
             result.append(interesting)
     
     return result
-
-def getautonbyteam(event, year=THISYEAR):
-    '''
-    autonresults are formatted as a list of 
-    [key, b1, b2, b3, r1, r2, r3, bautonhub, rautonhub]
-    '''
-    autonresults = getautons(event, year)
     
-    teamdict = {}
-    
-    for match in autonresults:
-        for team in match[1:7]:
-            print(team)
         
 #TODO Analyze Auton Data
 #TODO Auto OPRs?
