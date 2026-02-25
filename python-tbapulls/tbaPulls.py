@@ -152,14 +152,15 @@ def getautons(event, year=THISYEAR):
     for match in matchlist:
         #quals match that has played
         if match['comp_level'] == 'qm' and match['actual_time'] > 0: 
-            interesting = [match['key'], match['alliances']['blue']['team_keys'], 
-                           match['alliances']['red']['team_keys'],
-                           match['score_breakdown']['blue']['hubScore']['autoPoints'], 
-                           match['score_breakdown']['red']['hubScore']['autoPoints']]
+            interesting = [match['key']]
+            interesting.extend(match['alliances']['blue']['team_keys'])
+            interesting.extend(match['alliances']['red']['team_keys'])
+            interesting.append(match['score_breakdown']['blue']['hubScore']['autoPoints'])
+            interesting.append(match['score_breakdown']['red']['hubScore']['autoPoints'])
             
             result.append(interesting)
-    pprint(result)            
-    #return result
+    
+    return result
     
         
 #TODO Analyze Auton Data
