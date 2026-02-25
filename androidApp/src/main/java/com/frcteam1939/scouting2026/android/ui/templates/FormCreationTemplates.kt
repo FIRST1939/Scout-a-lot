@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -93,3 +94,67 @@ fun TextboxFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {
         )
     }
 }
+
+@Composable
+fun RadiobuttonFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Top
+    ) {
+        FieldTopbar(text = "Radio Button")
+        Divider()
+        UserInputs.TextboxInput(
+            value = "Unnamed Radio Button",
+            onValueChange = {},
+            label = "Label:",
+            singleLine = true,
+            characterLimit = 30
+        )
+        Divider()
+        UserInputs.OutlinedButtonTextBarInput(
+            onClick = {},
+            icon = Icons.Default.Add,
+            text = "Add Option:"
+        )
+        Divider()
+        UserInputs.SwitchTextBarInput(
+            checked = false,
+            onCheckedChange = {},
+            text = "Required:"
+        )
+        Divider()
+        UserInputs.DropdownTextBarInput(
+            options = emptyList(),
+            selectedOption = "None Selected",
+            onOptionSelected = {},
+            text = "Leads to:"
+        )
+        }
+    }
+
+@Composable
+fun SwitchFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Top
+    ) {
+        FieldTopbar(text = "Switch")
+        Divider()
+        UserInputs.TextboxInput(
+            value = "Unnamed Switch",
+            onValueChange = {},
+            label = "Label:",
+            singleLine = true,
+            characterLimit = 30
+        )
+        Divider()
+        UserInputs.DropdownTextBarInput(
+            options = emptyList(),
+            selectedOption = "None Selected",
+            onOptionSelected = {},
+            text = "Leads to:"
+        )
+    }
+}
+@Composable
+fun CheckboxFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {}

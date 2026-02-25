@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
+import com.frcteam1939.scouting2026.android.ui.templates.RadiobuttonFieldCTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldCTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldCTemplate
 import com.frcteam1939.scouting2026.data.structuring.FormFieldManager
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
@@ -244,8 +246,8 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
             Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
             when (field.type) {
                 FormFieldManager.FieldTypes.TEXTBOX -> TextboxFieldCTemplate(editFormsViewModel, field.id)
-                FormFieldManager.FieldTypes.RADIOBUTTON -> Text("This is a radio button at one pint 😀")
-                FormFieldManager.FieldTypes.SWITCH -> Text("This is a switch at one pint 🙄")
+                FormFieldManager.FieldTypes.RADIOBUTTON -> RadiobuttonFieldCTemplate(editFormsViewModel, field.id)
+                FormFieldManager.FieldTypes.SWITCH -> SwitchFieldCTemplate(editFormsViewModel, field.id)
                 FormFieldManager.FieldTypes.CHECKBOX -> Text("This is a checkbox at one pint 😋")
                 FormFieldManager.FieldTypes.COUNTER -> Text("This is a counter at one pint 😨")
                 FormFieldManager.FieldTypes.DROPDOWN -> Text("This is a dropdown at one pint 😎")
