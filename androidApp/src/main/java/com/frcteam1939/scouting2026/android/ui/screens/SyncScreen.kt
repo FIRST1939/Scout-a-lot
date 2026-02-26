@@ -1,6 +1,8 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
 import android.content.Intent
+import android.net.Uri
+import android.provider.DocumentsContract
 import android.provider.Settings
 import android.widget.Toast
 import android.widget.Toast.makeText
@@ -22,10 +24,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
 import com.frcteam1939.scouting2026.storage.readTextFile
+
+const val PICK_PDF_FILE = 2
+
+fun openFile(pickerInitialUri: Uri) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = "application/pdf"
+
+        // Optionally, specify a URI for the file that should appear in the
+        // system file picker when it loads.
+        putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+    }
+
+    startActivityForResult(intent, PICK_PDF_FILE)
+}
+
 
 @Composable
 fun SyncScreen(navController: NavController) {
@@ -56,6 +75,12 @@ fun SyncScreen(navController: NavController) {
         ) {
             Text(text = "Recieve")
         }
+        TextButton(
+            onClick = {}
+        ) {
+            Text(text = "Import")
+        }
+    }
         val context = LocalContext.current
         TextButton(
             onClick = {
@@ -90,4 +115,3 @@ fun SyncScreen(navController: NavController) {
             }
         }
     }
-}
