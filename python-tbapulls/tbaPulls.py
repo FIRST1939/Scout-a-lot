@@ -277,6 +277,17 @@ def getautonFuelOPR(event, year=THISYEAR):
     pseudoA = np.linalg.pinv(mtxAlliances)
     
     opr = np.matmul(pseudoA, mtxScores)
+    print()
+    
+    #TODO Make this print in a way that isn't hideous
+    oprlist = np.matrix.tolist(opr)
+    
+    oprdict = {}
+    
+    for i in range(len(oprlist)):
+        oprdict[int(teamlist[i][3:])] = oprlist[i]
+        
+    return oprdict
     
         
 
