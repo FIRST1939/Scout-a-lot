@@ -8,7 +8,6 @@ Intent is to pull TBA match data and use it to generate useful data.
 """
 import urllib.request
 import json
-from time import sleep
 from datetime import date
 from pprint import pprint
 import numpy as np
@@ -236,11 +235,8 @@ def getautonFuelOPR(event, year=THISYEAR):
         
     teamlist.sort()
     teamcount = len(teamlist)
-        
-    print(teamlist)
-    
+           
     matchcount = len(autonresults)
-    print(matchcount)
     
     emptymatch = [0] * teamcount
     
@@ -261,25 +257,21 @@ def getautonFuelOPR(event, year=THISYEAR):
     
     #Make a result matrix
     allianceResult = []
-    for match in autonresults:
-        print(match[0])
+    for match in autonresults:        
         allianceResult.append([match[-2]]) #blue
         allianceResult.append([match[-1]]) #red
         
     #This comes out with matches in ASCIIbetical order but it doesn't matter if I'm consistent
     
-    print(allianceResult)
-    
-    #TODO Then the linear algebra happens
+    #Then the linear algebra happens
     mtxAlliances = np.matrix(alliancemtx)
     mtxScores = np.matrix(allianceResult)
     
     pseudoA = np.linalg.pinv(mtxAlliances)
     
     opr = np.matmul(pseudoA, mtxScores)
-    print()
     
-    #TODO Make this print in a way that isn't hideous
+    #Clean output
     oprlist = np.matrix.tolist(opr)
     
     oprdict = {}
