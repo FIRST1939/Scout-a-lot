@@ -244,7 +244,7 @@ def getautonFuelOPR(event, year=THISYEAR):
     
     emptymatch = [0] * teamcount
     
-    #TODO Need to make a matrix of alliance-teams (2* matchcount rows)
+    #Make a matrix of alliance-teams (2* matchcount rows)
     alliancemtx = []
     for match in autonresults:
         blue = emptymatch.copy()
@@ -258,24 +258,25 @@ def getautonFuelOPR(event, year=THISYEAR):
             idx = teamlist.index(team)
             red[idx] = 1
         alliancemtx.append(red)
-        
-    print(len(alliancemtx))
-        
-            
-            
     
-    #TODO need to make a result matrix
+    #Make a result matrix
     allianceResult = []
     for match in autonresults:
         print(match[0])
-        allianceResult.append(match[-2]) #blue
-        allianceResult.append(match[-1]) #red
+        allianceResult.append([match[-2]]) #blue
+        allianceResult.append([match[-1]]) #red
         
     #This comes out with matches in ASCIIbetical order but it doesn't matter if I'm consistent
     
     print(allianceResult)
     
     #TODO Then the linear algebra happens
+    mtxAlliances = np.matrix(alliancemtx)
+    mtxScores = np.matrix(allianceResult)
+    
+    pseudoA = np.linalg.pinv(mtxAlliances)
+    
+    opr = np.matmul(pseudoA, mtxScores)
     
         
 
