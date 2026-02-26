@@ -1,5 +1,6 @@
 package com.frcteam1939.scouting2026.android.ui
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -26,6 +28,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import kotlin.math.roundToInt
 import kotlin.text.toIntOrNull
 
@@ -39,8 +43,22 @@ object UserInputs {
         forceNumberInput: Boolean = false,
         characterLimit: Int = 2500
     ) {
-        var keyboardOptions: KeyboardOptions = KeyboardOptions.Default
-        if (forceNumberInput) keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        val focusManager = LocalFocusManager.current
+        val keyboardOptions = when {
+            forceNumberInput -> KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = if (singleLine) ImeAction.Done else ImeAction.Default
+            )
+            !singleLine -> KeyboardOptions(imeAction = ImeAction.Done)
+            else -> KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+        }
+
+        val keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+            }
+        )
+
         TextField(
             value = value,
             onValueChange = { input ->
@@ -52,6 +70,7 @@ object UserInputs {
                 if (validUpdate) onValueChange(input) },
             modifier = Modifier.padding(all = 8.dp),
             keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
             singleLine = singleLine,
             label = { Text(label) },
         )
@@ -73,7 +92,9 @@ object UserInputs {
                         .selectable(
                             selected = (text == selectedOption),
                             onClick = { onOptionSelected(text) },
-                            role = Role.RadioButton
+                            role = Role.RadioButton,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
                         )
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically

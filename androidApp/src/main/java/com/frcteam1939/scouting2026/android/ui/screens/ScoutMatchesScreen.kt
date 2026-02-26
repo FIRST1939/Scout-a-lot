@@ -72,7 +72,7 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
                     canStartScouting = false
                     makeText(context, "Please select an event to start scouting!", Toast.LENGTH_SHORT).show()
                 } else if (currentForm.isEmpty()) {
-                    canStartScouting = false
+                    // canStartScouting = false
                     makeText(context, "Please select a match form to start scouting!", Toast.LENGTH_SHORT).show()
                 } else if (matchNumber.value.toIntOrNull() == null) {
                     canStartScouting = false

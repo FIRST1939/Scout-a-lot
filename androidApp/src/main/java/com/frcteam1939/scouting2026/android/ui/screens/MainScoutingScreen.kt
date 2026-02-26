@@ -4,10 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.VideogameAsset
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -20,10 +23,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.android.ui.templates.CheckboxFieldTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.CounterFieldTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.DropdownFieldTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.RadioButtonFieldTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.RebuiltHubScoringFieldTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
+import com.frcteam1939.scouting2026.data.structuring.Checkbox
+import com.frcteam1939.scouting2026.data.structuring.Counter
+import com.frcteam1939.scouting2026.data.structuring.Dropdown
+import com.frcteam1939.scouting2026.data.structuring.RadioButton
+import com.frcteam1939.scouting2026.data.structuring.RebuiltHubScoring
+import com.frcteam1939.scouting2026.data.structuring.Switch
+import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import kotlin.collections.contains
 
@@ -97,8 +115,73 @@ fun MatchScoutingScaffold(
 
 @Composable
 fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel) {
-    // TODO: add auto scouting screen
-    Text("Hi... this is the auto screen... yay!!")
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Scouting Auto", style = MaterialTheme.typography.headlineLarge)
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        TextboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Textbox(
+                id = 0,
+                label = "Test Textbox"
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        RadioButtonFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = RadioButton(
+                id = 1,
+                label = "Test Radio Button",
+                options = listOf("option 1", "option 2", "option 3")
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        SwitchFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Switch(
+                id = 2,
+                label = "Test Switch"
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        CheckboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Checkbox(
+                id = 3,
+                label = "Test Checkbox",
+                options = listOf("option 1", "option 2", "option 3")
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        CounterFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Counter(
+                id = 4,
+                label = "Test Counter"
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        DropdownFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Dropdown(
+                id = 5,
+                label = "Test Dropdown",
+                options = listOf("option 1", "option 2", "option 3")
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        RebuiltHubScoringFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = RebuiltHubScoring(
+                id = 6,
+                label = "Test Rebuilt Hub Scoring"
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+    }
 }
 
 @Composable
