@@ -157,4 +157,6 @@ fun SwitchFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {
     }
 }
 @Composable
-fun CheckboxFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {}
+fun CheckboxFieldCTemplate(editFormsViewModel: EditFormsViewModel, id: Int) {
+
+}
