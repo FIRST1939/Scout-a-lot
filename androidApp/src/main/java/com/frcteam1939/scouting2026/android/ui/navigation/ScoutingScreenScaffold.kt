@@ -1,11 +1,13 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,7 +28,10 @@ fun ScoutingScaffold(
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+            NavigationBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
                 val items =
                     listOf(
                         Screen.ScoutMatches,
@@ -39,9 +44,12 @@ fun ScoutingScaffold(
                         selected = index == selectedItem,
                         onClick = {
                             if (screen.route != currentRoute) {
-                                navController.navigate(screen.route) {
+                                navController.navigate(
+                                    screen.route
+                                ) {
                                     popUpTo(
-                                        navController.graph.findStartDestination()
+                                        navController.graph
+                                            .findStartDestination()
                                             .id
                                     ) { saveState = true }
                                     launchSingleTop = true
@@ -49,15 +57,34 @@ fun ScoutingScaffold(
                                 }
                             }
                         },
-                        icon = { Icon(screen.icon, contentDescription = screen.label) },
-                        label = { Text(screen.label) }
+                        icon = {
+                            Icon(
+                                screen.icon,
+                                contentDescription = screen.label
+                            )
+                        },
+                        label = { Text(screen.label) },
+                        colors =
+                            NavigationBarItemDefaults.colors(
+                                selectedIconColor =
+                                    MaterialTheme.colorScheme
+                                        .onBackground,
+                                selectedTextColor =
+                                    MaterialTheme.colorScheme
+                                        .onPrimary,
+                                indicatorColor =
+                                    MaterialTheme.colorScheme
+                                        .secondary,
+                                unselectedIconColor =
+                                    MaterialTheme.colorScheme
+                                        .secondary,
+                                unselectedTextColor =
+                                    MaterialTheme.colorScheme
+                                        .secondary,
+                            )
                     )
                 }
             }
         }
-    ) {
-        innerPadding -> Surface(Modifier.padding(innerPadding)) {
-            content()
-        }
-    }
+    ) { innerPadding -> Surface(Modifier.padding(innerPadding)) { content() } }
 }

@@ -1,5 +1,8 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
@@ -12,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.frcteam1939.scouting2026.android.ui.CupertinoTransitions
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.AssignFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
@@ -47,12 +51,48 @@ import kotlinx.coroutines.CoroutineScope
 fun AppNavigationHost(
     navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope
 ) {
-    NavHost(navController, startDestination = AppRoutes.MatchScouting.GRAPH) {
+    val topLevelRoutes =
+        setOf(
+            AppRoutes.MatchScouting.SCOUT_MATCHES,
+            AppRoutes.PitScouting.SCOUT_PITS,
+            AppRoutes.Settings.SETTINGS,
+            AppRoutes.MatchReports.MATCH_REPORTS,
+            AppRoutes.TeamStats.TEAM_STATS,
+            AppRoutes.SYNC,
+            AppRoutes.EditForms.EDIT_FORMS,
+        )
+
+    NavHost(
+        navController = navController,
+        startDestination = AppRoutes.MatchScouting.GRAPH,
+        enterTransition = { CupertinoTransitions.enterTransition },
+        exitTransition = { CupertinoTransitions.exitTransition },
+        popEnterTransition = { CupertinoTransitions.popEnterTransition },
+        popExitTransition = { CupertinoTransitions.popExitTransition },
+    ) {
         navigation(
             startDestination = AppRoutes.MatchScouting.SCOUT_MATCHES,
             route = AppRoutes.MatchScouting.GRAPH
         ) {
-            composable(AppRoutes.MatchScouting.SCOUT_MATCHES) { backStackEntry ->
+            composable(
+                route = AppRoutes.MatchScouting.SCOUT_MATCHES,
+                enterTransition = {
+                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                    else CupertinoTransitions.popEnterTransition
+                },
+                exitTransition = {
+                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                    else CupertinoTransitions.exitTransition
+                },
+                popEnterTransition = {
+                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                    else CupertinoTransitions.popEnterTransition
+                },
+                popExitTransition = {
+                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                    else CupertinoTransitions.popExitTransition
+                },
+            ) { backStackEntry ->
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
@@ -97,7 +137,25 @@ fun AppNavigationHost(
         navigation(
             startDestination = AppRoutes.PitScouting.SCOUT_PITS, route = AppRoutes.PitScouting.GRAPH
         ) {
-            composable(AppRoutes.PitScouting.SCOUT_PITS) { backStackEntry ->
+            composable(
+                route = AppRoutes.PitScouting.SCOUT_PITS,
+                enterTransition = {
+                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                    else CupertinoTransitions.popEnterTransition
+                },
+                exitTransition = {
+                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                    else CupertinoTransitions.exitTransition
+                },
+                popEnterTransition = {
+                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                    else CupertinoTransitions.popEnterTransition
+                },
+                popExitTransition = {
+                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                    else CupertinoTransitions.popExitTransition
+                },
+            ) { backStackEntry ->
                 val scoutingViewModel =
                     getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
@@ -116,7 +174,13 @@ fun AppNavigationHost(
         navigation(
             startDestination = AppRoutes.MatchReports.MATCH_REPORTS, route = AppRoutes.MatchReports.GRAPH
         ) {
-            composable(AppRoutes.MatchReports.MATCH_REPORTS) {
+            composable(
+                route = AppRoutes.MatchReports.MATCH_REPORTS,
+                enterTransition = { fadeIn(tween(300)) },
+                exitTransition = { fadeOut(tween(300)) },
+                popEnterTransition = { fadeIn(tween(300)) },
+                popExitTransition = { fadeOut(tween(300)) },
+            ) {
                 MainScreenScaffold(navController, drawerState, scope) {
                     // TODO: match report generation
                 }
@@ -125,7 +189,13 @@ fun AppNavigationHost(
         navigation(
             startDestination = AppRoutes.TeamStats.TEAM_STATS, route = AppRoutes.TeamStats.GRAPH
         ) {
-            composable(AppRoutes.TeamStats.TEAM_STATS) { backStackEntry ->
+            composable(
+                route = AppRoutes.TeamStats.TEAM_STATS,
+                enterTransition = { fadeIn(tween(300)) },
+                exitTransition = { fadeOut(tween(300)) },
+                popEnterTransition = { fadeIn(tween(300)) },
+                popExitTransition = { fadeOut(tween(300)) },
+            ) { backStackEntry ->
                 val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.TeamStats.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
                     TeamStatsMainScreen(dataViewModel, navController)
@@ -138,7 +208,13 @@ fun AppNavigationHost(
                 }
             }
         }
-        composable(AppRoutes.SYNC) { backStackEntry ->
+        composable(
+            route = AppRoutes.SYNC,
+            enterTransition = { fadeIn(tween(300)) },
+            exitTransition = { fadeOut(tween(300)) },
+            popEnterTransition = { fadeIn(tween(300)) },
+            popExitTransition = { fadeOut(tween(300)) },
+        ) { backStackEntry ->
             // TODO: device & data synchronization
             val scoutingViewModel = getScoutingViewModel(
                 backStackEntry, navController, AppRoutes.SYNC
@@ -148,7 +224,19 @@ fun AppNavigationHost(
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
-            composable(AppRoutes.EditForms.EDIT_FORMS) { backStackEntry ->
+            composable(
+                route = AppRoutes.EditForms.EDIT_FORMS,
+                enterTransition = { fadeIn(tween(300)) },
+                exitTransition = {
+                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                    else CupertinoTransitions.exitTransition
+                },
+                popEnterTransition = {
+                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                    else CupertinoTransitions.popEnterTransition
+                },
+                popExitTransition = { fadeOut(tween(300)) },
+            ) { backStackEntry ->
                 val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
                     EditFormsScreen(navController, editFormsViewModel = editFormsViewModel)
@@ -176,7 +264,25 @@ fun AppNavigationHost(
         navigation(
             startDestination = AppRoutes.Settings.SETTINGS, route = AppRoutes.Settings.GRAPH
         ) {
-            composable(AppRoutes.Settings.SETTINGS) { backStackEntry ->
+            composable(
+                route = AppRoutes.Settings.SETTINGS,
+                enterTransition = {
+                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                    else CupertinoTransitions.popEnterTransition
+                },
+                exitTransition = {
+                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                    else CupertinoTransitions.exitTransition
+                },
+                popEnterTransition = {
+                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                    else CupertinoTransitions.popEnterTransition
+                },
+                popExitTransition = {
+                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                    else CupertinoTransitions.popExitTransition
+                },
+            ) { backStackEntry ->
                 val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
                     ScoutingScaffold(navController) {
