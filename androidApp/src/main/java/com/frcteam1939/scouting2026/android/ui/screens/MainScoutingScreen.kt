@@ -123,66 +123,46 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
     ) {
         Text(text = "Scouting Auto", style = MaterialTheme.typography.headlineLarge)
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        TextboxFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Textbox(
-                id = 0,
-                label = "Test Textbox"
-            )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        RadioButtonFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = RadioButton(
-                id = 1,
-                label = "Test Radio Button",
-                options = listOf("option 1", "option 2", "option 3")
-            )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 2,
-                label = "Test Switch"
+                id = 0,
+                label = "Robot is preloaded?"
+            )
+        )
+        SwitchFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Switch(
+                id = 0,
+                label = "Robot shoots?"
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         CheckboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Checkbox(
-                id = 3,
-                label = "Test Checkbox",
-                options = listOf("option 1", "option 2", "option 3")
-            )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        CounterFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Counter(
-                id = 4,
-                label = "Test Counter"
-            )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        DropdownFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Dropdown(
-                id = 5,
-                label = "Test Dropdown",
-                options = listOf("option 1", "option 2", "option 3")
+                id = 0,
+                label = "Picks up from...",
+                options = listOf("Depot", "Alliance Zone (Ground)", "Outpost", "Neutral Zone")
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         RebuiltHubScoringFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = RebuiltHubScoring(
-                id = 6,
-                label = "Test Rebuilt Hub Scoring"
+                id = 4,
+                label = "Hub Scoring"
             ),
-            auto = false
+            auto = true
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        SwitchFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Switch(
+                id = 5,
+                label = "Robot climbs tower?"
+            )
+        )
     }
 }
 
