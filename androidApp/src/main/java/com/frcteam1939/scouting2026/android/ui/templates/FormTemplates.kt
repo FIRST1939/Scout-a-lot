@@ -88,6 +88,14 @@ fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Swit
 
 @Composable
 fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Checkbox) {
+    var checked by remember { mutableStateOf(List(fieldContent.options.size) { false }) }
+    UserInputs.CheckboxInput(
+        checked = checked,
+        onCheckedChange = { checked = it },
+        checkboxOptions = fieldContent.options,
+        maxSelected = fieldContent.maxSelected,
+        minSelected = fieldContent.maxSelected
+    )
 }
 
 @Composable

@@ -120,7 +120,7 @@ object UserInputs {
     @Composable
     fun CheckboxInput(
         checked: List<Boolean>,
-        onCheckedChange: (Boolean) -> Unit,
+        onCheckedChange: (List<Boolean>) -> Unit,
         modifier: Modifier = Modifier,
         checkboxOptions: List<String> = emptyList<String>(),
         maxSelected: Int,
@@ -134,7 +134,11 @@ object UserInputs {
                         .height(56.dp)
                         .selectable(
                             selected = (checked[index]),
-                            onClick = { onCheckedChange(checked[index]) },
+                            onClick = {
+                                val updatedList = checked.toMutableList()
+                                updatedList[index] = !updatedList[index]
+                                onCheckedChange(updatedList)
+                            },
                             role = Role.RadioButton,
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
