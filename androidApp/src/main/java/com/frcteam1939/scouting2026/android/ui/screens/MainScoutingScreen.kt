@@ -4,8 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.FlashOn
@@ -114,9 +115,9 @@ fun MatchScoutingScaffold(
 }
 
 @Composable
-fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel) {
+fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -178,23 +179,24 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel) {
             fieldContent = RebuiltHubScoring(
                 id = 6,
                 label = "Test Rebuilt Hub Scoring"
-            )
+            ),
+            auto = false
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
     }
 }
 
 @Composable
-fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel) {
+fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
     // TODO: add teleop scouting screen
-    Text("Hi... this is the teleop screen... yay!!")
+    Text("Hi... this is the teleop screen... yay!!", modifier = modifier)
 }
 
 @Composable
-fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
+fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
     // TODO: add endgame scouting screen
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
