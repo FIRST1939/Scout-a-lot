@@ -1,12 +1,9 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +17,7 @@ import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditMatchFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditPitFormsScreen
+import com.frcteam1939.scouting2026.android.ui.navigation.MainScreenScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
@@ -29,14 +27,13 @@ import com.frcteam1939.scouting2026.android.ui.screens.ScoutMatchesScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutPitForm
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutPitScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutTeleopScreen
+import com.frcteam1939.scouting2026.android.ui.navigation.ScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.SelectScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
+import com.frcteam1939.scouting2026.android.ui.navigation.SubScreenScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
-import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
-import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
-import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -68,24 +65,24 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { _ ->
-                    ScoutAutoScreen(scoutingViewModel)
+                MatchScoutingScaffold(navController) { innerPadding ->
+                    ScoutAutoScreen(scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
             composable(AppRoutes.MatchScouting.SCOUT_TELEOP) { backStackEntry ->
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { _ ->
-                    ScoutTeleopScreen(scoutingViewModel)
+                MatchScoutingScaffold(navController) { innerPadding ->
+                    ScoutTeleopScreen(scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
             composable(AppRoutes.MatchScouting.SCOUT_ENDGAME) { backStackEntry ->
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { _ ->
-                    ScoutEndgameScreen(navController, scoutingViewModel)
+                MatchScoutingScaffold(navController) { innerPadding ->
+                    ScoutEndgameScreen(navController, scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
         }
