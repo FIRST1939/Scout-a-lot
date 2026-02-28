@@ -7,6 +7,7 @@ import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
+import com.frcteam1939.scouting2026.showAlert
 import com.frcteam1939.scouting2026.tba.models.TBAMatch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,39 @@ class ScoutingViewModel(
 
     fun changeMatchNumber(newMatchNumber: String) {
         _matchNumber.value = newMatchNumber
+    }
+
+    private val _selectedTeam = MutableStateFlow("")
+    val selectedTeam: StateFlow<String> = _selectedTeam.asStateFlow()
+    fun changeSelectedTeam(newTeam: String) {
+        _selectedTeam.value = newTeam
+    }
+
+    suspend fun getTeamList(): List<String> {
+        val deviceName = settings.value?.deviceRobotAssignment
+        var deviceTag = 0
+        val eventName = settings.value?.currentEvent
+        if (eventName == null || eventName == "") {
+            showAlert("Error getting event teams:", "Current event not found. Make sure you select an event!")
+            return emptyList()
+        }
+        var teamList = eventsRepository.getEventByName(eventName).first()?.eventTeamList ?: emptyList()
+        //sorts the teamList to make it consistent and smallest to largest
+        teamList = teamList.mapNotNull { it.toIntOrNull() }.sorted().map { it.toString() }
+        val deviceTeamList = mutableListOf<String>()
+        when(deviceName) {
+            "Red 1" -> deviceTag = 0
+            "Red 2" -> deviceTag = 1
+            "Red 3" -> deviceTag = 2
+            "Blue 1" -> deviceTag = 3
+            "Blue 2" -> deviceTag = 4
+            "Blue 3" -> deviceTag = 5
+        }
+        while (deviceTag < teamList.size) {
+            deviceTeamList.add(teamList[deviceTag])
+            deviceTag += 6
+        }
+        return (deviceTeamList)
     }
 
     suspend fun getCurrentForm(currentEvent: String, formType: String): String {

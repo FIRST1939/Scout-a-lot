@@ -144,7 +144,7 @@ fun RebuiltHubScoringFieldTemplate(
     val accuracyOptions = listOf("Low", "Medium", "High", "Very High")
     val speedOptions = listOf("Slow", "Medium", "Fast", "Very Fast")
 
-    var period by remember { mutableIntStateOf(0) }
+    var period by remember { mutableIntStateOf(1) }
     var cycle by remember { mutableIntStateOf(1) }
     var accuracy by remember { mutableStateOf<Int?>(null) }
     var speed by remember { mutableStateOf<Int?>(null) }
@@ -156,12 +156,13 @@ fun RebuiltHubScoringFieldTemplate(
     fun saveCycleData() {
         val cycleItem = listOf(accuracy, speed)
         val mutable = periodData.toMutableList()
+        val periodIndex = period - 1
 
-        while (mutable.size <= period) {
+        while (mutable.size <= periodIndex) {
             mutable.add(emptyList())
         }
 
-        val periodCycles = mutable[period].toMutableList()
+        val periodCycles = mutable[periodIndex].toMutableList()
         val cycleIndex = cycle - 1
 
         if (cycleIndex < periodCycles.size) {
@@ -170,16 +171,17 @@ fun RebuiltHubScoringFieldTemplate(
             periodCycles.add(cycleItem)
         }
 
-        mutable[period] = periodCycles
+        mutable[periodIndex] = periodCycles
         periodData = mutable
     }
 
     fun changeCycle(newCycle: Int) {
         saveCycleData()
 
+        val periodIndex = period - 1
         val cycleIndex = newCycle - 1
-        if (period < periodData.size && cycleIndex < periodData[period].size) {
-            val data = periodData[period][cycleIndex]
+        if (periodIndex < periodData.size && cycleIndex < periodData[periodIndex].size) {
+            val data = periodData[periodIndex][cycleIndex]
             accuracy = data[0]
             speed = data[1]
         } else {
@@ -193,8 +195,9 @@ fun RebuiltHubScoringFieldTemplate(
     fun changePeriod(newPeriod: Int) {
         saveCycleData()
 
-        if (newPeriod < periodData.size && periodData[newPeriod].isNotEmpty()) {
-            val firstCycleData = periodData[newPeriod][0] // Index 0 = cycle 1
+        val newPeriodIndex = newPeriod - 1
+        if (newPeriodIndex < periodData.size && periodData[newPeriodIndex].isNotEmpty()) {
+            val firstCycleData = periodData[newPeriodIndex][0] // Index 0 = cycle 1
             accuracy = firstCycleData[0]
             speed = firstCycleData[1]
             cycle = 1
@@ -223,7 +226,8 @@ fun RebuiltHubScoringFieldTemplate(
                     Text(text = "Period", style = MaterialTheme.typography.bodyLarge)
                     UserInputs.CounterInput(
                         value = period,
-                        maxVal = 7,
+                        minVal = 1,
+                        maxVal = 6,
                         onValueChange = { changePeriod(it) }
                     )
                 }

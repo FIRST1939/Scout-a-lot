@@ -370,6 +370,7 @@ object UserInputs {
         @Composable
         fun OutlinedButtonTextBarInput(
             text: String,
+            textColor: Color = MaterialTheme.colorScheme.onBackground,
             icon: ImageVector,
             onClick: () -> Unit,
             buttonText: String = ""
@@ -382,7 +383,7 @@ object UserInputs {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = text)
+                Text(text = text, color = textColor)
                 OutlinedButton(
                     onClick = { onClick() },
                 ) {

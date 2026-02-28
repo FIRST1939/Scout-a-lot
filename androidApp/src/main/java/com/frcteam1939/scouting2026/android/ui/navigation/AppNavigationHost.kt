@@ -95,7 +95,7 @@ fun AppNavigationHost(
                     getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
                     ScoutingScaffold(navController) {
-                        ScoutPitScreen(scoutingViewModel)
+                        ScoutPitScreen(scoutingViewModel, navController)
                     }
                 }
             }
@@ -103,7 +103,7 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.PitScouting.GRAPH
                 )
-                ScoutPitForm(scoutingViewModel)
+                ScoutPitForm(scoutingViewModel, navController)
             }
         }
         composable(AppRoutes.MATCH_REPORTS) {

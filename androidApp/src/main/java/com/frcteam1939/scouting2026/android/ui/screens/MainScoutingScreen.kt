@@ -134,6 +134,16 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         Text(text = "Scouting Auto", style = MaterialTheme.typography.headlineLarge)
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        TextboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Textbox(
+                id = 0,
+                label = "Scouter Name",
+                singleLine = true,
+                forceNumberInput = false
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         RebuiltStartingPositionTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = RebuiltStartingPosition(

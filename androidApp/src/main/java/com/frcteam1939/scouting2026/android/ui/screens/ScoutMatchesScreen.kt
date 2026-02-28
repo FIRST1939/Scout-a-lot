@@ -123,7 +123,6 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
                     onClick = {
                         noShowPopup = false
                         navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
-                        TODO("log robot no-shows")
                     },
                     text = "Robot no-show",
                     containerColor = MaterialTheme.colorScheme.background,

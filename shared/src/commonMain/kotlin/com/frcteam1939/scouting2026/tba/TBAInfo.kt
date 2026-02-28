@@ -52,4 +52,15 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
             "[]"
         }
     }
+
+    suspend fun pullEventTeams(eventKey: String): List<String> {
+        val jsonString = this.pullFromTBA("/event/${eventKey}/teams/keys")
+        println("it worked: $jsonString")
+        if(jsonString.isNotBlank()) {
+            val keyList = Json.decodeFromString<List<String>>(jsonString)
+            return keyList.map { it.substring(3) }
+        } else {
+            return emptyList()
+        }
+    }
 }
