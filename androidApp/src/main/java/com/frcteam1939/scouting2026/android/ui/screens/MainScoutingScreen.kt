@@ -1,9 +1,13 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,9 +28,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.templates.CheckboxFieldTemplate
@@ -34,6 +40,7 @@ import com.frcteam1939.scouting2026.android.ui.templates.CounterFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.DropdownFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.RadioButtonFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.RebuiltHubScoringFieldTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.RebuiltStartingPositionTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
 import com.frcteam1939.scouting2026.data.structuring.Checkbox
@@ -41,6 +48,7 @@ import com.frcteam1939.scouting2026.data.structuring.Counter
 import com.frcteam1939.scouting2026.data.structuring.Dropdown
 import com.frcteam1939.scouting2026.data.structuring.RadioButton
 import com.frcteam1939.scouting2026.data.structuring.RebuiltHubScoring
+import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
 import com.frcteam1939.scouting2026.data.structuring.Switch
 import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
@@ -121,19 +129,28 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         Text(text = "Scouting Auto", style = MaterialTheme.typography.headlineLarge)
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        RebuiltStartingPositionTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = RebuiltStartingPosition(
+                id = 0,
+                label = "Starting Position"
+            )
+        )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 0,
+                id = 1,
                 label = "Robot is preloaded?"
             )
         )
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 0,
+                id = 2,
                 label = "Robot shoots?"
             )
         )
@@ -141,8 +158,8 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         CheckboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Checkbox(
-                id = 0,
-                label = "Picks up from...",
+                id = 3,
+                label = "Robot picks up from...",
                 options = listOf("Depot", "Alliance Zone (Ground)", "Outpost", "Neutral Zone")
             )
         )

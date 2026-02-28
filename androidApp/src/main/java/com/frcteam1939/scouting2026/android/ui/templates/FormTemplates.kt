@@ -1,8 +1,10 @@
 package com.frcteam1939.scouting2026.android.ui.templates
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,6 +35,7 @@ import com.frcteam1939.scouting2026.data.structuring.Switch
 import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.android.R
+import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
 
 @Composable
 fun TextboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Textbox) {
@@ -78,6 +81,7 @@ fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Swit
 @Composable
 fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Checkbox) {
     var checked by remember { mutableStateOf(List(fieldContent.options.size) { false }) }
+    Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
     UserInputs.CheckboxInput(
         checked = checked,
         onCheckedChange = { checked = it },
@@ -302,5 +306,49 @@ fun RebuiltHubScoringFieldTemplate(
                 speed = if (speed == it) null else it
             }
         )
+    }
+}
+
+@Composable
+fun RebuiltStartingPositionTemplate(
+    scoutingViewModel: ScoutingViewModel,
+    fieldContent: RebuiltStartingPosition,
+) {
+    val startingPositions = listOf("Depot-side Trench", "Depot-side Bump", "Hub", "Outpost-side Bump", "Outpost-side Trench")
+    var selectedPosition by remember { mutableStateOf(startingPositions[0]) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(fieldContent.label, style = MaterialTheme.typography.headlineSmall)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // image defaults to blue
+            var imageResource = R.drawable.blue_starting_zones to "Blue Alliance Starting Positions"
+            if (scoutingViewModel.alliance == "Red") {
+                imageResource = R.drawable.red_starting_zones to "Red Alliance Starting Positions"
+            }
+
+            Image(
+                painter = painterResource(id = imageResource.first),
+                contentDescription = imageResource.second,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(horizontal = 8.dp)
+            )
+            UserInputs.RadioButtonInput(
+                radioOptions = startingPositions,
+                selectedOption = selectedPosition,
+                onOptionSelected = { selectedPosition = it },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }

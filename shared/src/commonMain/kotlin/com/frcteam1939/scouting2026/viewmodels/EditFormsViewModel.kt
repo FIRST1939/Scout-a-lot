@@ -106,6 +106,10 @@ class EditFormsViewModel(
                 id = newID,
                 label = "Cycle Result",
             )
+            FormFieldManager.FieldTypes.REBUILT_STARTING_POSITION -> FormFieldManager.getRebuiltStartingPositionJson(
+                id = newID,
+                label = "Starting Position",
+            )
 
             else -> throw IllegalArgumentException("Invalid field type: ${selectedFieldTypeToAdd.value}")
         }

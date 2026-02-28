@@ -12,7 +12,8 @@ object FormFieldManager {
             this.CHECKBOX,
             this.COUNTER,
             this.DROPDOWN,
-            this.REBUILT_HUB_SCORING
+            this.REBUILT_HUB_SCORING,
+            this.REBUILT_STARTING_POSITION
         )
         const val TEXTBOX: String = "Textbox"
         const val RADIOBUTTON: String = "RadioButton"
@@ -21,6 +22,7 @@ object FormFieldManager {
         const val COUNTER: String = "Counter"
         const val DROPDOWN: String = "Dropdown"
         const val REBUILT_HUB_SCORING: String = "RebuiltHubScoring"
+        const val REBUILT_STARTING_POSITION: String = "RebuiltStartingPosition"
 
     }
 
@@ -50,5 +52,9 @@ object FormFieldManager {
 
     fun getRebuiltHubScoringJson(id: Int, label: String = "Cycle Result", required: Boolean = false, leadsTo: List<String> = emptyList()): RebuiltHubScoring {
         return RebuiltHubScoring(id = id, label = label, required = required, leadsTo = leadsTo)
+    }
+
+    fun getRebuiltStartingPositionJson(id: Int, label: String = "Starting Position", required: Boolean = false, leadsTo: List<String> = emptyList()): RebuiltStartingPosition {
+        return RebuiltStartingPosition(id = id, label = label, required = required, leadsTo = leadsTo)
     }
 }

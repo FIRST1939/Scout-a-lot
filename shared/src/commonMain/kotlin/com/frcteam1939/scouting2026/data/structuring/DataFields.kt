@@ -92,3 +92,13 @@ data class RebuiltHubScoring(
     override val required: Boolean = false,
     override val leadsTo: List<String> = emptyList(),
 ) : FormField()
+
+@Serializable
+@SerialName("RebuiltStartingPosition")
+data class RebuiltStartingPosition(
+    override val id: Int,
+    override val type: String = "RebuiltStartingPosition",
+    override val label: String = "Starting Position",
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+) : FormField()
