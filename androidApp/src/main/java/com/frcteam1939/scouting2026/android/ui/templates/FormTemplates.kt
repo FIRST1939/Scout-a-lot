@@ -99,7 +99,7 @@ fun ButtonBarTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Button
     UserInputs.SingleSelectButtonBarInput(
         options = fieldContent.options,
         selectedOption = selectedOption,
-        onOptionSelected = { selectedOption = it }
+        onOptionSelected = { selectedOption = if (selectedOption == it) null else it }
     )
 }
 
