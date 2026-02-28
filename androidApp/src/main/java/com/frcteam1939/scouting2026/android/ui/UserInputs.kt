@@ -164,7 +164,7 @@ object UserInputs {
     @Composable
     fun SingleSelectButtonBarInput(
         options: List<String>,
-        selectedOption: Int,
+        selectedOption: Int?,
         onOptionSelected: (Int) -> Unit
     ) {
         Row(
