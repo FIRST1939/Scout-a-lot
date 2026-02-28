@@ -147,7 +147,7 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         RebuiltStartingPositionTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = RebuiltStartingPosition(
-                id = 0,
+                id = 1,
                 label = "Starting Position"
             )
         )
@@ -155,14 +155,14 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 1,
+                id = 2,
                 label = "Robot is preloaded?"
             )
         )
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 2,
+                id = 3,
                 label = "Robot shoots?"
             )
         )
@@ -170,7 +170,7 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         CheckboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Checkbox(
-                id = 3,
+                id = 4,
                 label = "Robot picks up from...",
                 options = listOf("Depot", "Outpost", "Alliance Zone (Ground)", "Neutral Zone")
             )
@@ -179,7 +179,7 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         RebuiltHubScoringFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = RebuiltHubScoring(
-                id = 4,
+                id = 5,
                 label = "Hub Scoring"
             ),
             auto = true
@@ -188,7 +188,7 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 5,
+                id = 6,
                 label = "Robot climbs tower?"
             )
         )
@@ -216,7 +216,7 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier =
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 0,
+                id = 1,
                 label = "Difficulty travelling (explain in qualitative)"
             )
         )
@@ -224,7 +224,7 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier =
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 0,
+                id = 2,
                 label = "Plays defense"
             )
         )
@@ -248,7 +248,7 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier =
         ButtonBarTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = ButtonBar(
-                id = 0,
+                id = 5,
                 label = "Ferry volume",
                 options = listOf("Low", "Medium", "High", "Very High")
             )
@@ -257,7 +257,7 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier =
         RebuiltHubScoringFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = RebuiltHubScoring(
-                id = 0,
+                id = 6,
                 label = "Hub Scoring"
             ),
             auto = false
@@ -288,7 +288,7 @@ fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: Scouting
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 0,
+                id = 1,
                 label = "Robot died during match?"
             )
         )
@@ -296,7 +296,7 @@ fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: Scouting
         TextboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Textbox(
-                id = 0,
+                id = 2,
                 label = "Qualitative notes",
                 singleLine = false,
                 forceNumberInput = false

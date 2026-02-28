@@ -81,7 +81,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
         TextboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Textbox(
-                id = 0,
+                id = 1,
                 label = "Approximate Fuel Capacity",
                 singleLine = true,
                 forceNumberInput = true,
