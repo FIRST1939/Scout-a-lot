@@ -10,6 +10,7 @@ object FormFieldManager {
             this.RADIOBUTTON,
             this.SWITCH,
             this.CHECKBOX,
+            this.BUTTONBAR,
             this.COUNTER,
             this.DROPDOWN,
             this.REBUILT_HUB_SCORING,
@@ -19,6 +20,7 @@ object FormFieldManager {
         const val RADIOBUTTON: String = "RadioButton"
         const val SWITCH: String = "Switch"
         const val CHECKBOX: String = "Checkbox"
+        const val BUTTONBAR: String = "ButtonBar"
         const val COUNTER: String = "Counter"
         const val DROPDOWN: String = "Dropdown"
         const val REBUILT_HUB_SCORING: String = "RebuiltHubScoring"

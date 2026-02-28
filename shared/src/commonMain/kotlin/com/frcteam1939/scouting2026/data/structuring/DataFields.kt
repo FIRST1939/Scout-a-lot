@@ -60,6 +60,17 @@ data class Checkbox(
 ) : FormField()
 
 @Serializable
+@SerialName("ButtonBar")
+data class ButtonBar(
+    override val id: Int,
+    override val type: String = "ButtonBar",
+    override val label: String,
+    override val required: Boolean = false,
+    override val leadsTo: List<String> = emptyList(),
+    val options: List<String> = emptyList()
+) : FormField()
+
+@Serializable
 @SerialName("Counter")
 data class Counter(
     override val id: Int,

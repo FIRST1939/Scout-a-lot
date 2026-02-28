@@ -35,6 +35,7 @@ import com.frcteam1939.scouting2026.data.structuring.Switch
 import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.android.R
+import com.frcteam1939.scouting2026.data.structuring.ButtonBar
 import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
 
 @Composable
@@ -88,6 +89,17 @@ fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Ch
         checkboxOptions = fieldContent.options,
         maxSelected = fieldContent.maxSelected,
         minSelected = fieldContent.maxSelected
+    )
+}
+
+@Composable
+fun ButtonBarTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: ButtonBar) {
+    var selectedOption: Int? by remember { mutableStateOf(null) }
+    Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
+    UserInputs.SingleSelectButtonBarInput(
+        options = fieldContent.options,
+        selectedOption = selectedOption,
+        onOptionSelected = { selectedOption = it }
     )
 }
 
@@ -314,7 +326,11 @@ fun RebuiltStartingPositionTemplate(
     scoutingViewModel: ScoutingViewModel,
     fieldContent: RebuiltStartingPosition,
 ) {
-    val startingPositions = listOf("Depot-side Trench", "Depot-side Bump", "Hub", "Outpost-side Bump", "Outpost-side Trench")
+    // Positions default to blue
+    var startingPositions = listOf("Outpost-side Trench", "Outpost-side Bump", "Hub", "Depot-side Bump", "Depot-side Trench")
+    if (scoutingViewModel.alliance == "Red") {
+        startingPositions = listOf("Depot-side Trench", "Depot-side Bump", "Hub", "Outpost-side Bump", "Outpost-side Trench")
+    }
     var selectedPosition by remember { mutableStateOf(startingPositions[0]) }
 
     Column(
@@ -329,7 +345,7 @@ fun RebuiltStartingPositionTemplate(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // image defaults to blue
+            // Image defaults to blue
             var imageResource = R.drawable.blue_starting_zones to "Blue Alliance Starting Positions"
             if (scoutingViewModel.alliance == "Red") {
                 imageResource = R.drawable.red_starting_zones to "Red Alliance Starting Positions"
