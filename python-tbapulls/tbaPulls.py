@@ -197,18 +197,25 @@ def getautonbyteam(event, year=THISYEAR):
     teamdict = {}
     
     for match in autonresults:
+        qualkey = match[0].split('_')[1]
+        if len(qualkey) < 4:
+            qualnum = qualkey[:2] + '0' + qualkey[2:]
+        else:
+            qualnum = qualkey
         for team in match[1]:
-            if team not in teamdict:
-                teamdict[team] = []
+            teamint = int(team[3:])
+            if teamint not in teamdict:
+                teamdict[teamint] = {}
             
-            teamdict[team].append(match[3])
+            teamdict[teamint][qualnum] = match[3]
             
         for team in match[2]:
-            if team not in teamdict:
-                teamdict[team] = []
+            teamint = int(team[3:])
+            if teamint not in teamdict:
+                teamdict[teamint] = {}
             
-            teamdict[team].append(match[4])
-
+            teamdict[teamint][qualnum] = match[4]
+            
     return teamdict
 
 def getautonFuelOPR(event, year=THISYEAR):
