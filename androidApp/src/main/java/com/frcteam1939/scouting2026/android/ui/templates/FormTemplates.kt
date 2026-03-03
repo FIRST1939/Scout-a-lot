@@ -54,7 +54,7 @@ fun TextboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Tex
 
 @Composable
 fun RadioButtonFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: RadioButton) {
-    var selectedOption by remember { mutableStateOf(fieldContent.options[0]) }
+    val selectedOption = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,17 +65,26 @@ fun RadioButtonFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent:
         UserInputs.RadioButtonInput(
             radioOptions = fieldContent.options,
             selectedOption = selectedOption,
-            onOptionSelected = { selectedOption = it }
+            onOptionSelected = { scoutingViewModel.saveFieldValue(fieldContent.id, it) }
         )
     }
 }
 
 @Composable
 fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Switch) {
-    var checked by remember { mutableStateOf(false) }
+    val checked = when (scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent) {
+        "true" -> true
+        "false" -> false
+        else -> false
+    }
     UserInputs.SwitchTextBarInput(
         checked = checked,
-        onCheckedChange = { checked = it },
+        onCheckedChange = {
+            when (checked) {
+                true -> scoutingViewModel.saveFieldValue(fieldContent.id, "false")
+                false -> scoutingViewModel.saveFieldValue(fieldContent.id, "true")
+            }
+        },
         text = fieldContent.label
     )
 }
