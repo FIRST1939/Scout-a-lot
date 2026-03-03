@@ -43,7 +43,7 @@ fun TextboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Tex
     val value = scoutingViewModel.getFieldJson()[fieldContent.id].fieldContent
     UserInputs.TextboxInput(
         value = value,
-        onValueChange = { scoutingViewModel.saveFieldValue(fieldContent.id, value) },
+        onValueChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it) },
         label = fieldContent.label,
         singleLine = fieldContent.singleLine,
         forceNumberInput = fieldContent.forceNumberInput,
