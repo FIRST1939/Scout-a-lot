@@ -72,11 +72,7 @@ fun RadioButtonFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent:
 
 @Composable
 fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Switch) {
-    val checked = when (scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent) {
-        "true" -> true
-        "false" -> false
-        else -> false
-    }
+    val checked = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent.toBoolean()
     UserInputs.SwitchTextBarInput(
         checked = checked,
         onCheckedChange = {
@@ -91,11 +87,19 @@ fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Swit
 
 @Composable
 fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Checkbox) {
-    var checked by remember { mutableStateOf(List(fieldContent.options.size) { false }) }
+    val rawChecked = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+    val checked = remember(rawChecked, fieldContent.options.size) {
+        val list = rawChecked.split(",").map { it.toBoolean() }.toMutableList()
+        if (list.size != fieldContent.options.size) {
+            fieldContent.options.map { false }.toMutableList()
+        } else {
+            list
+        }
+    }
     Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
     UserInputs.CheckboxInput(
         checked = checked,
-        onCheckedChange = { checked = it },
+        onCheckedChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it.toString()) },
         checkboxOptions = fieldContent.options,
         maxSelected = fieldContent.maxSelected,
         minSelected = fieldContent.maxSelected
