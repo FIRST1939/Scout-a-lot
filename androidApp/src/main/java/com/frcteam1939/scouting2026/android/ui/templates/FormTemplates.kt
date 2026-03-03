@@ -85,24 +85,41 @@ fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Swit
     )
 }
 
+/**
+ * Converts a string of booleans (e.g. "[true, false]" or "true,false")
+ * into a List<Boolean>.
+ */
+fun String.toBooleanList(expectedSize: Int): List<Boolean> {
+    val cleanString = this
+        .replace("[", "")
+        .replace("]", "")
+        .replace(" ", "")
+        .trim()
+
+    if (cleanString.isEmpty()) return List(expectedSize) { false }
+
+    val parsed = cleanString.split(",")
+        .map { it.lowercase().toBoolean() }
+
+    return if (parsed.size != expectedSize) {
+        List(expectedSize) { false }
+    } else {
+        parsed
+    }
+}
 @Composable
 fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Checkbox) {
-    val rawChecked = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
-    val checked = remember(rawChecked, fieldContent.options.size) {
-        val list = rawChecked.split(",").map { it.toBoolean() }.toMutableList()
-        if (list.size != fieldContent.options.size) {
-            fieldContent.options.map { false }.toMutableList()
-        } else {
-            list
-        }
+    val rawData by scoutingViewModel.getFieldJson().collectAsState()
+    val currentString = rawData[fieldContent.id].fieldContent
+
+    val checked = remember(currentString, fieldContent.options.size) {
+        currentString.toBooleanList(fieldContent.options.size)
     }
+
     Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
     UserInputs.CheckboxInput(
         checked = checked,
-        onCheckedChange = {
-            println(it.toString())
-            scoutingViewModel.saveFieldValue(fieldContent.id, it.toString())
-                          },
+        onCheckedChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it.toString()) },
         checkboxOptions = fieldContent.options,
         maxSelected = fieldContent.maxSelected,
         minSelected = fieldContent.minSelected

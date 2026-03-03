@@ -43,17 +43,17 @@ class ScoutingViewModel(
   { "id": 1, "fieldName": "Starting Position", "fieldType": "starting_position", "fieldContent": "null" },
   { "id": 2, "fieldName": "Robot is preloaded?", "fieldType": "switch", "fieldContent": "false" },
   { "id": 3, "fieldName": "Robot shoots?", "fieldType": "switch", "fieldContent": "false" },
-  { "id": 4, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "[]" },
+  { "id": 4, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "" },
   { "id": 5, "fieldName": "Hub Scoring", "fieldType": "hub_scoring_auto", "fieldContent": "null" },
   { "id": 6, "fieldName": "Robot climbs tower?", "fieldType": "switch", "fieldContent": "false" }
 ]
 """.trimIndent()
     val DEFAULT_FORM_MATCH_TELEOP_JSON = """
 [
-  { "id": 0, "fieldName": "Travel", "fieldType": "checkbox", "fieldContent": "[]" },
+  { "id": 0, "fieldName": "Travel", "fieldType": "checkbox", "fieldContent": "" },
   { "id": 1, "fieldName": "Difficulty travelling", "fieldType": "switch", "fieldContent": "false" },
   { "id": 2, "fieldName": "Plays defense", "fieldType": "switch", "fieldContent": "false" },
-  { "id": 3, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "[]" },
+  { "id": 3, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "" },
   { "id": 4, "fieldName": "Pushes fuel into outpost", "fieldType": "switch", "fieldContent": "false" },
   { "id": 5, "fieldName": "Ferry volume", "fieldType": "button_bar", "fieldContent": "null" },
   { "id": 6, "fieldName": "Hub Scoring", "fieldType": "hub_scoring_teleop", "fieldContent": "null" }
