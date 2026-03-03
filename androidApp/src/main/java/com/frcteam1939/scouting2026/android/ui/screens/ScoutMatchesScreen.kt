@@ -79,7 +79,10 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
                     makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT).show()
                 }
 
-                if (canStartScouting) navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
+                if (canStartScouting) {
+                    navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
+                    scoutingViewModel.resetFormJsons()
+                }
             },
             text = "Scout Match",
         )
@@ -163,7 +166,10 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             // Yes button
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO) },
+                onClick = {
+                    navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO)
+                    scoutingViewModel.changeCurrentPage(newCurrentPage = "Auto")
+                },
                 text = "Yes",
                 modifier = Modifier.padding(all = 25.dp),
                 containerColor = MaterialTheme.colorScheme.primary

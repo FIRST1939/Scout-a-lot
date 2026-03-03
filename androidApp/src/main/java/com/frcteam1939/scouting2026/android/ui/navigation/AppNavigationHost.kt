@@ -65,7 +65,7 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { innerPadding ->
+                MatchScoutingScaffold(navController, scoutingViewModel) { innerPadding ->
                     ScoutAutoScreen(scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
@@ -73,7 +73,7 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { innerPadding ->
+                MatchScoutingScaffold(navController, scoutingViewModel) { innerPadding ->
                     ScoutTeleopScreen(scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
@@ -81,7 +81,7 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { innerPadding ->
+                MatchScoutingScaffold(navController, scoutingViewModel) { innerPadding ->
                     ScoutEndgameScreen(navController, scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }

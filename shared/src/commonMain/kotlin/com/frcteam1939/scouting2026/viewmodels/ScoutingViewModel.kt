@@ -13,13 +13,117 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+
+data class Field(
+    val id: Int,
+    val fieldName: String,
+    val fieldType: String,
+    val fieldContent: String
+)
 
 class ScoutingViewModel(
     private val settingsRepository: SettingsRepository,
     private val eventsRepository: EventsRepository,
     private val scoutedDataRepository: ScoutedDataRepository,
 ) : ViewModel() {
+    // Can be "Auto", "Teleop", "Endgame", or "Pit"
+    private val _currentPage = MutableStateFlow("Auto")
+    val currentPage: StateFlow<String> = _currentPage.asStateFlow()
+    fun changeCurrentPage(newCurrentPage: String) {
+        _currentPage.value = newCurrentPage
+    }
+
+    val DEFAULT_FORM_MATCH_AUTO_JSON = """
+[
+  { "id": 0, "fieldName": "Scouter Name", "fieldType": "textbox", "fieldContent": "" },
+  { "id": 1, "fieldName": "Starting Position", "fieldType": "starting_position", "fieldContent": "null" },
+  { "id": 2, "fieldName": "Robot is preloaded?", "fieldType": "switch", "fieldContent": "false" },
+  { "id": 3, "fieldName": "Robot shoots?", "fieldType": "switch", "fieldContent": "false" },
+  { "id": 4, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "null" },
+  { "id": 5, "fieldName": "Hub Scoring", "fieldType": "hub_scoring_auto", "fieldContent": "null" },
+  { "id": 6, "fieldName": "Robot climbs tower?", "fieldType": "switch", "fieldContent": "false" }
+]
+""".trimIndent()
+    val DEFAULT_FORM_MATCH_TELEOP_JSON = """
+[
+  { "id": 0, "fieldName": "Travel", "fieldType": "checkbox", "fieldContent": "null" },
+  { "id": 1, "fieldName": "Difficulty travelling", "fieldType": "switch", "fieldContent": "false" },
+  { "id": 2, "fieldName": "Plays defense", "fieldType": "switch", "fieldContent": "false" },
+  { "id": 3, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "null" },
+  { "id": 4, "fieldName": "Pushes fuel into outpost", "fieldType": "switch", "fieldContent": "false" },
+  { "id": 5, "fieldName": "Ferry volume", "fieldType": "button_bar", "fieldContent": "null" },
+  { "id": 6, "fieldName": "Hub Scoring", "fieldType": "hub_scoring_teleop", "fieldContent": "null" }
+]
+""".trimIndent()
+    val DEFAULT_FORM_MATCH_ENDGAME_JSON = """
+[
+  { "id": 0, "fieldName": "Tower level", "fieldType": "dropdown", "fieldContent": "0" },
+  { "id": 1, "fieldName": "Robot died during match?", "fieldType": "switch", "fieldContent": "false" },
+  { "id": 2, "fieldName": "Qualitative notes", "fieldType": "textbox", "fieldContent": "" }
+]
+""".trimIndent()
+    val DEFAULT_FORM_PIT_JSON = """
+[]
+    """.trimIndent()
+
+    private val _matchAutoJson = MutableStateFlow(Json.decodeFromString<List<Field>>(DEFAULT_FORM_MATCH_AUTO_JSON))
+    val matchAutoJson: StateFlow<List<Field>> = _matchAutoJson.asStateFlow()
+    fun changeMatchAutoJson(newMatchAutoJson: List<Field>) {
+        _matchAutoJson.value = newMatchAutoJson
+    }
+
+    private val _matchTeleopJson = MutableStateFlow(Json.decodeFromString<List<Field>>(DEFAULT_FORM_MATCH_TELEOP_JSON))
+    val matchTeleopJson: StateFlow<List<Field>> = _matchTeleopJson.asStateFlow()
+    fun changeMatchTeleopJson(newMatchTeleopJson: List<Field>) {
+        _matchTeleopJson.value = newMatchTeleopJson
+    }
+
+    private val _matchEndgameJson = MutableStateFlow(Json.decodeFromString<List<Field>>(DEFAULT_FORM_MATCH_ENDGAME_JSON))
+    val matchEndgameJson: StateFlow<List<Field>> = _matchEndgameJson.asStateFlow()
+    fun changeMatchEndgameJson(newMatchEndgameJson: List<Field>) {
+        _matchEndgameJson.value = newMatchEndgameJson
+    }
+
+    private val _pitJson = MutableStateFlow(Json.decodeFromString<List<Field>>(DEFAULT_FORM_PIT_JSON))
+    val pitJson: StateFlow<List<Field>> = _pitJson.asStateFlow()
+    fun changePitJson(newPitJson: List<Field>) {
+        _pitJson.value = newPitJson
+    }
+
+    fun resetFormJsons() {
+        _matchAutoJson.value = Json.decodeFromString(DEFAULT_FORM_MATCH_AUTO_JSON)
+        _matchTeleopJson.value = Json.decodeFromString(DEFAULT_FORM_MATCH_TELEOP_JSON)
+        _matchEndgameJson.value = Json.decodeFromString(DEFAULT_FORM_MATCH_ENDGAME_JSON)
+    }
+
+    fun saveFieldValue(id: Int, fieldContent: String) {
+        val updateList: (List<Field>) -> List<Field> = { list ->
+            list.map { field ->
+                if (field.id == id) field.copy(fieldContent = fieldContent) else field
+            }
+        }
+
+        when (currentPage.value) {
+            "Auto" -> _matchAutoJson.value = updateList(_matchAutoJson.value)
+            "Teleop" -> _matchTeleopJson.value = updateList(_matchTeleopJson.value)
+            "Endgame" -> _matchEndgameJson.value = updateList(_matchEndgameJson.value)
+            "Pit" -> _pitJson.value = updateList(_pitJson.value)
+            else -> println("ERROR: Invalid page, could not save field data!")
+        }
+    }
+
+    fun getFieldJson(): List<Field> {
+        return when (currentPage.value) {
+            "Auto" -> _matchAutoJson.value
+            "Teleop" -> _matchTeleopJson.value
+            "Endgame" -> _matchEndgameJson.value
+            "Pit" -> _pitJson.value
+            else -> emptyList()
+        }
+    }
+
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
     val alliance: String?
         get() = settings.value?.deviceRobotAssignment?.dropLast(2)
@@ -27,7 +131,6 @@ class ScoutingViewModel(
         get() = settings.value?.deviceRobotAssignment?.takeLast(1)?.toIntOrNull()
     private val _matchNumber = MutableStateFlow("")
     val matchNumber: StateFlow<String> = _matchNumber.asStateFlow()
-
     fun changeMatchNumber(newMatchNumber: String) {
         _matchNumber.value = newMatchNumber
     }

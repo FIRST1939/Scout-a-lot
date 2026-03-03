@@ -57,7 +57,7 @@ import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import kotlin.collections.contains
 
 @Composable
-fun MatchScoutingBottomBar(navController: NavController, currentRoute: String?) {
+fun MatchScoutingBottomBar(navController: NavController, scoutingViewModel: ScoutingViewModel, currentRoute: String?) {
     NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
         val items =
             listOf(
@@ -83,6 +83,7 @@ fun MatchScoutingBottomBar(navController: NavController, currentRoute: String?) 
                         restoreState = true
                         popUpTo(AppRoutes.MatchScouting.SCOUT_AUTO) { saveState = true }
                     }
+                    scoutingViewModel.changeCurrentPage(newCurrentPage = label)
                 },
                 icon = { Icon(icon, contentDescription = label) },
                 label = { Text(label) },
@@ -104,6 +105,7 @@ fun MatchScoutingBottomBar(navController: NavController, currentRoute: String?) 
 @Composable
 fun MatchScoutingScaffold(
     navController: NavController,
+    scoutingViewModel: ScoutingViewModel,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -118,7 +120,7 @@ fun MatchScoutingScaffold(
                     AppRoutes.MatchScouting.SCOUT_ENDGAME
                 )
             ) {
-                MatchScoutingBottomBar(navController, currentRoute)
+                MatchScoutingBottomBar(navController, scoutingViewModel, currentRoute)
             }
         }
     ) { innerPadding -> content(innerPadding) }

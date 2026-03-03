@@ -40,10 +40,10 @@ import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
 
 @Composable
 fun TextboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Textbox) {
-    var value by remember { mutableStateOf("") }
+    val value = scoutingViewModel.getFieldJson()[fieldContent.id].fieldContent
     UserInputs.TextboxInput(
         value = value,
-        onValueChange = { value = it },
+        onValueChange = { scoutingViewModel.saveFieldValue(fieldContent.id, value) },
         label = fieldContent.label,
         singleLine = fieldContent.singleLine,
         forceNumberInput = fieldContent.forceNumberInput,

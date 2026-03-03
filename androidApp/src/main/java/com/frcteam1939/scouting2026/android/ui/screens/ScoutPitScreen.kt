@@ -42,6 +42,8 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
                 text = team,
                 buttonText = String(),
                 onClick = {
+                    scoutingViewModel.resetFormJsons()
+                    scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
                     navController.navigate(AppRoutes.PitScouting.SCOUT_PITS_FORM)
                     scoutingViewModel.changeSelectedTeam(team)
                 },
