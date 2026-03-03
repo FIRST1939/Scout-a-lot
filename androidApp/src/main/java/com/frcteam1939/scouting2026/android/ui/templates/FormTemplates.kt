@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +41,7 @@ import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
 
 @Composable
 fun TextboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Textbox) {
-    val value = scoutingViewModel.getFieldJson()[fieldContent.id].fieldContent
+    val value = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
     UserInputs.TextboxInput(
         value = value,
         onValueChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it) },

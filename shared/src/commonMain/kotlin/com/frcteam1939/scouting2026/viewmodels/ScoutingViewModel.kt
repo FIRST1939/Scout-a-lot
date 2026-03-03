@@ -116,13 +116,13 @@ class ScoutingViewModel(
         }
     }
 
-    fun getFieldJson(): List<Field> {
+    fun getFieldJson(): StateFlow<List<Field>> {
         return when (currentPage.value) {
-            "Auto" -> _matchAutoJson.value
-            "Teleop" -> _matchTeleopJson.value
-            "Endgame" -> _matchEndgameJson.value
-            "Pit" -> _pitJson.value
-            else -> emptyList()
+            "Auto" -> _matchAutoJson
+            "Teleop" -> _matchTeleopJson
+            "Endgame" -> _matchEndgameJson
+            "Pit" -> _pitJson
+            else -> _matchAutoJson // default
         }
     }
 
