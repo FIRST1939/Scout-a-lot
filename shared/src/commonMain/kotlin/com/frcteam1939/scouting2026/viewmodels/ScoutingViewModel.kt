@@ -67,7 +67,14 @@ class ScoutingViewModel(
 ]
 """.trimIndent()
     val DEFAULT_FORM_PIT_JSON = """
-[]
+[
+  { "id": 0, "fieldName": "Scouter Names", "fieldType": "textbox", "fieldContent": "" },
+  { "id": 1, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "[]" },
+  { "id": 2, "fieldName": "Approximate Fuel Capacity", "fieldType": "textbox", "fieldContent": "" },
+  { "id": 3, "fieldName": "Where can the robot travel", "fieldType": "checkbox", "fieldContent": "[]" },
+  { "id": 4, "fieldName": "Robot's Drivetrain", "fieldType": "textbox", "fieldContent": "" },
+  { "id": 5, "fieldName": "What levels can it climb?", "fieldType": "checkbox", "fieldContent": "[]" }
+]
     """.trimIndent()
 
     private val _matchAutoJson = MutableStateFlow(Json.decodeFromString<List<Field>>(DEFAULT_FORM_MATCH_AUTO_JSON))
