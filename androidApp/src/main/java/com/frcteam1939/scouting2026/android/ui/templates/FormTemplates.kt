@@ -375,7 +375,8 @@ fun RebuiltStartingPositionTemplate(
     if (scoutingViewModel.alliance == "Red") {
         startingPositions = listOf("Depot-side Trench", "Depot-side Bump", "Hub", "Outpost-side Bump", "Outpost-side Trench")
     }
-    var selectedPosition by remember { mutableStateOf(startingPositions[0]) }
+    val selectedPosition = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+        .ifBlank { startingPositions[0] }
 
     Column(
         modifier = Modifier
@@ -406,7 +407,7 @@ fun RebuiltStartingPositionTemplate(
             UserInputs.RadioButtonInput(
                 radioOptions = startingPositions,
                 selectedOption = selectedPosition,
-                onOptionSelected = { selectedPosition = it },
+                onOptionSelected = { scoutingViewModel.saveFieldValue(fieldContent.id, it) },
                 modifier = Modifier.weight(1f)
             )
         }
