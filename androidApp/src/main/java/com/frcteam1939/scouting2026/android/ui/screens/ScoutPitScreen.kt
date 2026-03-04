@@ -23,11 +23,14 @@ import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.templates.ButtonBarTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.CheckboxFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
 import com.frcteam1939.scouting2026.data.structuring.ButtonBar
+import com.frcteam1939.scouting2026.data.structuring.Checkbox
 import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
-
+import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
 @Composable
 fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     var teamList by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -80,15 +83,65 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        CheckboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Checkbox(
+                id = 1,
+                label = "Robot picks up from...",
+                options = listOf("Depot", "Outpost", "Alliance Zone", "Neutral Zone")
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         TextboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Textbox(
-                id = 1,
+                id = 2,
                 label = "Approximate Fuel Capacity",
                 singleLine = true,
                 forceNumberInput = true,
                 characterLimit = 3
             )
         )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        CheckboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Checkbox(
+                id = 3,
+                label = "Where can the robot travel",
+                options = listOf("Depot", "Outpost", "Alliance Zone", "Neutral Zone")
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        TextboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Textbox(
+                id = 4,
+                label = "Robot's Drivetrain",
+                singleLine = true,
+                forceNumberInput = false
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        CheckboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Checkbox(
+                id = 5,
+                label = "What tower levels can it climb?",
+                options = listOf("1", "2", "3")
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = "Ask the team if you can take a picture of their robot."
+
+        )
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 100.dp),
+            text = "Send it in the #robopics channel in Discord with the team's number"
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
     }
 }
