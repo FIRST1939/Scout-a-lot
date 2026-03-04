@@ -61,7 +61,7 @@ class ScoutingViewModel(
 """.trimIndent()
     val DEFAULT_FORM_MATCH_ENDGAME_JSON = """
 [
-  { "id": 0, "fieldName": "Tower level", "fieldType": "dropdown", "fieldContent": "0" },
+  { "id": 0, "fieldName": "Tower level", "fieldType": "dropdown", "fieldContent": "" },
   { "id": 1, "fieldName": "Robot died during match?", "fieldType": "switch", "fieldContent": "false" },
   { "id": 2, "fieldName": "Qualitative notes", "fieldType": "textbox", "fieldContent": "" }
 ]
