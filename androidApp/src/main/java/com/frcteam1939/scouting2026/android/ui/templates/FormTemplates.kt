@@ -88,6 +88,7 @@ fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Swit
 /**
  * Converts a string of booleans (e.g. "[true, false]" or "true,false")
  * into a List<Boolean>.
+ * A helper function for CheckboxFieldTemplate() composable.
  */
 fun String.toBooleanList(expectedSize: Int): List<Boolean> {
     val cleanString = this
@@ -107,6 +108,7 @@ fun String.toBooleanList(expectedSize: Int): List<Boolean> {
         parsed
     }
 }
+
 @Composable
 fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Checkbox) {
     val rawData by scoutingViewModel.getFieldJson().collectAsState()
@@ -128,12 +130,15 @@ fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Ch
 
 @Composable
 fun ButtonBarTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: ButtonBar) {
-    var selectedOption: Int? by remember { mutableStateOf(null) }
+    val selectedOption = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent.toIntOrNull()
     Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
     UserInputs.SingleSelectButtonBarInput(
         options = fieldContent.options,
         selectedOption = selectedOption,
-        onOptionSelected = { selectedOption = if (selectedOption == it) null else it }
+        onOptionSelected = {
+            val newOption = if (selectedOption == it) null else it
+            scoutingViewModel.saveFieldValue(fieldContent.id, newOption.toString())
+        }
     )
 }
 
