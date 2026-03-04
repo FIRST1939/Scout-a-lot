@@ -144,7 +144,7 @@ fun ButtonBarTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Button
 
 @Composable
 fun CounterFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Counter) {
-    var value by remember { mutableIntStateOf(0) }
+    val value = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent.toIntOrNull() ?: 0
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,7 +157,7 @@ fun CounterFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Cou
             minVal = fieldContent.minVal,
             maxVal = fieldContent.maxVal,
             step = fieldContent.step,
-            onValueChange = { value = it },
+            onValueChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it.toString()) },
         )
     }
 }
