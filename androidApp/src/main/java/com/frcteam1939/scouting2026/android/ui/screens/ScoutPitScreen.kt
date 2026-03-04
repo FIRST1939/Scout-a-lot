@@ -94,11 +94,18 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            text = "Approximate Fuel Capacity",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
         TextboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Textbox(
                 id = 2,
-                label = "Approximate Fuel Capacity",
+                label = "Type here",
                 singleLine = true,
                 forceNumberInput = true,
                 characterLimit = 3
@@ -114,11 +121,18 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            text = "Robot's Driveterain",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
         TextboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Textbox(
                 id = 4,
-                label = "Robot's Drivetrain",
+                label = "Type here",
                 singleLine = true,
                 forceNumberInput = false
             )
