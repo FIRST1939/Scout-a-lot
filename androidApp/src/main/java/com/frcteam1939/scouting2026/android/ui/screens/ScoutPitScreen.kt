@@ -31,6 +31,8 @@ import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.text.font.FontWeight
+
 @Composable
 fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     var teamList by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -108,7 +110,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             fieldContent = Checkbox(
                 id = 3,
                 label = "Where can the robot travel",
-                options = listOf("Depot", "Outpost", "Alliance Zone", "Neutral Zone")
+                options = listOf("Under trench", "Over bump")
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
@@ -132,16 +134,22 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = "Ask the team if you can take a picture of their robot."
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(start = 10.dp, end = 10.dp, ),
+            text = "Ask the team if you can take a picture of their robot. Take it with your phone or the tablet.",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
 
         )
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(bottom = 100.dp),
-            text = "Send it in the #robopics channel in Discord with the team's number"
-        )
+                .padding(bottom = 100.dp, start = 10.dp, end = 10.dp, ),
+            text = "If you took it with your phone, send it in the #robopics channel in Discord with the team's number",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+            )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
     }
 }
