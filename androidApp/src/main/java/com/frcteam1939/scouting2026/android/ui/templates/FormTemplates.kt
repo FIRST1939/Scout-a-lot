@@ -164,11 +164,12 @@ fun CounterFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Cou
 
 @Composable
 fun DropdownFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Dropdown) {
-    var selectedOption by remember { mutableStateOf(fieldContent.options[0]) }
+    val selectedOption = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+        .ifBlank { fieldContent.options[0] }
     UserInputs.DropdownTextBarInput(
         options = fieldContent.options,
         selectedOption = selectedOption,
-        onOptionSelected = { selectedOption = it },
+        onOptionSelected = { scoutingViewModel.saveFieldValue(fieldContent.id, it) },
         text = fieldContent.label
     )
 }
