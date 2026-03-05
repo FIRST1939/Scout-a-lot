@@ -33,6 +33,7 @@ import androidx.navigation.compose.navigation
 import android.os.Build
 import com.frcteam1939.scouting2026.storage.readTextFile
 import com.frcteam1939.scouting2026.android.sync.bluetooth.InitBT
+import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 
@@ -82,6 +83,13 @@ fun getSettingsViewModel(
     return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }
 
+@Composable
+fun getDataViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): DataViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

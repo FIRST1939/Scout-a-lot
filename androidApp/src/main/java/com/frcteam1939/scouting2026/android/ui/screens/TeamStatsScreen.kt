@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.frcteam1939.scouting2026.viewmodels.DataViewModel
+import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 
 @Composable
-fun TeamStatsMainScreen(navController: NavController) {
+fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavController) {
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -36,7 +38,7 @@ fun TeamStatsMainScreen(navController: NavController) {
 }
 
 @Composable
-fun TeamStatsViewScreen(navController: NavController) {
+fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

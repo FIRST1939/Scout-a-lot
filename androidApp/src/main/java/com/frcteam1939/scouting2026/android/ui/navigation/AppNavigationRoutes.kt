@@ -19,8 +19,8 @@ object AppRoutes {
         MatchScouting.SCOUT_ENDGAME to "Scout Endgame",
         PitScouting.SCOUT_PITS to "Scout Pits",
         PitScouting.SCOUT_PITS_FORM to "Scout Pit Form",
-        MATCH_REPORTS to "Match Reports",
-        TEAM_STATS to "Team Stats",
+        MatchReports.MATCH_REPORTS to "Match Reports",
+        TeamStats.TEAM_STATS to "Team Stats",
         SYNC to "Sync",
         EditForms.EDIT_FORMS to "Edit Forms",
         EditForms.EDIT_PIT_FORM to "Edit Pit Form",
@@ -47,8 +47,19 @@ object AppRoutes {
         const val SCOUT_PITS = "scout_pits"
         const val SCOUT_PITS_FORM = "scout_pits_form"
     }
-    const val MATCH_REPORTS = "match_reports"
-    const val TEAM_STATS = "team_info"
+
+    object MatchReports {
+        const val GRAPH = "match_reports_graph"
+        const val MATCH_REPORTS = "match_reports"
+        const val VIEW_MATCH_REPORTS = "view_match_reports"
+    }
+
+    object TeamStats {
+        const val GRAPH = "team_stats_graph"
+        const val TEAM_STATS = "team_stats"
+        const val VIEW_TEAM_STATS = "view_team_stats"
+    }
+
     const val SYNC = "sync"
 
     object EditForms {
@@ -76,8 +87,8 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object Scouting : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scouting", Icons.Default.Build)
     object ScoutMatches : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scout Matches", Icons.Default.Build)
     object ScoutPits : Screen(AppRoutes.PitScouting.SCOUT_PITS, "Scout Pits", Icons.Default.Person)
-    object MatchReports : Screen(AppRoutes.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
-    object TeamStats : Screen(AppRoutes.TEAM_STATS, "Team Stats", Icons.Default.List)
+    object MatchReports : Screen(AppRoutes.MatchReports.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
+    object TeamStats : Screen(AppRoutes.TeamStats.TEAM_STATS, "Team Stats", Icons.Default.List)
     object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
     object EditForms : Screen(AppRoutes.EditForms.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.Settings.SETTINGS, "Settings", Icons.Default.Settings)
