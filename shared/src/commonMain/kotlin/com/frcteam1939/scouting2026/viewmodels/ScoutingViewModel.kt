@@ -74,7 +74,9 @@ class ScoutingViewModel(
   { "id": 2, "fieldName": "Approximate Fuel Capacity", "fieldType": "textbox", "fieldContent": "" },
   { "id": 3, "fieldName": "Where can the robot travel", "fieldType": "checkbox", "fieldContent": "[]" },
   { "id": 4, "fieldName": "Robot's Drivetrain", "fieldType": "textbox", "fieldContent": "" },
-  { "id": 5, "fieldName": "What levels can it climb?", "fieldType": "checkbox", "fieldContent": "[]" }
+  { "id": 5, "fieldName": "What levels can it climb?", "fieldType": "checkbox", "fieldContent": "[]" },
+  { "id": 6, "fieldName": "Auto Capabilities?", "fieldType": "textbox", "fieldContent": "" },
+  { "id": 7, "fieldName": "Any other notes go here:", "fieldType": "textbox", "fieldContent": "" }
 ]
     """.trimIndent()
 

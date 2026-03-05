@@ -131,7 +131,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally),
-            text = "Robot's Driveterain",
+            text = "Robot's Drivetrain",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
@@ -151,6 +151,40 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
                 id = 5,
                 label = "What tower levels can it climb?",
                 options = listOf("1", "2", "3")
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            text = "Auto Capabilities?",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+        TextboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Textbox(
+                id = 6,
+                label = "Type here",
+                singleLine = false,
+                forceNumberInput = false
+            )
+        )
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            text = "Any other notes go here:",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+        TextboxFieldTemplate(
+            scoutingViewModel = scoutingViewModel,
+            fieldContent = Textbox(
+                id = 7,
+                label = "Type here",
+                singleLine = false,
+                forceNumberInput = false
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
