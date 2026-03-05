@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,11 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
+import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun SyncScreen(navController: NavController) {
+fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     val context = LocalContext.current
     var fileContent by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     // Result launcher for picking a text file
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -41,6 +45,10 @@ fun SyncScreen(navController: NavController) {
             try {
                 context.contentResolver.openInputStream(it)?.use { inputStream ->
                     fileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
+                }
+                coroutineScope.launch {
+                    scoutingViewModel.importPitData(fileContent)
+                    makeText(context, "Data imported successfully", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 makeText(context, "Failed to read file", Toast.LENGTH_SHORT).show()
@@ -72,7 +80,6 @@ fun SyncScreen(navController: NavController) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                // Launch the picker for text files
                 filePickerLauncher.launch(arrayOf("text/plain"))
             },
             text = "Import and Show Data"
@@ -86,12 +93,14 @@ fun SyncScreen(navController: NavController) {
         )
         UserInputs.TextButtonInput(
             onClick = {
-                exportTextFile(
-                    fileName = fileName,
-                    content = "Did you get the photos printed? Bogos binted? Bogos BINTed? BINT BINT BINT BRAK  DOMER"
-                )
-                makeText(context, "Exported ✅", Toast.LENGTH_SHORT).show()
-                      },
+                coroutineScope.launch {
+                    exportTextFile(
+                        fileName = fileName,
+                        content = scoutingViewModel.getPitDataForExport(),
+                    )
+                    makeText(context, "Exported ✅", Toast.LENGTH_SHORT).show()
+                }
+            },
             text = "Export"
         )
 

@@ -1,6 +1,7 @@
 package com.frcteam1939.scouting2026.viewmodels
 
 // android ViewModel import can be replaced with a general ViewModel class later, im too lazy
+import androidx.collection.DoubleList
 import androidx.lifecycle.ViewModel
 
 import com.frcteam1939.scouting2026.data.entities.AppSettings
@@ -232,6 +233,45 @@ class ScoutingViewModel(
         val oldData = scoutedDataRepository.getPitData(selectedTeam.value, "OKC Pit Form 2026").first()?.scoutedData
         if (oldData != null) {
             changePitJson(newPitJson = Json.decodeFromString(oldData))
+        }
+    }
+
+    // STUFF ADDED BELOW THIS LINE MUST BE MOVED TO A DEDICATED SYNC VIEWMODEL BEFORE GKC
+
+    suspend fun getPitDataForExport(): String {
+        val eventName = settings.value?.currentEvent ?: ""
+        val teamList = eventsRepository.getEventByName(eventName).first()?.eventTeamList ?: emptyList()
+
+        val pitDataList: List<Pair<String, String>> = teamList.map { team ->
+            val pitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026").first()
+            val teamName = pitData?.team ?: ""
+            val scoutedData = pitData?.scoutedData ?: ""
+            teamName to scoutedData
+        }
+
+        return pitDataList.joinToString("\n") { (team, data) ->
+            "$team,$data"
+        }
+    }
+
+    fun importPitData(importedDataString: String) {
+        val eventName = settings.value?.currentEvent ?: ""
+        val lines = importedDataString.lines().filter { it.isNotBlank() }
+
+        lines.forEach { line ->
+            val firstCommaIndex = line.indexOf(",")
+
+            if (firstCommaIndex > 0) {
+                val team = line.substring(0, firstCommaIndex).trim()
+                val scoutedData = line.substring(firstCommaIndex + 1).trim()
+
+                if (team.isNotBlank()) {
+                    scoutedDataRepository.insertPitData(
+                        scoutedData = ScoutedData(id = 0, team = team, matchNumber = "0", formName = "OKC Pit Form 2026", formType = "pit", scoutedData),
+                        team = team
+                    )
+                }
+            }
         }
     }
 }

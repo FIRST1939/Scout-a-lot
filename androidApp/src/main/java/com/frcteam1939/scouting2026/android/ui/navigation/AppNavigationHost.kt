@@ -116,10 +116,13 @@ fun AppNavigationHost(
                 TeamStatsMainScreen(navController)
             }
         }
-        composable(AppRoutes.SYNC) {
+        composable(AppRoutes.SYNC) { backStackEntry ->
             // TODO: device & data synchronization
+            val scoutingViewModel = getScoutingViewModel(
+                backStackEntry, navController, AppRoutes.SYNC
+            )
             MainScreenScaffold(navController, drawerState, scope) {
-                SyncScreen(navController)
+                SyncScreen(scoutingViewModel, navController)
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
