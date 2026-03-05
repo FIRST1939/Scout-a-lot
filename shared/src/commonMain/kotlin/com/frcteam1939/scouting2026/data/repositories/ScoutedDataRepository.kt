@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 class ScoutedDataRepository(private val db: AppDatabase, private val applicationScope: CoroutineScope) {
     private val dao = db.scoutedDataDao()
 
-    fun getPitData(team: String, formName: String): Flow<ScoutedData> {
-        return dao.getPitData(team, formName)
+    fun getPitData(team: String, formName: String): Flow<ScoutedData?> {
+        return dao.getPitDataNullable(team, formName)
     }
 
     fun insertPitData(scoutedData: ScoutedData, team: String) {

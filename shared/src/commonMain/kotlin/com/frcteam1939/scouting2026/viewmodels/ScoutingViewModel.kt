@@ -225,4 +225,11 @@ class ScoutingViewModel(
             team = team
         )
     }
+
+    suspend fun loadPreviousPitData() {
+        val oldData = scoutedDataRepository.getPitData(selectedTeam.value, "OKC Pit Form 2026").first()?.scoutedData
+        if (oldData != null) {
+            changePitJson(newPitJson = Json.decodeFromString(oldData))
+        }
+    }
 }

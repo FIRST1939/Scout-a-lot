@@ -31,7 +31,9 @@ import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.font.FontWeight
+import kotlinx.coroutines.launch
 
 @Composable
 fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
@@ -42,15 +44,19 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
     Column(
         verticalArrangement = Arrangement.Top
     ) {
+        val coroutineScope = rememberCoroutineScope()
         teamList.forEach { team ->
             UserInputs.OutlinedButtonTextBarInput(
                 text = team,
                 buttonText = String(),
                 onClick = {
                     scoutingViewModel.resetFormJsons()
-                    scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
-                    navController.navigate(AppRoutes.PitScouting.SCOUT_PITS_FORM)
                     scoutingViewModel.changeSelectedTeam(team)
+                    scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
+                    coroutineScope.launch {
+                        scoutingViewModel.loadPreviousPitData()
+                    }
+                    navController.navigate(AppRoutes.PitScouting.SCOUT_PITS_FORM)
                 },
                 icon = Icons.Default.ArrowForward,
                 textColor = MaterialTheme.colorScheme.onBackground
