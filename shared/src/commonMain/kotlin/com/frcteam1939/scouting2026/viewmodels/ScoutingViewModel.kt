@@ -4,6 +4,7 @@ package com.frcteam1939.scouting2026.viewmodels
 import androidx.lifecycle.ViewModel
 
 import com.frcteam1939.scouting2026.data.entities.AppSettings
+import com.frcteam1939.scouting2026.data.entities.ScoutedData
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
@@ -105,6 +106,7 @@ class ScoutingViewModel(
         _matchAutoJson.value = Json.decodeFromString(DEFAULT_FORM_MATCH_AUTO_JSON)
         _matchTeleopJson.value = Json.decodeFromString(DEFAULT_FORM_MATCH_TELEOP_JSON)
         _matchEndgameJson.value = Json.decodeFromString(DEFAULT_FORM_MATCH_ENDGAME_JSON)
+        _pitJson.value = Json.decodeFromString(DEFAULT_FORM_PIT_JSON)
     }
 
     fun saveFieldValue(id: Int, fieldContent: String) {
@@ -208,5 +210,19 @@ class ScoutingViewModel(
             }
         }
         return "ERROR: COULD NOT FIND TEAM"
+    }
+
+    fun savePitData(team: String) {
+        scoutedDataRepository.insertPitData(
+            ScoutedData(
+                id = 0,
+                team = team,
+                matchNumber = "0",
+                formName = "OKC Pit Form 2026",
+                formType = "pit",
+                scoutedData = Json.encodeToString(pitJson.value)
+            ),
+            team = team
+        )
     }
 }

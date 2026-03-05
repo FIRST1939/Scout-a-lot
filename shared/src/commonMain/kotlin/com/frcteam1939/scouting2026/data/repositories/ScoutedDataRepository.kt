@@ -4,6 +4,8 @@ import com.frcteam1939.scouting2026.data.AppDatabase
 import com.frcteam1939.scouting2026.data.entities.ScoutedData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class ScoutedDataRepository(private val db: AppDatabase, private val applicationScope: CoroutineScope) {
@@ -13,9 +15,13 @@ class ScoutedDataRepository(private val db: AppDatabase, private val application
         return dao.getPitData(team, formName)
     }
 
-    fun insertPitData(scoutedData: ScoutedData) {
+    fun insertPitData(scoutedData: ScoutedData, team: String) {
         applicationScope.launch {
-            dao.insertData(scoutedData)
+            if (dao.getPitDataNullable(scoutedData.team, "OKC Pit Form 2026").first()?.scoutedData != null) {
+                dao.updatePitData(scoutedData.scoutedData, scoutedData.team, "OKC Pit Form 2026")
+            } else {
+                dao.insertData(scoutedData)
+            }
         }
     }
 }

@@ -70,6 +70,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             text = scoutingViewModel.selectedTeam.collectAsState().value,
             buttonText = String(),
             onClick = {
+                scoutingViewModel.savePitData(scoutingViewModel.selectedTeam.value)
                 navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
             },
             icon = Icons.Default.Check,
