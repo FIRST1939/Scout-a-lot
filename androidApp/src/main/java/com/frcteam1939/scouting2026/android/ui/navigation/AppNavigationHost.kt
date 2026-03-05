@@ -35,7 +35,6 @@ import com.frcteam1939.scouting2026.android.ui.navigation.SubScreenScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
-import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
@@ -112,7 +111,7 @@ fun AppNavigationHost(
             }
         }
         navigation(
-            startDestination = AppRoutes.MatchReports.MATCH_REPORTS, route = AppRoutes.PitScouting.GRAPH
+            startDestination = AppRoutes.MatchReports.MATCH_REPORTS, route = AppRoutes.MatchReports.GRAPH
         ) {
             composable(AppRoutes.MatchReports.MATCH_REPORTS) {
                 MainScreenScaffold(navController, drawerState, scope) {
@@ -131,7 +130,9 @@ fun AppNavigationHost(
             }
             composable(AppRoutes.TeamStats.VIEW_TEAM_STATS) { backStackEntry ->
                 val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.TeamStats.GRAPH)
-                ViewTeamStatsScreen(dataViewModel, navController)
+                SubScreenScaffold(navController) {
+                    ViewTeamStatsScreen(dataViewModel, navController)
+                }
             }
         }
         composable(AppRoutes.SYNC) { backStackEntry ->

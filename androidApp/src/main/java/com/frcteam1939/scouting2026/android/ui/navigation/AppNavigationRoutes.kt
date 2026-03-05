@@ -21,6 +21,7 @@ object AppRoutes {
         PitScouting.SCOUT_PITS_FORM to "Scout Pit Form",
         MatchReports.MATCH_REPORTS to "Match Reports",
         TeamStats.TEAM_STATS to "Team Stats",
+        TeamStats.VIEW_TEAM_STATS to "View Team Stats",
         SYNC to "Sync",
         EditForms.EDIT_FORMS to "Edit Forms",
         EditForms.EDIT_PIT_FORM to "Edit Pit Form",
