@@ -90,6 +90,8 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
     var approximateCapacity by remember { mutableStateOf("Fetching...") }
     var ferryVolume by remember { mutableStateOf("Fetching...") }
     var drivetrain by remember { mutableStateOf("Fetching...") }
+    var qualitativeComments: List<String> by remember { mutableStateOf(listOf("Fetching...")) }
+    var robotDeathCount by remember { mutableStateOf("Fetching...") }
 
     LaunchedEffect(dataViewModel.currentPitData.collectAsState().value) {
         dataViewModel.updateRawData(dataViewModel.currentTeam.value)
@@ -98,6 +100,8 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
         approximateCapacity = dataViewModel.getApproximateCapacity() ?: "Unknown"
         ferryVolume = dataViewModel.getAvgFerryVolume()
         drivetrain = dataViewModel.getDrivetrain() ?: "Unknown"
+        qualitativeComments = dataViewModel.getQualitativeComments()
+        robotDeathCount = dataViewModel.getDeadMatchCount().toString()
     }
 
     Column(
@@ -140,5 +144,13 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
             }
         }
         Text("Drivetrain: $drivetrain", modifier = Modifier.padding(all = 4.dp))
+        Text("Qualitative comments:", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium)
+        qualitativeComments.forEach { comment ->
+            Divider()
+            Text(comment, modifier = Modifier.padding(all = 4.dp))
+        }
+        if (robotDeathCount != "0") {
+            Text("Robot has died in $robotDeathCount matches", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.tertiary)
+        }
     }
 }

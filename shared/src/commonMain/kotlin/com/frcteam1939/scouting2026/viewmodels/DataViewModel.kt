@@ -167,76 +167,68 @@ class DataViewModel(
     }
 
     fun getAvgSpeedAndAccuracyAuto(): List<String> {
-        if (currentAutoData.value.isEmpty()) return listOf("Unknown", "Unknown")
+        val data = currentAutoData.value
+        if (data.isEmpty()) return listOf("Unknown", "Unknown")
+
         return try {
             val accuracyList = mutableListOf<Int>()
             val speedList = mutableListOf<Int>()
-            var accuracy: Number = 0
-            var speed: Number = 0
 
-            currentAutoData.value.forEach { scoutedData ->
-                if (scoutedData[5].fieldContent.isNotEmpty()) {
+            data.forEach { scoutedData ->
+                // Use isNotBlank() to avoid processing empty/whitespace strings
+                if (scoutedData.getOrNull(5)?.fieldContent?.isNotBlank() == true) {
                     val scoring = parseRebuiltHubData(scoutedData[5].fieldContent)
-                    val accuracyListInMatch = scoring.flatten().mapNotNull {
-                        it[0]
-                    }
-                    val speedListInMatch = scoring.flatten().mapNotNull {
-                        it[1]
-                    }
+                    val flattened = scoring.flatten()
+                    println("scoring: $scoring")
+                    println("flattened: $flattened")
 
-                    println("Acc list in match: $accuracyListInMatch")
-                    println("Speed list in match: $speedListInMatch")
-
-                    accuracyList.addAll(accuracyListInMatch)
-                    speedList.addAll(speedListInMatch)
-                } else {
-                    listOf("Unknown", "Unknown")
+                    accuracyList.addAll(flattened.mapNotNull { it[0] })
+                    speedList.addAll(flattened.mapNotNull { it[1] })
                 }
             }
 
-            println(accuracyList)
-            println(speedList)
-            accuracy = averageList(accuracyList)
-            speed = averageList(speedList)
-            listOf(accuracy.toString().take(4), speed.toString().take(4))
+            if (accuracyList.isEmpty() || speedList.isEmpty()) return listOf("Unknown", "Unknown")
+
+            // Use average() and format properly
+            val avgAcc = accuracyList.average()
+            val avgSpeed = speedList.average()
+
+            // Formats to 1 decimal place (e.g., "85.2")
+            listOf(avgAcc.toString().take(4), avgSpeed.toString().take(4))
         } catch (e: Exception) {
             listOf("Unknown", "Unknown")
         }
     }
 
     fun getAvgSpeedAndAccuracyTeleop(): List<String> {
-        if (currentTeleopData.value.isEmpty()) return listOf("Unknown", "Unknown")
+        val data = currentTeleopData.value
+        if (data.isEmpty()) return listOf("Unknown", "Unknown")
+
         return try {
             val accuracyList = mutableListOf<Int>()
             val speedList = mutableListOf<Int>()
-            var accuracy: Number = 0
-            var speed: Number = 0
 
-            currentTeleopData.value.forEach { scoutedData ->
-                if (scoutedData[5].fieldContent.isNotEmpty()) {
-                    val scoring = parseRebuiltHubData(scoutedData[5].fieldContent)
-                    val accuracyListInMatch = scoring.flatten().mapNotNull {
-                        it[0]
-                    }
-                    val speedListInMatch = scoring.flatten().mapNotNull {
-                        it[1]
-                    }
+            data.forEach { scoutedData ->
+                // Use isNotBlank() to avoid processing empty/whitespace strings
+                if (scoutedData.getOrNull(6)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[6].fieldContent)
+                    val flattened = scoring.flatten()
+                    println("scoring: $scoring")
+                    println("flattened: $flattened")
 
-                    println("Acc list in match: $accuracyListInMatch")
-                    println("Speed list in match: $speedListInMatch")
-
-                    accuracyList.addAll(accuracyListInMatch)
-                    speedList.addAll(speedListInMatch)
-                } else {
-                    listOf("Unknown", "Unknown")
+                    accuracyList.addAll(flattened.mapNotNull { it[0] })
+                    speedList.addAll(flattened.mapNotNull { it[1] })
                 }
             }
 
-            println(accuracyList)
-            println(speedList)
-            accuracy = averageList(accuracyList)
-            speed = averageList(speedList)
-            listOf(accuracy.toString().take(4), speed.toString().take(4))
+            if (accuracyList.isEmpty() || speedList.isEmpty()) return listOf("Unknown", "Unknown")
+
+            // Use average() and format properly
+            val avgAcc = accuracyList.average()
+            val avgSpeed = speedList.average()
+
+            // Formats to 1 decimal place (e.g., "85.2")
+            listOf(avgAcc.toString().take(4), avgSpeed.toString().take(4))
         } catch (e: Exception) {
             listOf("Unknown", "Unknown")
         }
@@ -287,6 +279,36 @@ class DataViewModel(
         } catch (e: Exception) {
             "Unknown"
         }
+    }
+
+    //fun getClimbAbilities(): List<String> {
+
+    //}
+
+    fun getDeadMatchCount(): Int {
+        if (currentEndgameData.value.isEmpty()) return 0
+        var deadMatchCount = 0
+
+        currentEndgameData.value.forEach { scoutedData ->
+            if (scoutedData[1].fieldContent == "true") {
+                deadMatchCount += 1
+            }
+        }
+
+        return deadMatchCount
+    }
+
+    fun getQualitativeComments(): List<String> {
+        if (currentEndgameData.value.isEmpty()) return listOf("Unknown")
+        val commentList = mutableListOf<String>()
+
+        currentEndgameData.value.forEach { scoutedData ->
+            if (scoutedData[2].fieldContent.isNotBlank()) {
+                commentList.add(scoutedData[2].fieldContent)
+            }
+        }
+
+        return commentList
     }
 
     suspend fun getTeamList(): List<String> {
