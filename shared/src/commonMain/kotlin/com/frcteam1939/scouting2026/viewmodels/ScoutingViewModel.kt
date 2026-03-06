@@ -153,6 +153,7 @@ class ScoutingViewModel(
     val selectedTeam: StateFlow<String> = _selectedTeam.asStateFlow()
     fun changeSelectedTeam(newTeam: String) {
         _selectedTeam.value = newTeam
+        println("new selected team: $newTeam")
     }
 
     suspend fun getTeamList(): List<String> {
@@ -164,7 +165,7 @@ class ScoutingViewModel(
             return emptyList()
         }
         var teamList = eventsRepository.getEventByName(eventName).first()?.eventTeamList ?: emptyList()
-        //sorts the teamList to make it consistent and smallest to largest
+        // sorts the teamList to make it consistent and smallest to largest
         teamList = teamList.mapNotNull { it.toIntOrNull() }.sorted().map { it.toString() }
         val deviceTeamList = mutableListOf<String>()
         when(deviceName) {
@@ -234,6 +235,23 @@ class ScoutingViewModel(
         if (oldData != null) {
             changePitJson(newPitJson = Json.decodeFromString(oldData))
         }
+    }
+
+    fun saveMatchData() {
+        scoutedDataRepository.insertMatchData(
+            ScoutedData(
+                id = 0,
+                team = selectedTeam.value,
+                matchNumber = matchNumber.value,
+                formName = "OKC Match Form 2026",
+                formType = "match",
+                scoutedData = listOf(
+                    Json.encodeToString(matchAutoJson.value),
+                    Json.encodeToString(matchTeleopJson.value),
+                    Json.encodeToString(matchEndgameJson.value)
+                ).toString()
+            )
+        )
     }
 
     // STUFF ADDED BELOW THIS LINE MUST BE MOVED TO A DEDICATED SYNC VIEWMODEL BEFORE GKC

@@ -24,4 +24,10 @@ class ScoutedDataRepository(private val db: AppDatabase, private val application
             }
         }
     }
+
+    fun insertMatchData(scoutedData: ScoutedData) {
+        applicationScope.launch {
+            dao.insertData(scoutedData)
+        }
+    }
 }

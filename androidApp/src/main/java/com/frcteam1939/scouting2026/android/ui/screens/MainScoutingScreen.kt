@@ -307,7 +307,7 @@ fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: Scouting
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         UserInputs.TextButtonInput(
             onClick = {
-                // TODO: add submission of collected match data
+                scoutingViewModel.saveMatchData()
                 navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
             },
             text = "Submit Match Data",

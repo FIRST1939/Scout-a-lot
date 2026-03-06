@@ -168,6 +168,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
             // Yes button
             UserInputs.TextButtonInput(
                 onClick = {
+                    scoutingViewModel.changeSelectedTeam(teamNumber)
                     navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO)
                     scoutingViewModel.changeCurrentPage(newCurrentPage = "Auto")
                 },
