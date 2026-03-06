@@ -23,6 +23,9 @@ interface ScoutedDataDao {
     @Query("SELECT * FROM scouted_data WHERE team = :team AND match_number = :matchNumber AND form_name = :formName AND form_type = 'match'")
     fun getMatchByTeamAndNumber(team: String, matchNumber: Int, formName: String): Flow<ScoutedData?>
 
+    @Query("SELECT * FROM scouted_data WHERE team = :team AND form_name = :formName AND form_type = 'match'")
+    fun getAllMatchesForTeam(team: String, formName: String): Flow<List<ScoutedData>>
+
     @Insert()
     fun insertData(scoutedData: ScoutedData)
 }

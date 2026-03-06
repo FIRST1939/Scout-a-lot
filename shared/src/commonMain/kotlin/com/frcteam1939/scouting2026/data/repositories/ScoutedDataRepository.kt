@@ -33,6 +33,10 @@ class ScoutedDataRepository(private val db: AppDatabase, private val application
         return dao.getMatchByTeamAndNumber(team, matchNumber, formName)
     }
 
+    fun getAllMatchesForTeam(team: String, formName: String): Flow<List<ScoutedData>> {
+        return dao.getAllMatchesForTeam(team, formName)
+    }
+
     fun insertMatchData(scoutedData: ScoutedData) {
         applicationScope.launch {
             dao.insertData(scoutedData)
