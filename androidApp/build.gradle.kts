@@ -53,5 +53,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.material)
     implementation(libs.compose.foundation)
+    implementation("com.google.accompanist:accompanist-drawablepainter:0.37.3")
     debugImplementation(libs.compose.ui.tooling)
 }

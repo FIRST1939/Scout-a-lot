@@ -28,7 +28,9 @@ import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.android.utils.getTeamImage
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlin.text.ifEmpty
 
 @Composable
@@ -102,7 +104,6 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
 
 @Composable
 fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
-    // TODO: add photo capability
     val matchNumber by scoutingViewModel.matchNumber.collectAsState()
     var teamNumber by remember { mutableStateOf("") }
     LaunchedEffect(matchNumber) { teamNumber = scoutingViewModel.getCurrentTeam() }
@@ -154,8 +155,8 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.missing_image),
-            contentDescription = "no robot image available",
+            painter = rememberDrawablePainter(getTeamImage(teamNumber)),
+            contentDescription = "robot image",
             modifier = Modifier.padding(all = 50.dp)
         )
         Text(
