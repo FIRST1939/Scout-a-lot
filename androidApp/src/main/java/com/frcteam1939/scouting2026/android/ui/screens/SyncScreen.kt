@@ -1,179 +1,188 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
-import android.net.Uri
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothDevice
 import android.widget.Toast
-import android.widget.Toast.makeText
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.frcteam1939.scouting2026.android.sync.bluetooth.getPairedDevices
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
-import kotlinx.coroutines.launch
+import com.frcteam1939.scouting2026.storage.readTextFile
 
+@SuppressLint("MissingPermission")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
+fun SyncScreen(navController: NavController) {
     val context = LocalContext.current
-    var pitFileContent by remember { mutableStateOf("") }
-    var matchFileContent by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
 
-    // Result launcher for picking pit data file
-    val pitFilePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            try {
-                context.contentResolver.openInputStream(it)?.use { inputStream ->
-                    pitFileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
-                }
-                coroutineScope.launch {
-                    scoutingViewModel.importPitData(pitFileContent)
-                    makeText(context, "Pit data imported successfully", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                makeText(context, "Failed to read pit data file", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+    var pairedDevices by remember { mutableStateOf(getPairedDevices(context)) }
+    var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
+    var fileContent by remember { mutableStateOf("") }
 
-    // Result launcher for picking match data file
-    val matchFilePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            try {
-                context.contentResolver.openInputStream(it)?.use { inputStream ->
-                    matchFileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
-                }
-                coroutineScope.launch {
-                    scoutingViewModel.importMatchData(matchFileContent)
-                    makeText(context, "Match data imported successfully", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                makeText(context, "Failed to read match data file", Toast.LENGTH_SHORT).show()
-            }
+    fun refreshDevices() {
+        pairedDevices = getPairedDevices(context)
+        if (pairedDevices.none { it.address == selectedDevice?.address }) {
+            selectedDevice = null
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = "Sync",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(all = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // Pit Data Section
-        Text(
-            text = "Pit Data",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+        UserInputs.TextButtonInput(
+            onClick = {},
+            text = "Send",
+            modifier = Modifier.padding(vertical = 4.dp)
         )
 
         UserInputs.TextButtonInput(
             onClick = {
-                pitFilePickerLauncher.launch(arrayOf("text/plain"))
+                fileContent = readTextFile("bogosbinter.txt") ?: "File not found or empty"
             },
-            text = "Import Pit Data"
-        )
-
-        var pitFileName by remember { mutableStateOf("PitData.txt") }
-        UserInputs.TextboxInput(
-            value = pitFileName,
-            onValueChange = { pitFileName = it },
-            label = "Pit File Name:"
-        )
-        UserInputs.TextButtonInput(
-            onClick = {
-                coroutineScope.launch {
-                    exportTextFile(
-                        fileName = pitFileName,
-                        content = scoutingViewModel.getPitDataForExport(),
-                    )
-                    makeText(context, "Pit data exported ✅", Toast.LENGTH_SHORT).show()
-                }
-            },
-            text = "Export Pit Data"
-        )
-
-        // Match Data Section
-        Text(
-            text = "Match Data",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+            text = "Receive",
+            modifier = Modifier.padding(vertical = 4.dp)
         )
 
         UserInputs.TextButtonInput(
             onClick = {
-                matchFilePickerLauncher.launch(arrayOf("text/plain"))
-            },
-            text = "Import Match Data"
-        )
-
-        var matchFileName by remember { mutableStateOf("MatchData.txt") }
-        UserInputs.TextboxInput(
-            value = matchFileName,
-            onValueChange = { matchFileName = it },
-            label = "Match File Name:"
-        )
-        UserInputs.TextButtonInput(
-            onClick = {
-                coroutineScope.launch {
-                    exportTextFile(
-                        fileName = matchFileName,
-                        content = scoutingViewModel.getMatchDataForExport(),
-                    )
-                    makeText(context, "Match data exported ✅", Toast.LENGTH_SHORT).show()
-                }
-            },
-            text = "Export Match Data"
-        )
-
-        // Display imported content
-        if (pitFileContent.isNotEmpty()) {
-            Card(
-                modifier = Modifier.padding(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                Text(
-                    text = "Pit Data:\n$pitFileContent",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge
+                exportTextFile(
+                    fileName = "bogosbinter.txt",
+                    content = "Did you get the photos printed? Bogos binted? Bogos BINTed?"
                 )
+                Toast.makeText(context, "Exported to Downloads", Toast.LENGTH_SHORT).show()
+            },
+            text = "Export",
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = {
+                refreshDevices()
+                Toast.makeText(context, "Device list refreshed", Toast.LENGTH_SHORT).show()
+            },
+            text = "Refresh Devices",
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        Text(
+            text = "Paired Devices",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, bottom = 8.dp),
+            textAlign = TextAlign.Start
+        )
+
+        if (pairedDevices.isEmpty()) {
+            Text(
+                text = "No paired Bluetooth devices found",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 140.dp),
+                contentPadding = PaddingValues(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = false)
+            ) {
+                items(items = pairedDevices, key = { it.address }) { device ->
+                    val isSelected = selectedDevice?.address == device.address
+                    Card(
+                        onClick = { selectedDevice = device },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        )
+                    ) {
+                        Text(
+                            text = device.name ?: "Unknown Device",
+                            modifier = Modifier.padding(10.dp),
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = device.address,
+                            modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
         }
 
-        if (matchFileContent.isNotEmpty()) {
+        selectedDevice?.let { device ->
+            Text(
+                text = "Selected: ${device.name ?: device.address}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                textAlign = TextAlign.Start
+            )
+        }
+
+        if (fileContent.isNotEmpty()) {
             Card(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Text(
-                    text = "Match Data:\n$matchFileContent",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge
+                    text = fileContent,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(12.dp)
                 )
             }
         }

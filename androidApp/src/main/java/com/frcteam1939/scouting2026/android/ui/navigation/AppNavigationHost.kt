@@ -214,13 +214,10 @@ fun AppNavigationHost(
             exitTransition = { fadeOut(tween(300)) },
             popEnterTransition = { fadeIn(tween(300)) },
             popExitTransition = { fadeOut(tween(300)) },
-        ) { backStackEntry ->
+        ) {
             // TODO: device & data synchronization
-            val scoutingViewModel = getScoutingViewModel(
-                backStackEntry, navController, AppRoutes.SYNC
-            )
             MainScreenScaffold(navController, drawerState, scope) {
-                SyncScreen(scoutingViewModel, navController)
+                SyncScreen(navController)
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
