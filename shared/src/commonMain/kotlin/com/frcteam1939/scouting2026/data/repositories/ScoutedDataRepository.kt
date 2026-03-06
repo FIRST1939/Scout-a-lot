@@ -25,6 +25,14 @@ class ScoutedDataRepository(private val db: AppDatabase, private val application
         }
     }
 
+    fun getMatchData(formName: String): Flow<List<ScoutedData>> {
+        return dao.getMatchData(formName)
+    }
+
+    fun getMatchByTeamAndNumber(team: String, matchNumber: Int, formName: String): Flow<ScoutedData?> {
+        return dao.getMatchByTeamAndNumber(team, matchNumber, formName)
+    }
+
     fun insertMatchData(scoutedData: ScoutedData) {
         applicationScope.launch {
             dao.insertData(scoutedData)

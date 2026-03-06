@@ -17,6 +17,12 @@ interface ScoutedDataDao {
     @Query("UPDATE scouted_data SET scouted_data = :scoutedData WHERE team = :team AND form_name = :formName AND form_type = 'pit'")
     fun updatePitData(scoutedData: String, team: String, formName: String)
 
+    @Query("SELECT * FROM scouted_data WHERE form_name = :formName AND form_type = 'match'")
+    fun getMatchData(formName: String): Flow<List<ScoutedData>>
+
+    @Query("SELECT * FROM scouted_data WHERE team = :team AND match_number = :matchNumber AND form_name = :formName AND form_type = 'match'")
+    fun getMatchByTeamAndNumber(team: String, matchNumber: Int, formName: String): Flow<ScoutedData?>
+
     @Insert()
     fun insertData(scoutedData: ScoutedData)
 }

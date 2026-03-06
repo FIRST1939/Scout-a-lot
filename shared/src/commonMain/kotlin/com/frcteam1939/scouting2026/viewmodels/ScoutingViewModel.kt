@@ -272,6 +272,14 @@ class ScoutingViewModel(
         }
     }
 
+    suspend fun getMatchDataForExport(): String {
+        val matchData = scoutedDataRepository.getMatchData("OKC Match Form 2026").first()
+
+        return matchData.joinToString("\n") { data ->
+            "${data.team},${data.matchNumber},${data.scoutedData}"
+        }
+    }
+
     fun importPitData(importedDataString: String) {
         val eventName = settings.value?.currentEvent ?: ""
         val lines = importedDataString.lines().filter { it.isNotBlank() }
@@ -288,6 +296,38 @@ class ScoutingViewModel(
                         scoutedData = ScoutedData(id = 0, team = team, matchNumber = "0", formName = "OKC Pit Form 2026", formType = "pit", scoutedData),
                         team = team
                     )
+                }
+            }
+        }
+    }
+
+    suspend fun importMatchData(importedDataString: String) {
+        val lines = importedDataString.lines().filter { it.isNotBlank() }
+
+        lines.forEach { line ->
+            val firstCommaIndex = line.indexOf(",")
+            val secondCommaIndex = if (firstCommaIndex != -1) line.indexOf(",", firstCommaIndex + 1) else -1
+
+            if (firstCommaIndex != -1 && secondCommaIndex != -1) {
+                val team = line.substring(0, firstCommaIndex).trim()
+                val matchNumber = line.substring(firstCommaIndex + 1, secondCommaIndex).trim()
+                val scoutedData = line.substring(secondCommaIndex + 1).trim()
+
+                if (team.isNotBlank() && matchNumber.isNotBlank()) {
+                    if (scoutedDataRepository.getMatchByTeamAndNumber(team, matchNumber.toInt(), "OKC Match Form 2026").first() == null) {
+                        scoutedDataRepository.insertMatchData(
+                            ScoutedData(
+                                id = 0,
+                                team = team,
+                                matchNumber = matchNumber,
+                                formName = "OKC Match Form 2026",
+                                formType = "match",
+                                scoutedData = scoutedData
+                            )
+                        )
+                    } else {
+                        println("Match data already exists for team $team and match number $matchNumber, so not submitted!")
+                    }
                 }
             }
         }

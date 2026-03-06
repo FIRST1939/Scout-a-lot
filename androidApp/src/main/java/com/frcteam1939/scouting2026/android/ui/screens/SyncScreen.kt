@@ -1,8 +1,6 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
-import android.content.Intent
 import android.net.Uri
-import android.provider.Settings
 import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -34,24 +32,44 @@ import kotlinx.coroutines.launch
 @Composable
 fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     val context = LocalContext.current
-    var fileContent by remember { mutableStateOf("") }
+    var pitFileContent by remember { mutableStateOf("") }
+    var matchFileContent by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    // Result launcher for picking a text file
-    val filePickerLauncher = rememberLauncherForActivityResult(
+    // Result launcher for picking pit data file
+    val pitFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         uri?.let {
             try {
                 context.contentResolver.openInputStream(it)?.use { inputStream ->
-                    fileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
+                    pitFileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
                 }
                 coroutineScope.launch {
-                    scoutingViewModel.importPitData(fileContent)
-                    makeText(context, "Data imported successfully", Toast.LENGTH_SHORT).show()
+                    scoutingViewModel.importPitData(pitFileContent)
+                    makeText(context, "Pit data imported successfully", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                makeText(context, "Failed to read file", Toast.LENGTH_SHORT).show()
+                makeText(context, "Failed to read pit data file", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Result launcher for picking match data file
+    val matchFilePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            try {
+                context.contentResolver.openInputStream(it)?.use { inputStream ->
+                    matchFileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
+                }
+                coroutineScope.launch {
+                    scoutingViewModel.importMatchData(matchFileContent)
+                    makeText(context, "Match data imported successfully", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                makeText(context, "Failed to read match data file", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -66,52 +84,94 @@ fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavControlle
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(all = 16.dp)
         )
-        UserInputs.TextButtonInput(
-            onClick = {
-                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                context.startActivity(intent)
-            },
-            text = "Send"
-        )
-        UserInputs.TextButtonInput(
-            onClick = {},
-            text = "Receive"
+
+        // Pit Data Section
+        Text(
+            text = "Pit Data",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
         UserInputs.TextButtonInput(
             onClick = {
-                filePickerLauncher.launch(arrayOf("text/plain"))
+                pitFilePickerLauncher.launch(arrayOf("text/plain"))
             },
-            text = "Import and Show Data"
+            text = "Import Pit Data"
         )
 
-        var fileName by remember { mutableStateOf("ScoutedData.txt") }
+        var pitFileName by remember { mutableStateOf("PitData.txt") }
         UserInputs.TextboxInput(
-            value = fileName,
-            onValueChange = { fileName = it },
-            label = "File Name:"
+            value = pitFileName,
+            onValueChange = { pitFileName = it },
+            label = "Pit File Name:"
         )
         UserInputs.TextButtonInput(
             onClick = {
                 coroutineScope.launch {
                     exportTextFile(
-                        fileName = fileName,
+                        fileName = pitFileName,
                         content = scoutingViewModel.getPitDataForExport(),
                     )
-                    makeText(context, "Exported ✅", Toast.LENGTH_SHORT).show()
+                    makeText(context, "Pit data exported ✅", Toast.LENGTH_SHORT).show()
                 }
             },
-            text = "Export"
+            text = "Export Pit Data"
         )
 
+        // Match Data Section
+        Text(
+            text = "Match Data",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+        )
 
-        if (fileContent.isNotEmpty()) {
+        UserInputs.TextButtonInput(
+            onClick = {
+                matchFilePickerLauncher.launch(arrayOf("text/plain"))
+            },
+            text = "Import Match Data"
+        )
+
+        var matchFileName by remember { mutableStateOf("MatchData.txt") }
+        UserInputs.TextboxInput(
+            value = matchFileName,
+            onValueChange = { matchFileName = it },
+            label = "Match File Name:"
+        )
+        UserInputs.TextButtonInput(
+            onClick = {
+                coroutineScope.launch {
+                    exportTextFile(
+                        fileName = matchFileName,
+                        content = scoutingViewModel.getMatchDataForExport(),
+                    )
+                    makeText(context, "Match data exported ✅", Toast.LENGTH_SHORT).show()
+                }
+            },
+            text = "Export Match Data"
+        )
+
+        // Display imported content
+        if (pitFileContent.isNotEmpty()) {
             Card(
                 modifier = Modifier.padding(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Text(
-                    text = fileContent,
+                    text = "Pit Data:\n$pitFileContent",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+
+        if (matchFileContent.isNotEmpty()) {
+            Card(
+                modifier = Modifier.padding(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Text(
+                    text = "Match Data:\n$matchFileContent",
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )
