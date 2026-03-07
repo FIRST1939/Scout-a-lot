@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,20 +33,22 @@ import com.frcteam1939.scouting2026.android.sync.bluetooth.BTController
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
+import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SyncScreen(navController: NavController) {
+fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewModel) {
     val context = LocalContext.current
     val btController = remember { BTController(context) }
 
-    var pairedDevices by remember {
-        mutableStateOf<List<BluetoothDevice>>(BTUtils.getPairedDevice(context))
-    }
+    // BT Variables
+    var pairedDevices by remember { mutableStateOf<List<BluetoothDevice>>(BTUtils.getPairedDevice(context)) }
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
+    val btControllerDeviceName by btController.safeName.observeAsState("Unknown")
+
     var fileContent by remember { mutableStateOf("") }
 
-    btController.startServerListening()
+    bluetoothViewModel.startListeningOnce()
 
     fun safeDeviceName(device: BluetoothDevice): String? {
         return try {
@@ -83,14 +86,20 @@ fun SyncScreen(navController: NavController) {
                 if (device == null) {
                     Toast.makeText(context, "Please select a device first", Toast.LENGTH_SHORT).show()
                 } else {
-                    btController.connectToDevice(device) { success ->
-                        if (success) {
-                            Toast.makeText(context, "Bluetooth connected", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Bluetooth connection failed", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                    btController.connectToDevice(device)
                 }
+            },
+            text = "Connect",
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = {
+                exportTextFile(
+                    fileName = "bogosbinter.txt",
+                    content = "TEST"
+                )
+                Toast.makeText(context, "Exported to Downloads", Toast.LENGTH_LONG).show()
             },
             text = "Send",
             modifier = Modifier.padding(vertical = 4.dp)
@@ -189,6 +198,16 @@ fun SyncScreen(navController: NavController) {
                 textAlign = TextAlign.Start
             )
         }
+
+        Text(
+            text = "Connected: $btControllerDeviceName",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            textAlign = TextAlign.Start
+        )
 
         if (fileContent.isNotEmpty()) {
             Card(
