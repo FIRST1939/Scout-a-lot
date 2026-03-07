@@ -260,6 +260,17 @@ class DataViewModel(
         }
     }
 
+//    fun avgCycleCount(): String {
+//        val data = currentTeleopData.value
+//        if (data.isEmpty()) return "Unknown"
+//
+//        return try {
+//            return ""
+//        } catch (e: Exception) {
+//            return "Unknown"
+//        }
+//    }
+
     fun getAvgFerryVolume(): String {
         if (currentTeleopData.value.isEmpty()) return "Unknown"
         return try {
