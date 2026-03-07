@@ -1,6 +1,5 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -29,23 +28,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.frcteam1939.scouting2026.android.sync.bluetooth.getPairedDevices
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
 import com.frcteam1939.scouting2026.storage.readTextFile
 
-@SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SyncScreen(navController: NavController) {
     val context = LocalContext.current
 
-    var pairedDevices by remember { mutableStateOf(getPairedDevices(context)) }
+    var pairedDevices by remember {
+        mutableStateOf<List<BluetoothDevice>>(BTUtils.getPairedDevice(context))
+    }
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
 
+    fun safeDeviceName(device: BluetoothDevice): String? {
+        return try {
+            device.name
+        } catch (_: SecurityException) {
+            null
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     fun refreshDevices() {
-        pairedDevices = getPairedDevices(context)
+        pairedDevices = BTUtils.getPairedDevice(context)
         if (pairedDevices.none { it.address == selectedDevice?.address }) {
             selectedDevice = null
         }
@@ -141,7 +151,7 @@ fun SyncScreen(navController: NavController) {
                         )
                     ) {
                         Text(
-                            text = device.name ?: "Unknown Device",
+                            text = safeDeviceName(device) ?: "Unknown Device",
                             modifier = Modifier.padding(10.dp),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
@@ -160,9 +170,11 @@ fun SyncScreen(navController: NavController) {
             }
         }
 
+
+
         selectedDevice?.let { device ->
             Text(
-                text = "Selected: ${device.name ?: device.address}",
+                text = "Selected: ${safeDeviceName(device) ?: device.address}",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier

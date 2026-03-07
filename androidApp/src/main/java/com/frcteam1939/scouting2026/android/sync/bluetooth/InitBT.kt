@@ -1,5 +1,6 @@
 package com.frcteam1939.scouting2026.android.sync.bluetooth
 
+import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
@@ -7,6 +8,7 @@ import android.content.ComponentName
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
@@ -15,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 
 private fun openBluetoothSettingsSafely(context: Context): Boolean {
     val intents = buildList {
@@ -61,6 +64,16 @@ private fun openBluetoothSettingsSafely(context: Context): Boolean {
     return false
 }
 
+private fun hasBluetoothAccessPermission(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) ==
+            PackageManager.PERMISSION_GRANTED
+    } else {
+        ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH) ==
+            PackageManager.PERMISSION_GRANTED
+    }
+}
+
 @Composable
 fun InitBT() {
     val context = LocalContext.current
@@ -71,6 +84,10 @@ fun InitBT() {
     fun showBluetoothStatusToast() {
         if (bluetoothAdapter == null) {
             Toast.makeText(context, "Bluetooth unavailable on this device", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (!hasBluetoothAccessPermission(context)) {
+            Toast.makeText(context, "Bluetooth permission missing", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -109,6 +126,8 @@ fun InitBT() {
 
     fun launchEnableBluetoothFlow() {
         if (bluetoothAdapter == null) return
+        if (!hasBluetoothAccessPermission(context)) return
+
         if (bluetoothAdapter.isEnabled) {
             return
         }
@@ -127,10 +146,17 @@ fun InitBT() {
         // MIUI/older ROM fallback: direct enable can still work when request dialog is unavailable.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             try {
-                if (bluetoothAdapter.enable()) {
+                val hasAdminPermission =
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.BLUETOOTH_ADMIN
+                    ) == PackageManager.PERMISSION_GRANTED
+                if (hasAdminPermission && bluetoothAdapter.enable()) {
                     Toast.makeText(context, "Turning on Bluetooth...", Toast.LENGTH_SHORT).show()
                     return
                 }
+            } catch (_: SecurityException) {
+                // Continue to settings fallback.
             } catch (_: Exception) {
                 // Continue to settings fallback.
             }
@@ -164,9 +190,7 @@ fun InitBT() {
                 // Android 11 and lower: Permissions are granted automatically if in Manifest.
                 // Just check if BT is on, and if not, show the "Enable Bluetooth" system dialog.
                 try {
-                    if (!bluetoothAdapter.isEnabled) {
-                        launchEnableBluetoothFlow()
-                    }
+                    launchEnableBluetoothFlow()
                 } catch (e: Exception) {
                     // Safety check for devices with restricted profiles
                     if (!openBluetoothSettingsSafely(context)) {
