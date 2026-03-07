@@ -5,9 +5,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -17,13 +20,17 @@ public class BTController {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     private final BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
+    private final Context context;
 
-    public BTController() {
+    public BTController(Context context) {
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        this.context = context;
     }
 
     public interface ConnectResultCallback {
         void onResult(boolean success);
+
     }
 
     @SuppressLint("MissingPermission")
@@ -81,6 +88,11 @@ public class BTController {
             try {
                 bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", MY_UUID);
                 bluetoothSocket = bluetoothServerSocket.accept();
+                MAIN_HANDLER.post(() -> {
+                    String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
+                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                        }
+                );
                 bluetoothServerSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "ERROR Listening", e);

@@ -32,13 +32,12 @@ import com.frcteam1939.scouting2026.android.sync.bluetooth.BTController
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
-import com.frcteam1939.scouting2026.storage.readTextFile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SyncScreen(navController: NavController) {
     val context = LocalContext.current
-    val btController = remember { BTController() }
+    val btController = remember { BTController(context) }
 
     var pairedDevices by remember {
         mutableStateOf<List<BluetoothDevice>>(BTUtils.getPairedDevice(context))
@@ -178,8 +177,6 @@ fun SyncScreen(navController: NavController) {
                 }
             }
         }
-
-
 
         selectedDevice?.let { device ->
             Text(
