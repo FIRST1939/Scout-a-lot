@@ -19,13 +19,13 @@ import java.util.UUID;
 
 public class BTController {
     private final Context context;
+    private final BluetoothAdapter bluetoothAdapter;
+    private BluetoothSocket bluetoothSocket;
     private static final String TAG = "BTController";
     private static final UUID MY_UUID = UUID.fromString("ffffffff-ffff-ffff-ffff-0800200c9a66");
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
-    private final BluetoothAdapter bluetoothAdapter;
-    private BluetoothSocket bluetoothSocket;
-    private final MutableLiveData<String> connectedDeviceName = new MutableLiveData<>("Unknown");
 
+    // Constructor
     public BTController(Context context) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.context = context;
@@ -39,8 +39,13 @@ public class BTController {
         }
     }
 
-    public LiveData<String> getSafeName() {
-        return connectedDeviceName;
+    @SuppressLint("MissingPermission")
+    public String getSafeConnectedDeviceName() {
+        try {
+            return bluetoothSocket.getRemoteDevice().getName();
+        } catch (NullPointerException e) {
+            return "None";
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -72,7 +77,6 @@ public class BTController {
                 MAIN_HANDLER.post(() -> {
                             String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                            connectedDeviceName.setValue(bluetoothSocket.getRemoteDevice().getName());
                         }
                 );
 
@@ -117,7 +121,6 @@ public class BTController {
                 MAIN_HANDLER.post(() -> {
                     String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                     Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                    connectedDeviceName.setValue(bluetoothSocket.getRemoteDevice().getName());
                         }
                 );
                 bluetoothServerSocket.close();

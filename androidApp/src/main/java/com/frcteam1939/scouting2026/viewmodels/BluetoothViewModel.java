@@ -4,7 +4,6 @@ import android.app.Application;
 import android.bluetooth.BluetoothDevice;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
 
@@ -22,7 +21,7 @@ public class BluetoothViewModel extends AndroidViewModel {
     public BluetoothViewModel(@NonNull Application application) {
         super(application);
         btController = new BTController(application.getApplicationContext());
-        _btControllerDeviceName = new MutableLiveData<>(btController.getSafeName().getValue());
+        _btControllerDeviceName = new MutableLiveData<>(btController.getSafeConnectedDeviceName());
         _pairedDevices = new MutableLiveData<>(BTUtils.getPairedDevice(application.getApplicationContext()));
         startListeningOnce();
     }
