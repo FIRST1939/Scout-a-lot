@@ -1,6 +1,7 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -90,6 +91,9 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
     var approximateCapacity by remember { mutableStateOf("Fetching...") }
     var ferryVolume by remember { mutableStateOf("Fetching...") }
     var drivetrain by remember { mutableStateOf("Fetching...") }
+    var defense by remember { mutableStateOf("Fetching...") }
+    var trench by remember { mutableStateOf("Fetching...") }
+    var bump by remember { mutableStateOf("Fetching...") }
     var qualitativeComments: List<String> by remember { mutableStateOf(listOf("Fetching...")) }
     var robotDeathCount by remember { mutableStateOf("Fetching...") }
 
@@ -100,12 +104,25 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
         approximateCapacity = dataViewModel.getApproximateCapacity() ?: "Unknown"
         ferryVolume = dataViewModel.getAvgFerryVolume()
         drivetrain = dataViewModel.getDrivetrain() ?: "Unknown"
+        defense = when(dataViewModel.getPlayedDefense().toString()) {
+            "true" -> "✅"
+            "false" -> "❌"
+            else -> "Unknown"
+        }
+        trench = when(dataViewModel.getTrenchTravel()) {
+            true -> "✅"
+            false -> "❌"
+        }
+        bump = when(dataViewModel.getBumpTravel()) {
+            true -> "✅"
+            false -> "❌"
+        }
         qualitativeComments = dataViewModel.getQualitativeComments()
         robotDeathCount = dataViewModel.getDeadMatchCount().toString()
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(all = 16.dp),
+        modifier = Modifier.fillMaxSize().padding(all = 16.dp).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -144,6 +161,9 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
             }
         }
         Text("Drivetrain: $drivetrain", modifier = Modifier.padding(all = 4.dp))
+        Text("Has played defense: $defense", modifier = Modifier.padding(all = 4.dp))
+        Text("Trench: $trench", modifier = Modifier.padding(all = 4.dp))
+        Text("Bump: $bump", modifier = Modifier.padding(all = 4.dp))
         Text("Qualitative comments:", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium)
         qualitativeComments.forEach { comment ->
             Divider()

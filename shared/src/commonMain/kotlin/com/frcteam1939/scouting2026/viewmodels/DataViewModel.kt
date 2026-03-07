@@ -271,6 +271,51 @@ class DataViewModel(
 //        }
 //    }
 
+    fun getPlayedDefense(): Boolean {
+        if (currentTeleopData.value.isEmpty()) return false
+        var playsDefense = false
+
+        currentTeleopData.value.forEach { scoutedData ->
+            if (scoutedData[2].fieldContent == "true") {
+                playsDefense = true
+            }
+        }
+
+        return playsDefense
+    }
+
+    fun getTrenchTravel(): Boolean {
+        if (currentTeleopData.value.isEmpty()) return false
+        var trench = false
+
+        currentTeleopData.value.forEach { scoutedData ->
+            val travelList = scoutedData[0].fieldContent
+                .removeSurrounding("[", "]")
+                .split(",")
+                .map { it.trim() }
+            println("Travel List trench: $travelList")
+            if (travelList.getOrNull(0)?.toBoolean() ?: false) { trench = true }
+        }
+
+        return trench
+    }
+
+    fun getBumpTravel(): Boolean {
+        if (currentTeleopData.value.isEmpty()) return false
+        var bump = false
+
+        currentTeleopData.value.forEach { scoutedData ->
+            val travelList = scoutedData[0].fieldContent
+                .removeSurrounding("[", "]")
+                .split(",")
+                .map { it.trim() }
+            println("Travel List bump: $travelList")
+            if (travelList.getOrNull(1)?.toBoolean() ?: false) { bump = true }
+        }
+
+        return bump
+    }
+
     fun getAvgFerryVolume(): String {
         if (currentTeleopData.value.isEmpty()) return "Unknown"
         return try {
