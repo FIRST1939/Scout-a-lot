@@ -11,37 +11,55 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import java.io.IOException;
 import java.util.UUID;
 
 public class BTController {
+    private final Context context;
     private static final String TAG = "BTController";
     private static final UUID MY_UUID = UUID.fromString("ffffffff-ffff-ffff-ffff-0800200c9a66");
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     private final BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
-    private final Context context;
+    private final MutableLiveData<String> connectedDeviceName = new MutableLiveData<>("Unknown");
 
     public BTController(Context context) {
-
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.context = context;
     }
 
-    public interface ConnectResultCallback {
-        void onResult(boolean success);
+    public boolean isConnected() {
+        try {
+            return bluetoothSocket.isConnected();
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
 
+    public LiveData<String> getSafeName() {
+        return connectedDeviceName;
     }
 
     @SuppressLint("MissingPermission")
-    public void connectToDevice(BluetoothDevice targetDevice, ConnectResultCallback callback) {
+    public synchronized void connectToDevice(BluetoothDevice targetDevice) {
+
+        if (isConnected()) {
+            Log.w(TAG,"Already connected, skipping");
+            Toast.makeText(context, "Already connected!", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+
         new Thread(() -> {
-            boolean isSuccess = false;
             try {
                 if (bluetoothAdapter == null) {
                     Log.e(TAG, "Bluetooth adapter is null");
                     return;
                 }
+
                 bluetoothSocket = targetDevice.createInsecureRfcommSocketToServiceRecord(MY_UUID);
 
                 try {
@@ -51,7 +69,12 @@ public class BTController {
                 }
 
                 bluetoothSocket.connect();
-                isSuccess = true;
+                MAIN_HANDLER.post(() -> {
+                            String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
+                            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                            connectedDeviceName.setValue(bluetoothSocket.getRemoteDevice().getName());
+                        }
+                );
 
             } catch (SecurityException e) {
                 Log.e(TAG, "Permission Needed", e);
@@ -63,7 +86,10 @@ public class BTController {
                     Log.e(TAG, "Close Connection Failed", closeException);
                 }
             } catch (IOException e) {
-                Log.e(TAG, "Connection Failed", e);
+                Log.e(TAG, "God damn Connection Failed, server on?", e);
+                MAIN_HANDLER.post(() -> {
+                    Toast.makeText(context, "Connection Failed, Make sure server is listening", Toast.LENGTH_SHORT).show();
+                });
                 try {
                     if (bluetoothSocket != null) {
                         bluetoothSocket.close();
@@ -71,26 +97,27 @@ public class BTController {
                 } catch (IOException closeException) {
                     Log.e(TAG, "Close Connection Failed", closeException);
                 }
-            } finally {
-                if (callback != null) {
-                    final boolean result = isSuccess;
-                    MAIN_HANDLER.post(() -> callback.onResult(result));
-                }
             }
         }).start();
     }
 
     @SuppressLint("MissingPermission")
-    public void startServerListening() {
+    public synchronized void startServerListening() {
+
+        if (isConnected()) {
+            return;
+        }
 
         new Thread(() -> {
             BluetoothServerSocket bluetoothServerSocket;
+
             try {
                 bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", MY_UUID);
                 bluetoothSocket = bluetoothServerSocket.accept();
                 MAIN_HANDLER.post(() -> {
                     String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                     Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    connectedDeviceName.setValue(bluetoothSocket.getRemoteDevice().getName());
                         }
                 );
                 bluetoothServerSocket.close();
