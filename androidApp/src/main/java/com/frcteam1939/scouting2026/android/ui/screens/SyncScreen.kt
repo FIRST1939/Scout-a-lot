@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTController
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
@@ -37,12 +38,15 @@ import com.frcteam1939.scouting2026.storage.readTextFile
 @Composable
 fun SyncScreen(navController: NavController) {
     val context = LocalContext.current
+    val btController = remember { BTController() }
 
     var pairedDevices by remember {
         mutableStateOf<List<BluetoothDevice>>(BTUtils.getPairedDevice(context))
     }
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
+
+    btController.startServerListening()
 
     fun safeDeviceName(device: BluetoothDevice): String? {
         return try {
@@ -75,16 +79,21 @@ fun SyncScreen(navController: NavController) {
         )
 
         UserInputs.TextButtonInput(
-            onClick = {},
-            text = "Send",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        UserInputs.TextButtonInput(
             onClick = {
-                fileContent = readTextFile("bogosbinter.txt") ?: "File not found or empty"
+                val device = selectedDevice
+                if (device == null) {
+                    Toast.makeText(context, "Please select a device first", Toast.LENGTH_SHORT).show()
+                } else {
+                    btController.connectToDevice(device) { success ->
+                        if (success) {
+                            Toast.makeText(context, "Bluetooth connected", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Bluetooth connection failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             },
-            text = "Receive",
+            text = "Send",
             modifier = Modifier.padding(vertical = 4.dp)
         )
 

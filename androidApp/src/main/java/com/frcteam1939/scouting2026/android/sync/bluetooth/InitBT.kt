@@ -74,6 +74,15 @@ private fun hasBluetoothAccessPermission(context: Context): Boolean {
     }
 }
 
+private fun hasBluetoothScanPermission(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) ==
+            PackageManager.PERMISSION_GRANTED
+    } else {
+        true
+    }
+}
+
 @Composable
 fun InitBT() {
     val context = LocalContext.current
@@ -170,21 +179,35 @@ fun InitBT() {
         rememberLauncherForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            val isGranted = permissions[android.Manifest.permission.BLUETOOTH_CONNECT] ?: false
-            if (isGranted) {
+            val connectGranted = permissions[android.Manifest.permission.BLUETOOTH_CONNECT] ?: false
+            val scanGranted = permissions[android.Manifest.permission.BLUETOOTH_SCAN] ?: false
+
+            if (connectGranted && scanGranted) {
                 showBluetoothStatusToast()
                 // Now that we have permission, we can try to enable Bluetooth
                 launchEnableBluetoothFlow()
             } else {
-                Toast.makeText(context, "Bluetooth permission denied", Toast.LENGTH_SHORT)
+                Toast.makeText(context, "Bluetooth permissions denied", Toast.LENGTH_SHORT)
                     .show()
             }
         }
     LaunchedEffect(Unit) {
         if (bluetoothAdapter != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                // Android 12+ (API 31+): Must request BLUETOOTH_CONNECT via dialog
-                permissionLauncher.launch(arrayOf(android.Manifest.permission.BLUETOOTH_CONNECT))
+                // Android 12+ (API 31+): Must request runtime Bluetooth permissions.
+                val hasConnectPermission = hasBluetoothAccessPermission(context)
+                val hasScanPermission = hasBluetoothScanPermission(context)
+                if (hasConnectPermission && hasScanPermission) {
+                    showBluetoothStatusToast()
+                    launchEnableBluetoothFlow()
+                } else {
+                    permissionLauncher.launch(
+                        arrayOf(
+                            android.Manifest.permission.BLUETOOTH_CONNECT,
+                            android.Manifest.permission.BLUETOOTH_SCAN
+                        )
+                    )
+                }
             } else {
                 showBluetoothStatusToast()
                 // Android 11 and lower: Permissions are granted automatically if in Manifest.

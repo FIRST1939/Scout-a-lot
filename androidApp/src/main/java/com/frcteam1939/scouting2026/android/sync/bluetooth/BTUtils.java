@@ -8,16 +8,19 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.core.content.ContextCompat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class BTUtils {
     public static List<BluetoothDevice> getPairedDevice(Context context) {
         final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        if (bluetoothManager == null) {return Collections.emptyList();}
+        if (bluetoothManager == null) {
+            return Collections.emptyList();
+        }
         final BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-        if  (bluetoothAdapter == null) {return Collections.emptyList();}
+        if (bluetoothAdapter == null) {
+            return Collections.emptyList();
+        }
 
         final boolean hasPermission = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ?
                 (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) :
@@ -25,11 +28,14 @@ public class BTUtils {
 
         if (!hasPermission) return Collections.emptyList();
 
+        List<BluetoothDevice> pariedDevicesList;
         try {
-            return Collections.unmodifiableList(new ArrayList<>(bluetoothAdapter.getBondedDevices()));
+            pariedDevicesList = List.copyOf(bluetoothAdapter.getBondedDevices());
+            return pariedDevicesList;
         } catch (Exception e) {
             return Collections.emptyList();
         }
+
     }
 
 }
