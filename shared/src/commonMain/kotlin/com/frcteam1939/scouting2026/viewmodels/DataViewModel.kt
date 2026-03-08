@@ -260,16 +260,71 @@ class DataViewModel(
         }
     }
 
-//    fun avgCycleCount(): String {
-//        val data = currentTeleopData.value
-//        if (data.isEmpty()) return "Unknown"
-//
-//        return try {
-//            return ""
-//        } catch (e: Exception) {
-//            return "Unknown"
-//        }
-//    }
+    fun avgAutoCycleCount(): String {
+        val data = currentAutoData.value
+        if (data.isEmpty()) return "Unknown"
+
+        return try {
+            val cycleCountList = mutableListOf<Int>()
+
+            data.forEach { scoutedData ->
+                var cycles = 0
+
+                if (scoutedData.getOrNull(5)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[5].fieldContent)
+                    scoring.forEach { period ->
+                        period.forEach { cycle ->
+                            if (cycle.any { it != null }) {
+                                cycles += 1
+                            }
+                        }
+                    }
+                }
+
+                cycleCountList.add(cycles)
+            }
+
+            if (cycleCountList.isEmpty()) return "Unknown"
+
+            val avgCycles = cycleCountList.average()
+            avgCycles.toString().take(4)
+        } catch (e: Exception) {
+            return "Unknown"
+        }
+    }
+
+    fun avgTeleopCycleCount(): String {
+        val data = currentTeleopData.value
+        if (data.isEmpty()) return "Unknown"
+
+        return try {
+            val cycleCountList = mutableListOf<Int>()
+
+            data.forEach { scoutedData ->
+                var cycles = 0
+
+                if (scoutedData.getOrNull(6)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[6].fieldContent)
+                    scoring.forEach { period ->
+                        period.forEach { cycle ->
+                            if (cycle.any { it != null }) {
+                                cycles += 1
+                            }
+                        }
+                    }
+                }
+
+                cycleCountList.add(cycles)
+            }
+
+            if (cycleCountList.isEmpty()) return "Unknown"
+
+            val avgCycles = cycleCountList.average()
+            avgCycles.toString().take(4)
+        } catch (e: Exception) {
+            return "Unknown"
+        }
+    }
 
     fun getPlayedDefense(): Boolean {
         if (currentTeleopData.value.isEmpty()) return false
@@ -330,7 +385,7 @@ class DataViewModel(
             if (valueList.isEmpty()) {
                 "Unknown"
             } else {
-                averageList(valueList).toString()
+                averageList(valueList).toString().take(4)
             }
         } catch (e: Exception) {
             "Unknown"

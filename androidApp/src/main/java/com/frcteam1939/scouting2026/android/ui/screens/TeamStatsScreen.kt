@@ -86,7 +86,9 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
 
 @Composable
 fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavController) {
+    var autoCycleAvg by remember { mutableStateOf("Fetching...") }
     var autoHubStats: List<String> by remember { mutableStateOf(listOf("Fetching...", "Fetching...")) }
+    var teleopCycleAvg by remember { mutableStateOf("Fetching...") }
     var teleopHubStats: List<String> by remember { mutableStateOf(listOf("Fetching...", "Fetching...")) }
     var approximateCapacity by remember { mutableStateOf("Fetching...") }
     var ferryVolume by remember { mutableStateOf("Fetching...") }
@@ -99,7 +101,9 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
 
     LaunchedEffect(dataViewModel.currentPitData.collectAsState().value) {
         dataViewModel.updateRawData(dataViewModel.currentTeam.value)
+        autoCycleAvg = dataViewModel.avgAutoCycleCount()
         autoHubStats = dataViewModel.getAvgSpeedAndAccuracyAuto()
+        teleopCycleAvg = dataViewModel.avgTeleopCycleCount()
         teleopHubStats = dataViewModel.getAvgSpeedAndAccuracyTeleop()
         approximateCapacity = dataViewModel.getApproximateCapacity() ?: "Unknown"
         ferryVolume = dataViewModel.getAvgFerryVolume()
@@ -145,14 +149,17 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
             ) {
+
                 Divider()
                 Text("Auto:", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium)
                 Text("AVG Accuracy: ${autoHubStats[0]}", modifier = Modifier.padding(all = 4.dp))
                 Text("AVG Speed: ${autoHubStats[1]}", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Cycles: $autoCycleAvg", modifier = Modifier.padding(all = 4.dp))
                 Divider()
                 Text("Teleop:", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium)
                 Text("AVG Accuracy: ${teleopHubStats[0]}", modifier = Modifier.padding(all = 4.dp))
                 Text("AVG Speed: ${teleopHubStats[1]}", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Cycles: $teleopCycleAvg", modifier = Modifier.padding(all = 4.dp))
                 Divider()
                 Text("Approx. Capacity: $approximateCapacity", modifier = Modifier.padding(all = 4.dp))
                 Divider()
