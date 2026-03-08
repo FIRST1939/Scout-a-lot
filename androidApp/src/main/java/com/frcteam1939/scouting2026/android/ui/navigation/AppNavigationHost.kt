@@ -1,5 +1,6 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -8,6 +9,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -214,7 +216,7 @@ fun AppNavigationHost(
             popExitTransition = { fadeOut(tween(300)) },
         ) { backStackEntry ->
             // WIP
-            val bluetoothViewModel = getBluetoothViewModel(backStackEntry, navController, AppRoutes.SYNC)
+            val bluetoothViewModel = getBluetoothViewModel()
             MainScreenScaffold(navController, drawerState, scope) {
                 SyncScreen(navController,bluetoothViewModel)
             }
@@ -351,9 +353,7 @@ fun getDataViewModel(
 }
 
 @Composable
-fun getBluetoothViewModel(
-    backStackEntry: NavBackStackEntry, navController: NavController, route: String
-): BluetoothViewModel {
-    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
-    return viewModel(viewModelStoreOwner = parentEntry)
+fun getBluetoothViewModel(): BluetoothViewModel {
+    val activity = LocalContext.current as ComponentActivity
+    return viewModel(viewModelStoreOwner = activity)
 }

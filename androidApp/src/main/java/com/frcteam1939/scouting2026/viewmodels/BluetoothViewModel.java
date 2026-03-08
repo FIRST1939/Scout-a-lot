@@ -35,8 +35,7 @@ public class BluetoothViewModel extends AndroidViewModel {
     public void connectToDevice(BluetoothDevice bluetoothDevice) {
         btController.connectToDevice(bluetoothDevice).thenAccept(success -> {
             if (success) {
-                String newName = btController.getSafeConnectedDeviceName();
-                _bTControllerDeviceName.postValue(newName);
+                _bTControllerDeviceName.postValue(btController.getSafeConnectedDeviceName());
             }
         });
     }
