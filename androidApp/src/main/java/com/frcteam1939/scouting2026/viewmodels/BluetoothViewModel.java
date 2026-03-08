@@ -16,19 +16,29 @@ public class BluetoothViewModel extends AndroidViewModel {
     private final MutableLiveData<String> _bTControllerDeviceName;
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
 
-    public LiveData<String> GetBTControllerDeviceName() {
-        return _bTControllerDeviceName;
-    }
-
-    public LiveData<List<BluetoothDevice>> PairedDevices() {
-        return _pairedDevices;
-    }
-
     public BluetoothViewModel(@NonNull Application application) {
         super(application);
         btController = new BTController(application.getApplicationContext());
         _bTControllerDeviceName = new MutableLiveData<>(btController.getSafeConnectedDeviceName());
         _pairedDevices = new MutableLiveData<>(BTUtils.getPairedDevice(application.getApplicationContext()));
+    }
+
+    public LiveData<String> getBTControllerDeviceName() {
+        _bTControllerDeviceName.setValue(btController.getSafeConnectedDeviceName());
+        return _bTControllerDeviceName;
+    }
+
+    public LiveData<List<BluetoothDevice>> getPairedDevices() {
+        return _pairedDevices;
+    }
+
+    public void connectToDevice(BluetoothDevice bluetoothDevice) {
+        btController.connectToDevice(bluetoothDevice).thenAccept(success -> {
+            if (success) {
+                String newName = btController.getSafeConnectedDeviceName();
+                _bTControllerDeviceName.postValue(newName);
+            }
+        });
     }
 
     public void startListeningOnce() {

@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
 import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
@@ -37,11 +37,10 @@ import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
 @Composable
 fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewModel) {
     val context = LocalContext.current
-    val btController = remember { BTController(context) }
     // BT Variable
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
-    var pairedDevices = bluetoothViewModel.PairedDevices()
+    var pairedDevices = bluetoothViewModel.getPairedDevices()
 
     bluetoothViewModel.startListeningOnce()
 
@@ -56,7 +55,7 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
     }
 
     fun refreshDevices() {
-        pairedDevices = bluetoothViewModel.PairedDevices()
+        pairedDevices = bluetoothViewModel.getPairedDevices()
         if (pairedDevices.value?.none { it.address == selectedDevice?.address } == true) {
             selectedDevice = null
         }
@@ -81,7 +80,8 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
                 if (device == null) {
                     Toast.makeText(context, "Please select a device first", Toast.LENGTH_SHORT).show()
                 } else {
-                    btController.connectToDevice(device)
+                    bluetoothViewModel.connectToDevice(device)
+                    bluetoothViewModel.getBTControllerDeviceName()
                 }
             },
             text = "Connect",
@@ -194,8 +194,10 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
             )
         }
 
+        val deviceName by bluetoothViewModel.getBTControllerDeviceName().observeAsState()
+
         Text(
-            text = "Connected: ${bluetoothViewModel.GetBTControllerDeviceName()}",
+            text = "Connected: $deviceName",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier

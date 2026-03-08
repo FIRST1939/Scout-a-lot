@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class BTController {
     private final Context context;
@@ -24,6 +25,7 @@ public class BTController {
     private static final String TAG = "BTController";
     private static final UUID MY_UUID = UUID.fromString("ffffffff-ffff-ffff-ffff-0800200c9a66");
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+    private String connectedDeviceName = "None";
 
     // Constructor
     public BTController(Context context) {
@@ -40,22 +42,28 @@ public class BTController {
     }
 
     @SuppressLint("MissingPermission")
-    public String getSafeConnectedDeviceName() {
+    private void updateConnectedDeviceName() {
         try {
-            return bluetoothSocket.getRemoteDevice().getName();
-        } catch (NullPointerException e) {
-            return "None";
+            connectedDeviceName = bluetoothSocket.getRemoteDevice().getName();
+        } catch (NullPointerException ignored) {
         }
     }
 
     @SuppressLint("MissingPermission")
-    public synchronized void connectToDevice(BluetoothDevice targetDevice) {
+    public String getSafeConnectedDeviceName() {
+        return connectedDeviceName;
+    }
+
+    @SuppressLint("MissingPermission")
+    public synchronized CompletableFuture<Boolean> connectToDevice(BluetoothDevice targetDevice) {
+        // Future
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         if (isConnected()) {
             Log.w(TAG,"Already connected, skipping");
             Toast.makeText(context, "Already connected!", Toast.LENGTH_SHORT).show();
-
-            return;
+            future.complete(false);
+            return future;
         }
 
         new Thread(() -> {
@@ -71,9 +79,12 @@ public class BTController {
                     bluetoothAdapter.cancelDiscovery();
                 } catch (SecurityException securityException) {
                     Log.w(TAG, "No BLUETOOTH_SCAN permission, skip cancelDiscovery()", securityException);
+                    future.complete(false);
                 }
 
                 bluetoothSocket.connect();
+                updateConnectedDeviceName();
+                future.complete(true);
                 MAIN_HANDLER.post(() -> {
                             String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
@@ -82,6 +93,7 @@ public class BTController {
 
             } catch (SecurityException e) {
                 Log.e(TAG, "Permission Needed", e);
+                future.complete(false);
                 try {
                     if (bluetoothSocket != null) {
                         bluetoothSocket.close();
@@ -91,6 +103,7 @@ public class BTController {
                 }
             } catch (IOException e) {
                 Log.e(TAG, "God damn Connection Failed, server on?", e);
+                future.complete(false);
                 MAIN_HANDLER.post(() -> {
                     Toast.makeText(context, "Connection Failed, Make sure server is listening", Toast.LENGTH_SHORT).show();
                 });
@@ -103,6 +116,7 @@ public class BTController {
                 }
             }
         }).start();
+        return future;
     }
 
     @SuppressLint("MissingPermission")
@@ -118,6 +132,7 @@ public class BTController {
             try {
                 bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", MY_UUID);
                 bluetoothSocket = bluetoothServerSocket.accept();
+                updateConnectedDeviceName();
                 MAIN_HANDLER.post(() -> {
                     String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                     Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
@@ -130,3 +145,4 @@ public class BTController {
         }).start();
     }
 }
+
