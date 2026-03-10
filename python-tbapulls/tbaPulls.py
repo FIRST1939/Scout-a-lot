@@ -181,7 +181,7 @@ def getautons(event, year=THISYEAR):
     result = []
     for match in matchlist:
         #quals match that has played
-        if match['comp_level'] == 'qm' and match['actual_time'] > 0: 
+        if match['comp_level'] == 'qm' and match['actual_time'] != None: 
             interesting = [match['key'], match['alliances']['blue']['team_keys'], 
                            match['alliances']['red']['team_keys'],
                            match['score_breakdown']['blue']['hubScore']['autoPoints'], 
