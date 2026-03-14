@@ -12,7 +12,6 @@ import com.frcteam1939.scouting2026.android.ui.MyApplicationTheme
 import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.android.sync.bluetooth.InitBT
-import com.frcteam1939.scouting2026.android.ui.navigation.getBluetoothViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,13 +40,7 @@ fun ScoutingApp() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val bluetoothViewModel = getBluetoothViewModel()
 
-    // Initialize Bluetooth
-    LaunchedEffect(Unit) {
-        bluetoothViewModel.startListeningOnce()
-    }
-    // Should be moved to LaunchedEffect
     InitBT()
 
     // NaviHost

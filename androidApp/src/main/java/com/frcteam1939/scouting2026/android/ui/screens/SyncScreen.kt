@@ -40,9 +40,7 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
     // BT Variable
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
-    var pairedDevices = bluetoothViewModel.getPairedDevices()
-
-    bluetoothViewModel.startListeningOnce()
+    var pairedDevices = bluetoothViewModel.pairedDevices
 
     fun safeDeviceName(device: BluetoothDevice): String? {
         return try {
@@ -55,7 +53,7 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
     }
 
     fun refreshDevices() {
-        pairedDevices = bluetoothViewModel.getPairedDevices()
+        pairedDevices = bluetoothViewModel.pairedDevices
         if (pairedDevices.value?.none { it.address == selectedDevice?.address } == true) {
             selectedDevice = null
         }

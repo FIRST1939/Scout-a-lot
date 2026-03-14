@@ -11,9 +11,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -31,6 +28,7 @@ public class BTController {
     public BTController(Context context) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.context = context;
+
     }
 
     public boolean isConnected() {

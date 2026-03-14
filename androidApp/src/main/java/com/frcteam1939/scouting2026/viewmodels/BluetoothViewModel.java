@@ -21,6 +21,7 @@ public class BluetoothViewModel extends AndroidViewModel {
         btController = new BTController(application.getApplicationContext());
         _bTControllerDeviceName = new MutableLiveData<>(btController.getSafeConnectedDeviceName());
         _pairedDevices = new MutableLiveData<>(BTUtils.getPairedDevice(application.getApplicationContext()));
+        startListening();
     }
 
     public LiveData<String> getBTControllerDeviceName() {
@@ -40,7 +41,7 @@ public class BluetoothViewModel extends AndroidViewModel {
         });
     }
 
-    public void startListeningOnce() {
+    public void startListening() {
         if (Boolean.TRUE.equals(_listeningStatus.getValue())) return;
         _listeningStatus.setValue(true);
         btController.startServerListening();
