@@ -28,7 +28,9 @@ import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.android.utils.getTeamImage
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlin.text.ifEmpty
 
 @Composable
@@ -72,14 +74,17 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
                     canStartScouting = false
                     makeText(context, "Please select an event to start scouting!", Toast.LENGTH_SHORT).show()
                 } else if (currentForm.isEmpty()) {
-                    canStartScouting = false
+                    // canStartScouting = false
                     makeText(context, "Please select a match form to start scouting!", Toast.LENGTH_SHORT).show()
                 } else if (matchNumber.value.toIntOrNull() == null) {
                     canStartScouting = false
                     makeText(context, "Please enter a valid match number!", Toast.LENGTH_SHORT).show()
                 }
 
-                if (canStartScouting) navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
+                if (canStartScouting) {
+                    navController.navigate(AppRoutes.MatchScouting.TEAM_CONFIRMATION)
+                    scoutingViewModel.resetFormJsons()
+                }
             },
             text = "Scout Match",
         )
@@ -99,7 +104,6 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
 
 @Composable
 fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
-    // TODO: add photo capability
     val matchNumber by scoutingViewModel.matchNumber.collectAsState()
     var teamNumber by remember { mutableStateOf("") }
     LaunchedEffect(matchNumber) { teamNumber = scoutingViewModel.getCurrentTeam() }
@@ -123,7 +127,6 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
                     onClick = {
                         noShowPopup = false
                         navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
-                        TODO("log robot no-shows")
                     },
                     text = "Robot no-show",
                     containerColor = MaterialTheme.colorScheme.background,
@@ -152,8 +155,8 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.missing_image),
-            contentDescription = "no robot image available",
+            painter = rememberDrawablePainter(getTeamImage(teamNumber)),
+            contentDescription = "robot image",
             modifier = Modifier.padding(all = 50.dp)
         )
         Text(
@@ -164,7 +167,11 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             // Yes button
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO) },
+                onClick = {
+                    scoutingViewModel.changeSelectedTeam(teamNumber)
+                    navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO)
+                    scoutingViewModel.changeCurrentPage(newCurrentPage = "Auto")
+                },
                 text = "Yes",
                 modifier = Modifier.padding(all = 25.dp),
                 containerColor = MaterialTheme.colorScheme.primary

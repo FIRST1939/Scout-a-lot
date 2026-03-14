@@ -52,6 +52,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.room.runtime)
     implementation(libs.material)
-    implementation(libs.androidx.foundation)
+    implementation(libs.compose.foundation)
+    implementation("com.google.accompanist:accompanist-drawablepainter:0.37.3")
     debugImplementation(libs.compose.ui.tooling)
 }

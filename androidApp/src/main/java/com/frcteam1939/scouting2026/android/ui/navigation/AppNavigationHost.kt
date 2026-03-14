@@ -1,24 +1,23 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.frcteam1939.scouting2026.android.getDataViewModel
 import com.frcteam1939.scouting2026.android.getEditFormsViewModel
 import com.frcteam1939.scouting2026.android.getScoutingViewModel
 import com.frcteam1939.scouting2026.android.getSettingsViewModel
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.AssignFormsScreen
-import com.frcteam1939.scouting2026.android.ui.screens.CreateFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.EditMatchFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.EditPitFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
@@ -33,9 +32,7 @@ import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
-import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
-import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
-import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
+import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -67,24 +64,24 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { _ ->
-                    ScoutAutoScreen(scoutingViewModel)
+                MatchScoutingScaffold(navController, scoutingViewModel) { innerPadding ->
+                    ScoutAutoScreen(scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
             composable(AppRoutes.MatchScouting.SCOUT_TELEOP) { backStackEntry ->
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { _ ->
-                    ScoutTeleopScreen(scoutingViewModel)
+                MatchScoutingScaffold(navController, scoutingViewModel) { innerPadding ->
+                    ScoutTeleopScreen(scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
             composable(AppRoutes.MatchScouting.SCOUT_ENDGAME) { backStackEntry ->
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
                 )
-                MatchScoutingScaffold(navController) { _ ->
-                    ScoutEndgameScreen(navController, scoutingViewModel)
+                MatchScoutingScaffold(navController, scoutingViewModel) { innerPadding ->
+                    ScoutEndgameScreen(navController, scoutingViewModel, Modifier.padding(innerPadding))
                 }
             }
         }
@@ -97,7 +94,7 @@ fun AppNavigationHost(
                     getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
                     ScoutingScaffold(navController) {
-                        ScoutPitScreen(scoutingViewModel)
+                        ScoutPitScreen(scoutingViewModel, navController)
                     }
                 }
             }
@@ -105,23 +102,41 @@ fun AppNavigationHost(
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.PitScouting.GRAPH
                 )
-                ScoutPitForm(scoutingViewModel)
+                ScoutPitForm(scoutingViewModel, navController)
             }
         }
-        composable(AppRoutes.MATCH_REPORTS) {
-            MainScreenScaffold(navController, drawerState, scope) {
-                // TODO: match report generation
+        navigation(
+            startDestination = AppRoutes.MatchReports.MATCH_REPORTS, route = AppRoutes.MatchReports.GRAPH
+        ) {
+            composable(AppRoutes.MatchReports.MATCH_REPORTS) {
+                MainScreenScaffold(navController, drawerState, scope) {
+                    // TODO: match report generation
+                }
             }
         }
-        composable(AppRoutes.TEAM_STATS) {
-            MainScreenScaffold(navController, drawerState, scope) {
-                TeamStatsMainScreen(navController)
+        navigation(
+            startDestination = AppRoutes.TeamStats.TEAM_STATS, route = AppRoutes.TeamStats.GRAPH
+        ) {
+            composable(AppRoutes.TeamStats.TEAM_STATS) { backStackEntry ->
+                val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.TeamStats.GRAPH)
+                MainScreenScaffold(navController, drawerState, scope) {
+                    TeamStatsMainScreen(dataViewModel, navController)
+                }
+            }
+            composable(AppRoutes.TeamStats.VIEW_TEAM_STATS) { backStackEntry ->
+                val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.TeamStats.GRAPH)
+                SubScreenScaffold(navController) {
+                    ViewTeamStatsScreen(dataViewModel, navController)
+                }
             }
         }
-        composable(AppRoutes.SYNC) {
+        composable(AppRoutes.SYNC) { backStackEntry ->
             // TODO: device & data synchronization
+            val scoutingViewModel = getScoutingViewModel(
+                backStackEntry, navController, AppRoutes.SYNC
+            )
             MainScreenScaffold(navController, drawerState, scope) {
-                SyncScreen(navController)
+                SyncScreen(scoutingViewModel, navController)
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
@@ -131,10 +146,16 @@ fun AppNavigationHost(
                     EditFormsScreen(navController, editFormsViewModel = editFormsViewModel)
                 }
             }
-            composable(AppRoutes.EditForms.CREATE_FORM) { backStackEntry ->
+            composable(AppRoutes.EditForms.EDIT_PIT_FORM) { backStackEntry ->
                 val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
                 SubScreenScaffold(navController) {
-                    CreateFormsScreen(navController, editFormsViewModel)
+                    EditPitFormsScreen(navController, editFormsViewModel)
+                }
+            }
+            composable(AppRoutes.EditForms.EDIT_MATCH_FORM) { backStackEntry ->
+                val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
+                SubScreenScaffold(navController) {
+                    EditMatchFormsScreen(navController, editFormsViewModel)
                 }
             }
             composable(AppRoutes.EditForms.ASSIGN_FORMS) { backStackEntry ->

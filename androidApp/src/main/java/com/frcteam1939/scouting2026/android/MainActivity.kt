@@ -1,7 +1,5 @@
 package com.frcteam1939.scouting2026.android
 
-import android.Manifest
-import android.app.Activity
 import com.frcteam1939.scouting2026.android.ui.navigation.AppNavigationHost
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,21 +16,8 @@ import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
-import com.frcteam1939.scouting2026.storage.exportTextFile
-import kotlinx.coroutines.launch
-import android.net.Uri
-import android.content.Intent
-import android.provider.DocumentsContract
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Context
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.navigation.compose.navigation
-import android.os.Build
-import com.frcteam1939.scouting2026.storage.readTextFile
 import com.frcteam1939.scouting2026.android.sync.bluetooth.InitBT
+import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 
@@ -82,6 +67,13 @@ fun getSettingsViewModel(
     return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }
 
+@Composable
+fun getDataViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): DataViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

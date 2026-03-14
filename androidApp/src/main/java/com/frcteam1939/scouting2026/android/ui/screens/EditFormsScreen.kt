@@ -1,5 +1,7 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
+import android.widget.Toast
+import android.widget.Toast.makeText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,11 +30,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
+import com.frcteam1939.scouting2026.android.ui.templates.RadiobuttonFieldCTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldCTemplate
+import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldCTemplate
+import com.frcteam1939.scouting2026.data.structuring.FormFieldManager
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 import kotlinx.coroutines.launch
 
@@ -60,17 +69,27 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                 text = "Create Pit Form",
                 icon = Icons.Default.Add,
                 onClick = {
-                    navController.navigate(AppRoutes.EditForms.CREATE_FORM)
+                    editFormsViewModel.changeEditingFormName("")
+                    editFormsViewModel.changeCurrentPage(1)
+                    editFormsViewModel.resetFormContent()
+                    navController.navigate(AppRoutes.EditForms.EDIT_PIT_FORM)
                 }
             )
             editFormsViewModel.getPitFormNames().collectAsState(initial = emptyList()).value.forEach { formName ->
-                UserInputs.OutlinedButtonTextBarInput(
+                UserInputs.DoubleOutlinedButtonTextBarInput(
                     text = formName,
-                    icon = Icons.Default.Delete,
-                    onClick = {
+                    iconOne = Icons.Default.Delete,
+                    onButtonOneClick = {
                         coroutineScope.launch {
                             editFormsViewModel.deleteForm(formName, formType = "pit")
                         }
+                    },
+                    iconTwo = Icons.Default.Edit,
+                    onButtonTwoClick = {
+                        editFormsViewModel.changeEditingFormName(formName)
+                        editFormsViewModel.changeCurrentPage(1)
+                        editFormsViewModel.resetFormContent()
+                        navController.navigate(AppRoutes.EditForms.EDIT_PIT_FORM)
                     }
                 )
             }
@@ -93,7 +112,7 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                 text = "Create Match Form",
                 icon = Icons.Default.Add,
                 onClick = {
-                    navController.navigate(AppRoutes.EditForms.CREATE_FORM)
+                    navController.navigate(AppRoutes.EditForms.EDIT_MATCH_FORM)
                 }
             )
             editFormsViewModel.getMatchFormNames().collectAsState(initial = emptyList()).value.forEach { formName ->
@@ -120,12 +139,14 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
 }
 
 @Composable
-fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    val formType = "pit" // Placeholder until match forms are implemented... TODO: implement match forms
+    val context = LocalContext.current
 
     var nameFormPopup by remember { mutableStateOf(false) }
-    var formName by remember { mutableStateOf("") }
+    val editingFormName = editFormsViewModel.editingFormName.collectAsState().value
+    var newFormName by remember { mutableStateOf(editingFormName) }
+    val pitFormContent by editFormsViewModel.formContentPage1.collectAsState()
 
     if(nameFormPopup) {
         AlertDialog(
@@ -139,8 +160,8 @@ fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditForm
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     UserInputs.TextboxInput(
-                        value = formName,
-                        onValueChange = { formName = it },
+                        value = newFormName,
+                        onValueChange = { newFormName = it },
                         label = "Form Name",
                         singleLine = true
                     )
@@ -162,12 +183,14 @@ fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditForm
                         // Save button
                         UserInputs.TextButtonInput(
                             onClick = {
-                                if (formName.isNotBlank()) {
+                                if (newFormName.isNotBlank()) {
                                     coroutineScope.launch {
-                                        editFormsViewModel.saveForm(formName, formType)
+                                        editFormsViewModel.saveForm(newFormName, formType = "pit")
                                     }
                                     nameFormPopup = false
                                     navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+                                } else {
+                                    makeText(context, "Please name this form!", Toast.LENGTH_SHORT).show()
                                 }
                             },
                             text = "Save",
@@ -195,28 +218,80 @@ fun CreateFormsScreen(navController: NavController, editFormsViewModel: EditForm
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            UserInputs.TextButtonInput(
-                onClick = {
-                    navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
-                },
-                text = "Back",
+            Text(
+                text = newFormName.ifBlank { "Unnamed Pit Form" },
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(all = 16.dp)
             )
+            // Saves form if it exists, else opens the name form prompt
             UserInputs.TextButtonInput(
                 onClick = {
-                    nameFormPopup = true
+                    if (editingFormName.isBlank()) {
+                        nameFormPopup = true
+                    } else {
+                        coroutineScope.launch {
+                            editFormsViewModel.saveForm(editingFormName, formType = "pit")
+                        }
+                        navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
+                    }
                 },
                 text = "Save",
                 modifier = Modifier.padding(all = 16.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
             )
         }
-        UserInputs.OutlinedButtonInput(
-            onClick = { /* TODO: add data field creation */ },
-            icon = Icons.Default.Add,
-            buttonText = "Add data field"
-        )
+        pitFormContent.forEach { field ->
+            Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+            when (field.type) {
+                FormFieldManager.FieldTypes.TEXTBOX -> TextboxFieldCTemplate(editFormsViewModel, field.id)
+                FormFieldManager.FieldTypes.RADIOBUTTON -> RadiobuttonFieldCTemplate(editFormsViewModel, field.id)
+                FormFieldManager.FieldTypes.SWITCH -> SwitchFieldCTemplate(editFormsViewModel, field.id)
+                FormFieldManager.FieldTypes.CHECKBOX -> Text("This is a checkbox at one pint 😋")
+                FormFieldManager.FieldTypes.COUNTER -> Text("This is a counter at one pint 😨")
+                FormFieldManager.FieldTypes.DROPDOWN -> Text("This is a dropdown at one pint 😎")
+                FormFieldManager.FieldTypes.REBUILT_HUB_SCORING -> Text("This is a rebuilt hub scoring at one bint 😮🎉🎉🎉")
+            }
+        }
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(all = 16.dp),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Add Data Field:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+            )
+            Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.End
+            ) {
+                UserInputs.DropdownInput(
+                    options = editFormsViewModel.getFieldTypes(),
+                    selectedOption = "Textbox",
+                    onOptionSelected = {
+                        editFormsViewModel.changeSelectedFieldTypeToAdd(it)
+                    }
+                )
+                UserInputs.OutlinedButtonInput(
+                    onClick = { editFormsViewModel.addField() },
+                    icon = Icons.Default.Add,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    iconColor = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
     }
+}
+
+@Composable
+fun EditMatchFormsScreen(navController: NavController, editFormsViewModel: EditFormsViewModel) {
+    // TODO: implement match forms
+    Text("Edit Match Forms Screen coming soon... not done yet!! bark bark bint bint 67")
 }
 
 @Composable

@@ -1,9 +1,7 @@
 package com.frcteam1939.scouting2026.data
 
 import androidx.room.Database
-import androidx.room.ConstructedBy
 import androidx.room.RoomDatabase
-import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import com.frcteam1939.scouting2026.data.dao.EventCodesDao
 import com.frcteam1939.scouting2026.data.dao.EventsDao

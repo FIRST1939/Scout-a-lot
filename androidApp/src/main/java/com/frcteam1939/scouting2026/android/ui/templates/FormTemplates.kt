@@ -1,0 +1,529 @@
+package com.frcteam1939.scouting2026.android.ui.templates
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.data.structuring.Checkbox
+import com.frcteam1939.scouting2026.data.structuring.Counter
+import com.frcteam1939.scouting2026.data.structuring.Dropdown
+import com.frcteam1939.scouting2026.data.structuring.RadioButton
+import com.frcteam1939.scouting2026.data.structuring.RebuiltHubScoring
+import com.frcteam1939.scouting2026.data.structuring.Switch
+import com.frcteam1939.scouting2026.data.structuring.Textbox
+import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.frcteam1939.scouting2026.android.R
+import com.frcteam1939.scouting2026.data.structuring.ButtonBar
+import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
+
+@Composable
+fun TextboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Textbox) {
+    val value = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+    UserInputs.TextboxInput(
+        value = value,
+        onValueChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it) },
+        label = fieldContent.label,
+        singleLine = fieldContent.singleLine,
+        forceNumberInput = fieldContent.forceNumberInput,
+        characterLimit = fieldContent.characterLimit
+    )
+}
+
+@Composable
+fun RadioButtonFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: RadioButton) {
+    val selectedOption = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = fieldContent.label, style = MaterialTheme.typography.bodyLarge)
+        UserInputs.RadioButtonInput(
+            radioOptions = fieldContent.options,
+            selectedOption = selectedOption,
+            onOptionSelected = { scoutingViewModel.saveFieldValue(fieldContent.id, it) }
+        )
+    }
+}
+
+@Composable
+fun SwitchFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Switch) {
+    val checked = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent.toBoolean()
+    UserInputs.SwitchTextBarInput(
+        checked = checked,
+        onCheckedChange = {
+            when (checked) {
+                true -> scoutingViewModel.saveFieldValue(fieldContent.id, "false")
+                false -> scoutingViewModel.saveFieldValue(fieldContent.id, "true")
+            }
+        },
+        text = fieldContent.label
+    )
+}
+
+/**
+ * Converts a string of booleans (e.g. "[true, false]" or "true,false")
+ * into a List<Boolean>.
+ * A helper function for CheckboxFieldTemplate() composable.
+ */
+fun String.toBooleanList(expectedSize: Int): List<Boolean> {
+    val cleanString = this
+        .replace("[", "")
+        .replace("]", "")
+        .replace(" ", "")
+        .trim()
+
+    if (cleanString.isEmpty()) return List(expectedSize) { false }
+
+    val parsed = cleanString.split(",")
+        .map { it.lowercase().toBoolean() }
+
+    return if (parsed.size != expectedSize) {
+        List(expectedSize) { false }
+    } else {
+        parsed
+    }
+}
+
+@Composable
+fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Checkbox) {
+    val rawData by scoutingViewModel.getFieldJson().collectAsState()
+    val currentString = rawData[fieldContent.id].fieldContent
+
+    val checked = remember(currentString, fieldContent.options.size) {
+        currentString.toBooleanList(fieldContent.options.size)
+    }
+
+    Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
+    UserInputs.CheckboxInput(
+        checked = checked,
+        onCheckedChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it.toString()) },
+        checkboxOptions = fieldContent.options,
+        maxSelected = fieldContent.maxSelected,
+        minSelected = fieldContent.minSelected
+    )
+}
+
+@Composable
+fun ButtonBarTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: ButtonBar) {
+    val selectedOption = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent.toIntOrNull()
+    Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
+    UserInputs.SingleSelectButtonBarInput(
+        options = fieldContent.options,
+        selectedOption = selectedOption,
+        onOptionSelected = {
+            val newOption = if (selectedOption == it) null else it
+            scoutingViewModel.saveFieldValue(fieldContent.id, newOption.toString())
+        }
+    )
+}
+
+@Composable
+fun CounterFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Counter) {
+    val value = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent.toIntOrNull() ?: 0
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = fieldContent.label, style = MaterialTheme.typography.bodyLarge)
+        UserInputs.CounterInput(
+            value = value,
+            minVal = fieldContent.minVal,
+            maxVal = fieldContent.maxVal,
+            step = fieldContent.step,
+            onValueChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it.toString()) },
+        )
+    }
+}
+
+@Composable
+fun DropdownFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Dropdown) {
+    val selectedOption = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+        .ifBlank { fieldContent.options[0] }
+    UserInputs.DropdownTextBarInput(
+        options = fieldContent.options,
+        selectedOption = selectedOption,
+        onOptionSelected = { scoutingViewModel.saveFieldValue(fieldContent.id, it) },
+        text = fieldContent.label
+    )
+}
+
+
+fun parseRebuiltHubData(input: String): List<List<List<Int?>>> {
+    fun parseCycle(cycleStr: String): List<Int?> {
+        val cleaned = cycleStr.trim().removePrefix("[").removeSuffix("]").trim()
+        return cleaned.split(",").map {
+            it.trim().let { value ->
+                if (value == "null") null else value.toIntOrNull()
+            }
+        }
+    }
+
+    fun parsePeriod(periodStr: String): List<List<Int?>> {
+        val cleaned = periodStr.trim().removePrefix("[").removeSuffix("]").trim()
+        if (cleaned.isEmpty()) return emptyList()
+
+        val cycles = mutableListOf<List<Int?>>()
+        var depth = 0
+        var currentCycle = StringBuilder()
+
+        for (char in cleaned) {
+            when (char) {
+                '[' -> {
+                    depth++
+                    currentCycle.append(char)
+                }
+                ']' -> {
+                    depth--
+                    currentCycle.append(char)
+                    if (depth == 0) {
+                        cycles.add(parseCycle(currentCycle.toString()))
+                        currentCycle.clear()
+                    }
+                }
+                ',' -> {
+                    if (depth == 0) {
+                        continue
+                    } else {
+                        currentCycle.append(char)
+                    }
+                }
+                else -> currentCycle.append(char)
+            }
+        }
+
+        return cycles
+    }
+
+    if (input.isBlank()) return emptyList()
+
+    return try {
+        // Remove outer brackets and whitespace
+        val cleaned = input.trim().removePrefix("[").removeSuffix("]").trim()
+        if (cleaned.isEmpty()) return emptyList()
+
+        val result = mutableListOf<List<List<Int?>>>()
+        var depth = 0
+        var currentSegment = StringBuilder()
+
+        for (char in cleaned) {
+            when (char) {
+                '[' -> {
+                    depth++
+                    currentSegment.append(char)
+                }
+                ']' -> {
+                    depth--
+                    currentSegment.append(char)
+                    // When we close a period (depth becomes 0)
+                    if (depth == 0) {
+                        val periodStr = currentSegment.toString()
+                        result.add(parsePeriod(periodStr))
+                        currentSegment.clear()
+                    }
+                }
+                ',' -> {
+                    if (depth == 0) {
+                        // Skip commas between periods
+                        continue
+                    } else {
+                        currentSegment.append(char)
+                    }
+                }
+                else -> currentSegment.append(char)
+            }
+        }
+
+        result
+    } catch (e: Exception) {
+        emptyList()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RebuiltHubScoringFieldTemplate(
+    scoutingViewModel: ScoutingViewModel,
+    fieldContent: RebuiltHubScoring,
+    auto: Boolean
+) {
+    val accuracyOptions = listOf("Low", "Medium", "High", "Very High")
+    val speedOptions = listOf("Slow", "Medium", "Fast", "Very Fast")
+
+    val fieldData = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+    // Period contains cycle contains accuracy & speed
+    // Store as nullable: null means no selection, >= 0 means selected index
+    var periodData: List<List<List<Int?>>> by remember { mutableStateOf(emptyList()) }
+    periodData = parseRebuiltHubData(fieldData)
+
+    val startingAccuracy = try {
+        periodData[0][0][0]
+    } catch (e: Exception) {
+        null
+    }
+    val startingSpeed = try {
+        periodData[0][0][1]
+    } catch (e: Exception) {
+        null
+    }
+
+    var period by remember { mutableIntStateOf(1) }
+    var cycle by remember { mutableIntStateOf(1) }
+    var accuracy by remember { mutableStateOf(startingAccuracy) }
+    var speed by remember { mutableStateOf(startingSpeed) }
+
+    fun saveCycleData() {
+        val cycleItem = listOf(accuracy, speed)
+        val mutable = periodData.toMutableList()
+        val periodIndex = period - 1
+
+        while (mutable.size <= periodIndex) {
+            mutable.add(emptyList())
+        }
+
+        val periodCycles = mutable[periodIndex].toMutableList()
+        val cycleIndex = cycle - 1
+
+        if (cycleIndex < periodCycles.size) {
+            periodCycles[cycleIndex] = cycleItem
+        } else if (cycleIndex == periodCycles.size) {
+            periodCycles.add(cycleItem)
+        }
+
+        mutable[periodIndex] = periodCycles
+        periodData = mutable
+
+        scoutingViewModel.saveFieldValue(fieldContent.id, periodData.toString())
+    }
+
+    fun changeCycle(newCycle: Int) {
+        saveCycleData()
+
+        val periodIndex = period - 1
+        val cycleIndex = newCycle - 1
+        if (periodIndex < periodData.size && cycleIndex < periodData[periodIndex].size) {
+            val data = periodData[periodIndex][cycleIndex]
+            accuracy = data[0]
+            speed = data[1]
+        } else {
+            accuracy = null
+            speed = null
+        }
+
+        cycle = newCycle
+    }
+
+    fun changePeriod(newPeriod: Int) {
+        saveCycleData()
+
+        val newPeriodIndex = newPeriod - 1
+        if (newPeriodIndex < periodData.size && periodData[newPeriodIndex].isNotEmpty()) {
+            val firstCycleData = periodData[newPeriodIndex][0] // Index 0 = cycle 1
+            accuracy = firstCycleData[0]
+            speed = firstCycleData[1]
+            cycle = 1
+        } else {
+            cycle = 1
+            accuracy = null
+            speed = null
+        }
+
+        period = newPeriod
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Row {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (!auto) {
+                    Text(text = "Period", style = MaterialTheme.typography.bodyLarge)
+                    UserInputs.CounterInput(
+                        value = period,
+                        minVal = 1,
+                        maxVal = 6,
+                        onValueChange = { changePeriod(it) }
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Cycle", style = MaterialTheme.typography.bodyLarge)
+                UserInputs.CounterInput(
+                    value = cycle,
+                    minVal = 1,
+                    onValueChange = { changeCycle(it) }
+                )
+            }
+        }
+        Divider()
+        Text(text = "Accuracy", style = MaterialTheme.typography.bodyLarge)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val iconResources = listOf(
+                R.drawable.accuracy_low_light to "Low Accuracy",
+                R.drawable.accuracy_med_light to "Medium Accuracy",
+                R.drawable.accuracy_high_light to "High Accuracy",
+                R.drawable.accuracy_vehigh_light to "Very High Accuracy"
+            )
+
+            iconResources.forEachIndexed { index, (drawableId, contentDesc) ->
+                Icon(
+                    painter = painterResource(id = drawableId),
+                    contentDescription = contentDesc,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(horizontal = 4.dp)
+                )
+
+                if (index < iconResources.size - 1) {
+                    Divider(
+                        modifier = Modifier
+                            .height(72.dp)
+                            .width(1.dp)
+                    )
+                }
+            }
+        }
+        UserInputs.SingleSelectButtonBarInput(
+            options = accuracyOptions,
+            selectedOption = accuracy,
+            onOptionSelected = {
+                accuracy = if (accuracy == it) null else it
+                saveCycleData()
+            }
+        )
+        Divider()
+        Text(text = "Speed", style = MaterialTheme.typography.bodyLarge)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val iconResources = listOf(
+                R.drawable.speed_slow_light to "Slow Speed",
+                R.drawable.speed_med_light to "Medium Speed",
+                R.drawable.speed_fast_light to "Fast Speed",
+                R.drawable.speed_vefast_light to "Very Fast Speed"
+            )
+
+            iconResources.forEachIndexed { index, (drawableId, contentDesc) ->
+                Icon(
+                    painter = painterResource(id = drawableId),
+                    contentDescription = contentDesc,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(horizontal = 4.dp)
+                )
+
+                if (index < iconResources.size - 1) {
+                    Divider(
+                        modifier = Modifier
+                            .height(72.dp)
+                            .width(1.dp)
+                    )
+                }
+            }
+        }
+        UserInputs.SingleSelectButtonBarInput(
+            options = speedOptions,
+            selectedOption = speed,
+            onOptionSelected = {
+                speed = if (speed == it) null else it
+                saveCycleData()
+            }
+        )
+    }
+}
+
+@Composable
+fun RebuiltStartingPositionTemplate(
+    scoutingViewModel: ScoutingViewModel,
+    fieldContent: RebuiltStartingPosition,
+) {
+    // Positions default to blue
+    var startingPositions = listOf("Outpost-side Trench", "Outpost-side Bump", "Hub", "Depot-side Bump", "Depot-side Trench")
+    if (scoutingViewModel.alliance == "Red") {
+        startingPositions = listOf("Depot-side Trench", "Depot-side Bump", "Hub", "Outpost-side Bump", "Outpost-side Trench")
+    }
+    val selectedPosition = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent
+        .ifBlank { startingPositions[0] }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(fieldContent.label, style = MaterialTheme.typography.headlineSmall)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Max),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Image defaults to blue
+            var imageResource = R.drawable.blue_starting_zones to "Blue Alliance Starting Positions"
+            if (scoutingViewModel.alliance == "Red") {
+                imageResource = R.drawable.red_starting_zones to "Red Alliance Starting Positions"
+            }
+
+            Image(
+                painter = painterResource(id = imageResource.first),
+                contentDescription = imageResource.second,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(horizontal = 8.dp)
+            )
+            UserInputs.RadioButtonInput(
+                radioOptions = startingPositions,
+                selectedOption = selectedPosition,
+                onOptionSelected = { scoutingViewModel.saveFieldValue(fieldContent.id, it) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
