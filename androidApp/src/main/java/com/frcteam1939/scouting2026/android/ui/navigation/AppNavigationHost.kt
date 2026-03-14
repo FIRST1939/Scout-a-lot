@@ -214,11 +214,11 @@ fun AppNavigationHost(
             exitTransition = { fadeOut(tween(300)) },
             popEnterTransition = { fadeIn(tween(300)) },
             popExitTransition = { fadeOut(tween(300)) },
-        ) { backStackEntry ->
+        ) { _ ->
             // WIP
             val bluetoothViewModel = getBluetoothViewModel()
             MainScreenScaffold(navController, drawerState, scope) {
-                SyncScreen(navController,bluetoothViewModel)
+                SyncScreen(bluetoothViewModel)
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {

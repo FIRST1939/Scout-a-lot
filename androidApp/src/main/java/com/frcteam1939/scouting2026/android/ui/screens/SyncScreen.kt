@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -35,12 +36,19 @@ import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewModel) {
+fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     val context = LocalContext.current
-    // BT Variable
+    // BT Variables
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
-    var pairedDevices = bluetoothViewModel.pairedDevices
+    val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
+
+    LaunchedEffect(pairedDevices) {
+        if (selectedDevice != null &&
+            pairedDevices.none { it.address == selectedDevice?.address }) {
+            selectedDevice = null
+        }
+    }
 
     fun safeDeviceName(device: BluetoothDevice): String? {
         return try {
@@ -49,13 +57,6 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
             null
         } catch (_: Exception) {
             null
-        }
-    }
-
-    fun refreshDevices() {
-        pairedDevices = bluetoothViewModel.pairedDevices
-        if (pairedDevices.value?.none { it.address == selectedDevice?.address } == true) {
-            selectedDevice = null
         }
     }
 
@@ -112,7 +113,7 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
 
         UserInputs.TextButtonInput(
             onClick = {
-                refreshDevices()
+                bluetoothViewModel.refreshPairedDevices()
                 Toast.makeText(context, "Device list refreshed", Toast.LENGTH_SHORT).show()
             },
             text = "Refresh Devices",
@@ -128,7 +129,7 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
             textAlign = TextAlign.Start
         )
 
-        if (pairedDevices.value.isNullOrEmpty()) {
+        if (pairedDevices.isNullOrEmpty()) {
             Text(
                 text = "No paired Bluetooth devices found",
                 style = MaterialTheme.typography.bodyMedium,
@@ -146,7 +147,7 @@ fun SyncScreen(navController: NavController, bluetoothViewModel: BluetoothViewMo
                     .fillMaxWidth()
                     .weight(1f, fill = false)
             ) {
-                items(items = pairedDevices.value.orEmpty(), key = { it.address }) { device ->
+                items(items = pairedDevices.orEmpty(), key = { it.address }) { device ->
                     val isSelected = selectedDevice?.address == device.address
                     Card(
                         onClick = { selectedDevice = device },

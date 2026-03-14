@@ -33,6 +33,12 @@ public class BluetoothViewModel extends AndroidViewModel {
         return _pairedDevices;
     }
 
+    public void refreshPairedDevices() {
+        _pairedDevices.setValue(
+                BTUtils.getPairedDevice(getApplication().getApplicationContext())
+        );
+    }
+
     public void connectToDevice(BluetoothDevice bluetoothDevice) {
         btController.connectToDevice(bluetoothDevice).thenAccept(success -> {
             if (success) {
