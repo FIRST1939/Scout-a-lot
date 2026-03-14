@@ -25,16 +25,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
-import com.frcteam1939.scouting2026.data.entities.ScoutedData
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
 

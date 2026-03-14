@@ -22,10 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
-import com.frcteam1939.scouting2026.android.ui.templates.ButtonBarTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.CheckboxFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
-import com.frcteam1939.scouting2026.data.structuring.ButtonBar
 import com.frcteam1939.scouting2026.data.structuring.Checkbox
 import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
@@ -39,7 +37,7 @@ import kotlinx.coroutines.launch
 fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     var teamList by remember { mutableStateOf<List<String>>(emptyList()) }
     LaunchedEffect(true) {
-        teamList = scoutingViewModel.getTeamList()
+        teamList = scoutingViewModel.getPitTeamList()
     }
     Column(
         verticalArrangement = Arrangement.Top

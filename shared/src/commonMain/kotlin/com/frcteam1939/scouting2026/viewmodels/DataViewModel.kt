@@ -2,7 +2,6 @@ package com.frcteam1939.scouting2026.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.frcteam1939.scouting2026.data.entities.AppSettings
-import com.frcteam1939.scouting2026.data.entities.ScoutedData
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
@@ -10,9 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.forEach
 import kotlin.collections.emptyList
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class DataViewModel(

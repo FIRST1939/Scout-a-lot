@@ -41,7 +41,6 @@ import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldCTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldCTemplate
 import com.frcteam1939.scouting2026.data.structuring.FormFieldManager
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
 
 @Composable

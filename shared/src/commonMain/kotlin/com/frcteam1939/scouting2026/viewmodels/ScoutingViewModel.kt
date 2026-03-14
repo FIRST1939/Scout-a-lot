@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable
@@ -156,7 +155,7 @@ class ScoutingViewModel(
         println("new selected team: $newTeam")
     }
 
-    suspend fun getTeamList(): List<String> {
+    suspend fun getPitTeamList(): List<String> {
         val deviceName = settings.value?.deviceRobotAssignment
         var deviceTag = 0
         val eventName = settings.value?.currentEvent

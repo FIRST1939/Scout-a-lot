@@ -5,7 +5,6 @@ import com.frcteam1939.scouting2026.data.entities.ScoutedData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class ScoutedDataRepository(private val db: AppDatabase, private val applicationScope: CoroutineScope) {
