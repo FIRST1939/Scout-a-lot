@@ -58,7 +58,6 @@ public class BTController {
     public synchronized CompletableFuture<BTConnectStatus> connectToDevice(BluetoothDevice targetDevice) {
         if (isConnected()) {
             Log.w(TAG,"Already connected, skipping");
-            // Toast.makeText(context, "Already connected!", Toast.LENGTH_SHORT).show();
             return CompletableFuture.completedFuture(BTConnectStatus.SKIPPED_ALREADY_CONNECTED);
         }
 
@@ -76,7 +75,6 @@ public class BTController {
                 }
                 bluetoothSocket.connect();
                 updateConnectedDeviceName();
-                // String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                 return BTConnectStatus.SUCCEEDED;
             } catch (SecurityException e) {
                 Log.e(TAG, "Permission Needed", e);
@@ -90,9 +88,6 @@ public class BTController {
                 return BTConnectStatus.FAILED_NO_PERMISSION;
             } catch (IOException e) {
                 Log.e(TAG, "God damn Connection Failed, server on?", e);
-                MAIN_HANDLER.post(() -> {
-                    // Toast.makeText(context, "Connection Failed, Make sure server is listening", Toast.LENGTH_SHORT).show();
-                });
                 try {
                     if (bluetoothSocket != null) {
                         bluetoothSocket.close();
@@ -115,6 +110,7 @@ public class BTController {
                 bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", MY_UUID);
                 bluetoothSocket = bluetoothServerSocket.accept();
                 updateConnectedDeviceName();
+                // Needs remove
                 MAIN_HANDLER.post(() -> {
                             String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();

@@ -75,9 +75,13 @@ public class BluetoothViewModel extends AndroidViewModel {
     }
 
     public void startBTServer() {
-        if (_bTServerStatus.getValue() == BTServerStatus.LISTENING) return;
+        if (_bTServerStatus.getValue() == BTServerStatus.LISTENING) {
+            _uiMessage.setValue("BT server already listening!");
+            return;
+        }
         _bTServerStatus.setValue(BTServerStatus.LISTENING);
         btController.startServerListening().thenAccept(_bTServerStatus::postValue);
+        _uiMessage.setValue("BT server started");
     }
 
     public void closeBTServer() {
