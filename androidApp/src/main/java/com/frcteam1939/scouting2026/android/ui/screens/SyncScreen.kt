@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
 import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
@@ -42,6 +43,8 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
     val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
+    val deviceName by bluetoothViewModel.connectedDevice.observeAsState()
+    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerState.OFF)
 
     LaunchedEffect(pairedDevices) {
         if (selectedDevice != null &&
@@ -75,27 +78,21 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                val device = selectedDevice
-                if (device == null) {
-                    Toast.makeText(context, "Please select a device first", Toast.LENGTH_SHORT).show()
-                } else {
-                    bluetoothViewModel.connectToDevice(device)
-                    bluetoothViewModel.getBTControllerDeviceName()
-                }
+                bluetoothViewModel.startListening()
             },
-            text = "Connect",
+            text = "Start BT Server",
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
         UserInputs.TextButtonInput(
             onClick = {
-                exportTextFile(
-                    fileName = "bogosbinter.txt",
-                    content = "TEST"
-                )
-                Toast.makeText(context, "Exported to Downloads", Toast.LENGTH_LONG).show()
+                if (selectedDevice == null) {
+                    Toast.makeText(context, "Please select a device first", Toast.LENGTH_SHORT).show()
+                } else {
+                    bluetoothViewModel.connectToDevice(selectedDevice)
+                }
             },
-            text = "Send",
+            text = "Connect",
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
@@ -107,7 +104,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
                 )
                 Toast.makeText(context, "Exported to Downloads", Toast.LENGTH_SHORT).show()
             },
-            text = "Export",
+            text = "Test Connection",
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
@@ -181,22 +178,31 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
             }
         }
 
-        selectedDevice?.let { device ->
-            Text(
-                text = "Selected: ${safeDeviceName(device) ?: device.address}",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                textAlign = TextAlign.Start
-            )
-        }
-
-        val deviceName by bluetoothViewModel.getBTControllerDeviceName().observeAsState()
+        val selectedDeviceText = selectedDevice?.let { device ->
+            safeDeviceName(device) ?: device.address
+        } ?: "None"
+        Text(
+            text = "Selected: $selectedDeviceText",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            textAlign = TextAlign.Start
+        )
 
         Text(
             text = "Connected: $deviceName",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            textAlign = TextAlign.Start
+        )
+
+        Text(
+            text = "Bluetooth Server Status: ${btServerStatus.name}",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
