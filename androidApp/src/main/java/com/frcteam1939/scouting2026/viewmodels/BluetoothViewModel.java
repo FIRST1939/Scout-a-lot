@@ -10,15 +10,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTController;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState;
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerStatus;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils;
 import java.util.List;
 
-import kotlinx.coroutines.scheduling.NanoTimeSource;
-
 public class BluetoothViewModel extends AndroidViewModel {
     private final BTController btController;
-    private final MutableLiveData<BTServerState> _bTServerStatus = new MutableLiveData<>(BTServerState.OFF);
+    private final MutableLiveData<BTServerStatus> _bTServerStatus = new MutableLiveData<>(BTServerStatus.OFF);
     private final MutableLiveData<String> _connectedDevice;
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
     private final Context context;
@@ -27,7 +25,7 @@ public class BluetoothViewModel extends AndroidViewModel {
         super(application);
         context = getApplication().getApplicationContext();
         btController = new BTController(application.getApplicationContext());
-        _connectedDevice = new MutableLiveData<>(btController.getSafeConnectedDeviceName());
+        _connectedDevice = new MutableLiveData<>(btController.getConnectedDeviceName());
         _pairedDevices = new MutableLiveData<>(BTUtils.getPairedDevice(application.getApplicationContext()));
     }
 
@@ -45,22 +43,22 @@ public class BluetoothViewModel extends AndroidViewModel {
         return _connectedDevice;
     }
 
-    public LiveData<BTServerState> getBTServerStatus() {
+    public LiveData<BTServerStatus> getBTServerStatus() {
         return _bTServerStatus;
     }
 
     public void connectToDevice(BluetoothDevice bluetoothDevice) {
         btController.connectToDevice(bluetoothDevice).thenAccept(success -> {
             if (success) {
-                _connectedDevice.postValue(btController.getSafeConnectedDeviceName());
+                _connectedDevice.postValue(btController.getConnectedDeviceName());
             }
         });
     }
 
     public void startBTServer() {
-        if (_bTServerStatus.getValue() == BTServerState.LISTENING) return;
+        if (_bTServerStatus.getValue() == BTServerStatus.LISTENING) return;
 
-        _bTServerStatus.setValue(BTServerState.LISTENING);
+        _bTServerStatus.setValue(BTServerStatus.LISTENING);
 
         btController.startServerListening().thenAccept(_bTServerStatus::postValue);
     }

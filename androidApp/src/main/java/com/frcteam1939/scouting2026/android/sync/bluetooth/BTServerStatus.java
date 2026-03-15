@@ -1,6 +1,6 @@
 package com.frcteam1939.scouting2026.android.sync.bluetooth;
 
-public enum BTServerState {
+public enum BTServerStatus {
     LISTENING,
     CONNECTED,
     OFF

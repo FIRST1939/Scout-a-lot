@@ -29,10 +29,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerStatus
 import com.frcteam1939.scouting2026.android.ui.UserInputs
-import com.frcteam1939.scouting2026.storage.exportTextFile
 import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +42,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     var fileContent by remember { mutableStateOf("") }
     val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
     val deviceName by bluetoothViewModel.connectedDevice.observeAsState()
-    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerState.OFF)
+    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerStatus.OFF)
 
     LaunchedEffect(pairedDevices) {
         if (selectedDevice != null &&

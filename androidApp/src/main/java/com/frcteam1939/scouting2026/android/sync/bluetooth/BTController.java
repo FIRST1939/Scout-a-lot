@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +20,6 @@ public class BTController {
     private final Context context;
     private final ExecutorService bluetoothConnectExecutor = Executors.newSingleThreadExecutor();
     private final ExecutorService bluetoothListenExecutor = Executors.newSingleThreadExecutor();
-
     private final BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
     private BluetoothServerSocket bluetoothServerSocket;
@@ -34,7 +32,6 @@ public class BTController {
     public BTController(Context context) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.context = context;
-
     }
 
     public boolean isConnected() {
@@ -53,7 +50,7 @@ public class BTController {
     }
 
     @SuppressLint("MissingPermission")
-    public String getSafeConnectedDeviceName() {
+    public String getConnectedDeviceName() {
         return connectedDeviceName;
     }
 
@@ -62,7 +59,7 @@ public class BTController {
 
         if (isConnected()) {
             Log.w(TAG,"Already connected, skipping");
-            Toast.makeText(context, "Already connected!", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(context, "Already connected!", Toast.LENGTH_SHORT).show();
             return CompletableFuture.completedFuture(false);
         }
 
@@ -82,11 +79,13 @@ public class BTController {
                 }
                 bluetoothSocket.connect();
                 updateConnectedDeviceName();
+                /**
                 MAIN_HANDLER.post(() -> {
                             String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
                             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                         }
                 );
+                 **/
                 return true;
 
             } catch (SecurityException e) {
@@ -102,7 +101,7 @@ public class BTController {
             } catch (IOException e) {
                 Log.e(TAG, "God damn Connection Failed, server on?", e);
                 MAIN_HANDLER.post(() -> {
-                    Toast.makeText(context, "Connection Failed, Make sure server is listening", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(context, "Connection Failed, Make sure server is listening", Toast.LENGTH_SHORT).show();
                 });
                 try {
                     if (bluetoothSocket != null) {
@@ -117,10 +116,10 @@ public class BTController {
     }
 
     @SuppressLint("MissingPermission")
-    public synchronized CompletableFuture<BTServerState> startServerListening() {
+    public synchronized CompletableFuture<BTServerStatus> startServerListening() {
 
         if (isConnected()) {
-            return CompletableFuture.completedFuture(BTServerState.OFF);
+            return CompletableFuture.completedFuture(BTServerStatus.OFF);
         }
 
         return CompletableFuture.supplyAsync(() -> {
@@ -134,10 +133,10 @@ public class BTController {
                         }
                 );
                 bluetoothServerSocket.close();
-                return BTServerState.CONNECTED;
+                return BTServerStatus.CONNECTED;
             } catch (IOException e) {
                 Log.e(TAG, "ERROR Listening", e);
-                return BTServerState.OFF;
+                return BTServerStatus.OFF;
             }
         },bluetoothListenExecutor);
     }
