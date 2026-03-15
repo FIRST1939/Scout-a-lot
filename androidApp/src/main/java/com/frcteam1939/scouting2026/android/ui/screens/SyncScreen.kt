@@ -106,11 +106,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                exportTextFile(
-                    fileName = "bogosbinter.txt",
-                    content = "Did you get the photos printed? Bogos binted? Bogos BINTed?"
-                )
-                Toast.makeText(context, "Exported to Downloads", Toast.LENGTH_SHORT).show()
+                // TODO()
             },
             text = "Test Connection",
             modifier = Modifier.padding(vertical = 4.dp)
