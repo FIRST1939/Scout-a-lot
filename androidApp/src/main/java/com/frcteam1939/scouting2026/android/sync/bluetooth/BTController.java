@@ -24,6 +24,7 @@ public class BTController {
 
     private final BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
+    private BluetoothServerSocket bluetoothServerSocket;
     private static final String TAG = "BTController";
     private static final UUID MY_UUID = UUID.fromString("ffffffff-ffff-ffff-ffff-0800200c9a66");
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
@@ -123,8 +124,6 @@ public class BTController {
         }
 
         return CompletableFuture.supplyAsync(() -> {
-            BluetoothServerSocket bluetoothServerSocket;
-
             try {
                 bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", MY_UUID);
                 bluetoothSocket = bluetoothServerSocket.accept();
@@ -141,6 +140,16 @@ public class BTController {
                 return BTServerState.OFF;
             }
         },bluetoothListenExecutor);
+    }
+
+    public Boolean closeBTServer() {
+        try {
+            bluetoothServerSocket.close();
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to close BluetoothServerSocket", e);
+            return false;
+        }
     }
 }
 

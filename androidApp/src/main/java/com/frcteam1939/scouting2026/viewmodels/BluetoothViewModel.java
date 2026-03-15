@@ -2,6 +2,9 @@ package com.frcteam1939.scouting2026.viewmodels;
 
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -18,9 +21,11 @@ public class BluetoothViewModel extends AndroidViewModel {
     private final MutableLiveData<BTServerState> _bTServerStatus = new MutableLiveData<>(BTServerState.OFF);
     private final MutableLiveData<String> _connectedDevice;
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
+    private final Context context;
 
     public BluetoothViewModel(@NonNull Application application) {
         super(application);
+        context = getApplication().getApplicationContext();
         btController = new BTController(application.getApplicationContext());
         _connectedDevice = new MutableLiveData<>(btController.getSafeConnectedDeviceName());
         _pairedDevices = new MutableLiveData<>(BTUtils.getPairedDevice(application.getApplicationContext()));
@@ -52,11 +57,19 @@ public class BluetoothViewModel extends AndroidViewModel {
         });
     }
 
-    public void startListening() {
+    public void startBTServer() {
         if (_bTServerStatus.getValue() == BTServerState.LISTENING) return;
 
         _bTServerStatus.setValue(BTServerState.LISTENING);
 
         btController.startServerListening().thenAccept(_bTServerStatus::postValue);
+    }
+
+    public void closeBTServer() {
+        if (btController.closeBTServer()) {
+            Toast.makeText(context, "Successfully closed BT server.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Failed to close BT server.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -78,9 +78,17 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                bluetoothViewModel.startListening()
+                bluetoothViewModel.startBTServer()
             },
             text = "Start BT Server",
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = {
+                bluetoothViewModel.closeBTServer()
+            },
+            text = "Kill BT Server",
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
