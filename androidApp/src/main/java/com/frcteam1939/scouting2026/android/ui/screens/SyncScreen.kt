@@ -43,11 +43,19 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
     val deviceName by bluetoothViewModel.connectedDevice.observeAsState()
     val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerStatus.OFF)
+    val uiMsg by bluetoothViewModel.uiMessage.observeAsState(null)
 
     LaunchedEffect(pairedDevices) {
         if (selectedDevice != null &&
             pairedDevices.none { it.address == selectedDevice?.address }) {
             selectedDevice = null
+        }
+    }
+
+    LaunchedEffect(uiMsg) {
+        if (uiMsg != null) {
+            Toast.makeText(context, uiMsg, Toast.LENGTH_LONG).show()
+            bluetoothViewModel.clearUiMessage()
         }
     }
 

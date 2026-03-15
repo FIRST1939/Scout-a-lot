@@ -2,8 +2,7 @@ package com.frcteam1939.scouting2026.viewmodels;
 
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -19,11 +18,12 @@ public class BluetoothViewModel extends AndroidViewModel {
     private final MutableLiveData<BTServerStatus> _bTServerStatus = new MutableLiveData<>(BTServerStatus.OFF);
     private final MutableLiveData<String> _connectedDevice;
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
-    private final Context context;
+    private final MutableLiveData<String> _uiMessage = new MutableLiveData<>(null);
+
 
     public BluetoothViewModel(@NonNull Application application) {
         super(application);
-        context = getApplication().getApplicationContext();
+
         btController = new BTController(application.getApplicationContext());
         _connectedDevice = new MutableLiveData<>(btController.getConnectedDeviceName());
         _pairedDevices = new MutableLiveData<>(BTUtils.getPairedDevice(application.getApplicationContext()));
@@ -34,9 +34,7 @@ public class BluetoothViewModel extends AndroidViewModel {
     }
 
     public void refreshPairedDevices() {
-        _pairedDevices.setValue(
-                BTUtils.getPairedDevice(getApplication().getApplicationContext())
-        );
+        _pairedDevices.setValue(BTUtils.getPairedDevice(getApplication().getApplicationContext()));
     }
 
     public LiveData<String> getConnectedDevice() {
@@ -47,24 +45,33 @@ public class BluetoothViewModel extends AndroidViewModel {
         return _bTServerStatus;
     }
 
-    public LiveData<String> connectToDevice(BluetoothDevice bluetoothDevice) {
-        MutableLiveData<String> toastMsg = new MutableLiveData<>("");
+    public LiveData<String> getUiMessage() {
+        return _uiMessage;
+    }
+
+    public void clearUiMessage() {
+        _uiMessage.setValue(null);
+    }
+
+    public void connectToDevice(BluetoothDevice bluetoothDevice) {
         btController.connectToDevice(bluetoothDevice).thenAccept(success -> {
             switch (success) {
-                case SUCCEEDED -> _connectedDevice.postValue(btController.getConnectedDeviceName());
+                case SUCCEEDED -> {
+                    _connectedDevice.postValue(btController.getConnectedDeviceName());
+                    _uiMessage.postValue("Successfully Connected to device");
+                }
                 case SKIPPED_ALREADY_CONNECTED ->
-                        toastMsg.postValue("Already Connected! Skipped.");
+                        _uiMessage.postValue("Already Connected! Skipped.");
                 case FAILED_TO_CONNECT ->
-                        toastMsg.postValue("Failed to connect. Server on?");
+                        _uiMessage.postValue("Failed to connect. Server on?");
                 case FAILED_NO_ADAPTER ->
-                        toastMsg.postValue("No Bluetooth Adapter.");
+                        _uiMessage.postValue("No Bluetooth Adapter.");
                 case FAILED_NO_PERMISSION ->
-                        toastMsg.postValue("No Bluetooth permission.");
+                        _uiMessage.postValue("No Bluetooth permission.");
                 default ->
-                        toastMsg.postValue("Unknown error.");
+                        _uiMessage.postValue("Unknown error.");
             }
         });
-        return toastMsg;
     }
 
     public void startBTServer() {
@@ -75,9 +82,9 @@ public class BluetoothViewModel extends AndroidViewModel {
 
     public void closeBTServer() {
         if (btController.closeBTServer()) {
-            Toast.makeText(context, "Successfully closed BT server.", Toast.LENGTH_SHORT).show();
+            _uiMessage.setValue("Successfully closed BT server.");
         } else {
-            Toast.makeText(context, "Failed to close BT server.", Toast.LENGTH_SHORT).show();
+            _uiMessage.setValue("Failed to close BT server.");
         }
     }
 }
