@@ -2,12 +2,22 @@ package com.frcteam1939.scouting2026.android.ui.screens
 
 import android.widget.Toast
 import android.widget.Toast.makeText
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -16,11 +26,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -54,6 +69,35 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val context = LocalContext.current
+
+        // for silly bunny spin
+        val mutableInteractionSource = remember { MutableInteractionSource() }
+        val isPressed by mutableInteractionSource.collectIsPressedAsState()
+        val flipCount = remember { mutableIntStateOf(0) }
+        val isBunnyAngry = flipCount.intValue >= 4
+
+        LaunchedEffect(isPressed) {
+            if (isPressed && !isBunnyAngry && (1..20).random() == 1) {
+                flipCount.intValue++
+                when (flipCount.intValue) {
+                    1 -> makeText(context, "🐰Hey!", Toast.LENGTH_SHORT).show()
+                    2 -> makeText(context, "🐰Don't do that!", Toast.LENGTH_SHORT).show()
+                    3 -> makeText(context, "🐰I'm warning you...", Toast.LENGTH_SHORT).show()
+                    4 -> makeText(context, "👿BARK! BINT! EVIL EVIL BINT!👿", Toast.LENGTH_SHORT).show()
+                }
+            }
+            if (isPressed && (flipCount.intValue >= 4)) {
+                val intimidatingMessage = (1..20).random()
+                when (intimidatingMessage) {
+                    1 -> makeText(context, "👿NO MORE!👿", Toast.LENGTH_SHORT).show()
+                    2 -> makeText(context, "👿IT'S OVER!👿", Toast.LENGTH_SHORT).show()
+                    3 -> makeText(context, "👿YOU WENT TO FAR!👿", Toast.LENGTH_SHORT).show()
+                    4 -> makeText(context, "👿JUST GET BACK TO SCOUTING!👿", Toast.LENGTH_SHORT).show()
+                    5 -> makeText(context, "👿DON'T YOU HAVE SCOUTING TO DO???👿", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         Text(
             text = "Current Event: ${currentEvent.ifEmpty { "None Selected" }}",
             modifier = Modifier.padding(all = 8.dp)
@@ -62,9 +106,39 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
             text = "Current Form: ${currentForm.ifEmpty { "None Selected" }}",
             modifier = Modifier.padding(all = 8.dp)
         )
+
+        // logic for silly bunny movement
+        val targetOffsetY = if (isPressed && !isBunnyAngry) (-24).dp else 0.dp
+        val bunnyOffsetY by animateDpAsState(
+            targetValue = targetOffsetY,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioHighBouncy,
+                stiffness = Spring.StiffnessHigh
+            ),
+            label = "bunny hop"
+        )
+
+        val rotation by animateFloatAsState(
+            targetValue = flipCount.intValue * 360f,
+            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+            label = "backflip"
+        )
+
+        if (flipCount.intValue >= 4) {
+            Text("👿 Don't play with me. 👿", color = MaterialTheme.colorScheme.tertiary)
+        }
+
         Image(
             painter = painterResource(id = R.drawable.bunny),
-            contentDescription = "bunny"
+            contentDescription = "bunny",
+            colorFilter = if (isBunnyAngry) ColorFilter.tint(Color.Red, BlendMode.SrcIn) else null,
+            modifier = Modifier
+                .offset(y = bunnyOffsetY)
+                .graphicsLayer(rotationZ = rotation)
+                .clickable(
+                    interactionSource = mutableInteractionSource,
+                    indication = null
+                ) { }
         )
         UserInputs.TextButtonInput(
             onClick = {
