@@ -91,7 +91,7 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
                 when (intimidatingMessage) {
                     1 -> makeText(context, "👿NO MORE!👿", Toast.LENGTH_SHORT).show()
                     2 -> makeText(context, "👿IT'S OVER!👿", Toast.LENGTH_SHORT).show()
-                    3 -> makeText(context, "👿YOU WENT TO FAR!👿", Toast.LENGTH_SHORT).show()
+                    3 -> makeText(context, "👿YOU WENT TOO FAR!👿", Toast.LENGTH_SHORT).show()
                     4 -> makeText(context, "👿JUST GET BACK TO SCOUTING!👿", Toast.LENGTH_SHORT).show()
                     5 -> makeText(context, "👿DON'T YOU HAVE SCOUTING TO DO???👿", Toast.LENGTH_SHORT).show()
                 }
