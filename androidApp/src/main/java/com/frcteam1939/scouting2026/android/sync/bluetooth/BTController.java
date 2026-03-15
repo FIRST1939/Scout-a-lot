@@ -55,23 +55,20 @@ public class BTController {
     }
 
     @SuppressLint("MissingPermission")
-    public synchronized CompletableFuture<Boolean> connectToDevice(BluetoothDevice targetDevice) {
-
+    public synchronized CompletableFuture<BTConnectStatus> connectToDevice(BluetoothDevice targetDevice) {
         if (isConnected()) {
             Log.w(TAG,"Already connected, skipping");
             // Toast.makeText(context, "Already connected!", Toast.LENGTH_SHORT).show();
-            return CompletableFuture.completedFuture(false);
+            return CompletableFuture.completedFuture(BTConnectStatus.SKIPPED_ALREADY_CONNECTED);
         }
 
         return CompletableFuture.supplyAsync(() -> {
             try {
                 if (bluetoothAdapter == null) {
                     Log.e(TAG, "Bluetooth adapter is null");
-                    return false;
+                    return BTConnectStatus.FAILED_NO_ADAPTER;
                 }
-
                 bluetoothSocket = targetDevice.createInsecureRfcommSocketToServiceRecord(MY_UUID);
-
                 try {
                     bluetoothAdapter.cancelDiscovery();
                 } catch (SecurityException securityException) {
@@ -79,15 +76,8 @@ public class BTController {
                 }
                 bluetoothSocket.connect();
                 updateConnectedDeviceName();
-                /**
-                MAIN_HANDLER.post(() -> {
-                            String text = String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
-                            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                        }
-                );
-                 **/
-                return true;
-
+                // String.format("Bluetooth successfully connected with device %s.",bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getName() : null);
+                return BTConnectStatus.SUCCEEDED;
             } catch (SecurityException e) {
                 Log.e(TAG, "Permission Needed", e);
                 try {
@@ -97,7 +87,7 @@ public class BTController {
                 } catch (IOException closeException) {
                     Log.e(TAG, "Close Connection Failed", closeException);
                 }
-                return false;
+                return BTConnectStatus.FAILED_NO_PERMISSION;
             } catch (IOException e) {
                 Log.e(TAG, "God damn Connection Failed, server on?", e);
                 MAIN_HANDLER.post(() -> {
@@ -110,18 +100,16 @@ public class BTController {
                 } catch (IOException closeException) {
                     Log.e(TAG, "Close Connection Failed", closeException);
                 }
-                return false;
+                return BTConnectStatus.FAILED_TO_CONNECT;
             }
         },bluetoothConnectExecutor);
     }
 
     @SuppressLint("MissingPermission")
     public synchronized CompletableFuture<BTServerStatus> startServerListening() {
-
         if (isConnected()) {
             return CompletableFuture.completedFuture(BTServerStatus.OFF);
         }
-
         return CompletableFuture.supplyAsync(() -> {
             try {
                 bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", MY_UUID);
@@ -145,7 +133,7 @@ public class BTController {
         try {
             bluetoothServerSocket.close();
             return true;
-        } catch (IOException e) {
+        } catch (NullPointerException | IOException e) {
             Log.e(TAG, "Failed to close BluetoothServerSocket", e);
             return false;
         }

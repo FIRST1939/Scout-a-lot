@@ -47,19 +47,29 @@ public class BluetoothViewModel extends AndroidViewModel {
         return _bTServerStatus;
     }
 
-    public void connectToDevice(BluetoothDevice bluetoothDevice) {
+    public LiveData<String> connectToDevice(BluetoothDevice bluetoothDevice) {
+        MutableLiveData<String> toastMsg = new MutableLiveData<>("");
         btController.connectToDevice(bluetoothDevice).thenAccept(success -> {
-            if (success) {
-                _connectedDevice.postValue(btController.getConnectedDeviceName());
+            switch (success) {
+                case SUCCEEDED -> _connectedDevice.postValue(btController.getConnectedDeviceName());
+                case SKIPPED_ALREADY_CONNECTED ->
+                        toastMsg.postValue("Already Connected! Skipped.");
+                case FAILED_TO_CONNECT ->
+                        toastMsg.postValue("Failed to connect. Server on?");
+                case FAILED_NO_ADAPTER ->
+                        toastMsg.postValue("No Bluetooth Adapter.");
+                case FAILED_NO_PERMISSION ->
+                        toastMsg.postValue("No Bluetooth permission.");
+                default ->
+                        toastMsg.postValue("Unknown error.");
             }
         });
+        return toastMsg;
     }
 
     public void startBTServer() {
         if (_bTServerStatus.getValue() == BTServerStatus.LISTENING) return;
-
         _bTServerStatus.setValue(BTServerStatus.LISTENING);
-
         btController.startServerListening().thenAccept(_bTServerStatus::postValue);
     }
 
