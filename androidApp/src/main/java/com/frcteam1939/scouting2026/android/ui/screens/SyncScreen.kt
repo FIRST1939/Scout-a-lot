@@ -29,7 +29,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerStatus
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerEvent
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
 
@@ -41,8 +42,8 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
     val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
-    val deviceName by bluetoothViewModel.connectedDevice.observeAsState()
-    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerStatus.OFF)
+    val deviceName by bluetoothViewModel.btConnectionDeviceName.observeAsState("")
+    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerState.OFF)
     val uiMsg by bluetoothViewModel.uiMessage.observeAsState(null)
 
     LaunchedEffect(pairedDevices) {
@@ -84,7 +85,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                bluetoothViewModel.startBTServer()
+                bluetoothViewModel.startBTServerAutoAccept()
             },
             text = "Start BT Server",
             modifier = Modifier.padding(vertical = 4.dp)
