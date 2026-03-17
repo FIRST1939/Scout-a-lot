@@ -17,7 +17,6 @@ public class BTServer {
     private volatile boolean isListening = false;
     private final BluetoothAdapter bluetoothAdapter;
     private BluetoothServerSocket bluetoothServerSocket;
-    private BluetoothSocket bluetoothSocket;
 
     public BTServer(BluetoothAdapter bluetoothAdapter) {
         this.bluetoothAdapter = bluetoothAdapter;
@@ -32,6 +31,7 @@ public class BTServer {
         }
         isListening = true;
         return CompletableFuture.supplyAsync(() -> {
+            BluetoothSocket bluetoothSocket;
             try {
                 bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", BTUtils.BT_UUID);
                 bluetoothSocket = bluetoothServerSocket.accept();

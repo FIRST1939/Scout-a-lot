@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,7 +15,6 @@ public class BTClient {
     private final ExecutorService bluetoothClientExecutor = Executors.newSingleThreadExecutor();
     private static final String TAG = "BTController";
     private final BluetoothAdapter bluetoothAdapter;
-    private BluetoothSocket bluetoothSocket;
 
     public BTClient(BluetoothAdapter bluetoothAdapter) {
         this.bluetoothAdapter = bluetoothAdapter;
@@ -25,6 +23,7 @@ public class BTClient {
     public CompletableFuture<BTConnectResult> connectToDevice(BluetoothDevice bluetoothDevice) {
         
         return CompletableFuture.supplyAsync(() -> {
+            BluetoothSocket bluetoothSocket = null;
             try {
                 if (bluetoothAdapter == null) {
                     Log.e(TAG, "Bluetooth adapter is null");
