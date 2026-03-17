@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,7 +13,6 @@ import java.util.concurrent.Executors;
 @SuppressLint("MissingPermission")
 public class BTServer {
     private final ExecutorService bluetoothServerExecutor = Executors.newSingleThreadExecutor();
-    private static final UUID MY_UUID = UUID.fromString("ffffffff-ffff-ffff-ffff-0800200c9a66");
     private static final String TAG = "BTServer";
     private volatile boolean isListening = false;
     private final BluetoothAdapter bluetoothAdapter;
@@ -35,7 +33,7 @@ public class BTServer {
         isListening = true;
         return CompletableFuture.supplyAsync(() -> {
             try {
-                bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", MY_UUID);
+                bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", BTUtils.BT_UUID);
                 bluetoothSocket = bluetoothServerSocket.accept();
                 bluetoothServerSocket.close();
                 isListening = false;

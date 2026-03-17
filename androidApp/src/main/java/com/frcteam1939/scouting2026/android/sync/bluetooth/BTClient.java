@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 @SuppressLint("MissingPermission")
 public class BTClient {
     private final ExecutorService bluetoothClientExecutor = Executors.newSingleThreadExecutor();
-    private static final UUID MY_UUID = UUID.fromString("ffffffff-ffff-ffff-ffff-0800200c9a66");
     private static final String TAG = "BTController";
     private final BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
@@ -31,7 +30,7 @@ public class BTClient {
                     Log.e(TAG, "Bluetooth adapter is null");
                     return new BTConnectResult(BTConnectStatus.FAILED_NO_ADAPTER,null);
                 }
-                bluetoothSocket = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+                bluetoothSocket = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(BTUtils.BT_UUID);
                 try {
                     bluetoothAdapter.cancelDiscovery();
                 } catch (SecurityException securityException) {

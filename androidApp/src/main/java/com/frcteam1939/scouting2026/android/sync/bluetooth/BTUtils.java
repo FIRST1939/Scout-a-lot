@@ -10,8 +10,11 @@ import android.os.Build;
 import androidx.core.content.ContextCompat;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class BTUtils {
+    public static final UUID BT_UUID = UUID.fromString("ffffffff-ffff-ffff-ffff-0800200c9a66");
+
     public static List<BluetoothDevice> getPairedDevice(Context context) {
         final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
