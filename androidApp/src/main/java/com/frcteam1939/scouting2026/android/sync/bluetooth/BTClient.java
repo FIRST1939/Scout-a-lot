@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 @SuppressLint("MissingPermission")
 public class BTClient {
     private final ExecutorService bluetoothClientExecutor = Executors.newSingleThreadExecutor();
-    private static final String TAG = "BTController";
+    private static final String TAG = "BTClient";
     private final BluetoothAdapter bluetoothAdapter;
 
     public BTClient(BluetoothAdapter bluetoothAdapter) {
