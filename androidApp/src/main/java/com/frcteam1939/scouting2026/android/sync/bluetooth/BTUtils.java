@@ -31,10 +31,10 @@ public class BTUtils {
 
         if (!hasPermission) return Collections.emptyList();
 
-        List<BluetoothDevice> pariedDevicesList;
+        List<BluetoothDevice> pairedDevicesList;
         try {
-            pariedDevicesList = List.copyOf(bluetoothAdapter.getBondedDevices());
-            return pariedDevicesList;
+            pairedDevicesList = List.copyOf(bluetoothAdapter.getBondedDevices());
+            return pairedDevicesList;
         } catch (Exception e) {
             return Collections.emptyList();
         }
