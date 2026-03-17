@@ -59,7 +59,7 @@ class DataViewModel(
     }
 
     suspend fun updateRawData(team: String) {
-        val rawPitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026").first()?.scoutedData ?: ""
+        val rawPitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026").first()?.scoutedData ?: "[]"
         val rawMatchData = scoutedDataRepository.getAllMatchesForTeam(team, "OKC Match Form 2026").first()
 
         val matches = rawMatchData.map { match ->
@@ -427,6 +427,3 @@ class DataViewModel(
             ?: emptyList()
     }
 }
-
-
-//Json.decodeFromString<List<Field>>
