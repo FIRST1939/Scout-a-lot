@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
+import java.io.IOException;
+
 @SuppressLint("MissingPermission")
 public class BTConnection {
     private final BluetoothSocket bluetoothSocket;
@@ -29,6 +31,6 @@ public class BTConnection {
     public void closeSocket() {
         try {
             bluetoothSocket.close();
-        } catch (Exception ignored) {}
+        } catch (NullPointerException | IOException ignored) {}
     }
 }

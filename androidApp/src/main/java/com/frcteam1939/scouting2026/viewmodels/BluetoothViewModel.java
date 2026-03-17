@@ -57,10 +57,18 @@ public class BluetoothViewModel extends AndroidViewModel {
         return _btServerStatus;
     }
 
+    private void closeExistingConnection() {
+        BTConnection old = _btConnection.getValue();
+        if (old != null) {
+            old.closeSocket();
+        }
+    }
+
     public void connectToDevice(BluetoothDevice bluetoothDevice) {
         btClient.connectToDevice(bluetoothDevice).thenAccept(btConnectResult -> {
             switch (btConnectResult.status) {
                 case SUCCEEDED -> {
+                    closeExistingConnection();
                     _btConnection.postValue(btConnectResult.connection);
                     _btConnectionDeviceName.postValue(btConnectResult.connection.getRemoteDeviceName());
                     _uiMessage.postValue(String.format("Successfully connected to %s",btConnectResult.connection.getRemoteDeviceName()));
@@ -84,6 +92,7 @@ public class BluetoothViewModel extends AndroidViewModel {
         btServer.startServerListening().thenAccept(btServerResult -> {
             switch (btServerResult.event) {
                 case CONNECT_SUCCESS ->{
+                    closeExistingConnection();
                     _btConnection.postValue(btServerResult.connection);
                     _btConnectionDeviceName.postValue(btServerResult.connection.getRemoteDeviceName());
                     _btServerStatus.postValue(BTServerState.OFF);
