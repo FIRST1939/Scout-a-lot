@@ -1,7 +1,6 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.android.ui.WarningBox
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
@@ -56,6 +56,9 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(all = 16.dp)
         )
+        if (teamList.isEmpty()) {
+            WarningBox(warningText = "No teams detected... have you loaded an event?")
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
