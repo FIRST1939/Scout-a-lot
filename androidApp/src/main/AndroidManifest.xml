@@ -31,7 +31,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="FRC Scout Maker"
+            android:label="Bunny Scout"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
