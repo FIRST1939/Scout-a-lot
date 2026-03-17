@@ -16,7 +16,7 @@ public class BTServer {
     private static final String TAG = "BTServer";
     private volatile boolean isListening = false;
     private final BluetoothAdapter bluetoothAdapter;
-    private BluetoothServerSocket bluetoothServerSocket;
+    private volatile BluetoothServerSocket bluetoothServerSocket;
 
     public BTServer(BluetoothAdapter bluetoothAdapter) {
         this.bluetoothAdapter = bluetoothAdapter;
