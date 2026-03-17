@@ -18,8 +18,8 @@ import java.util.List;
 public class BluetoothViewModel extends AndroidViewModel {
     private final BTClient btClient;
     private final BTServer btServer;
-    private final MutableLiveData<BTConnection> _btConnection;
-    private final MutableLiveData<String> _btConnectionDeviceName = new MutableLiveData<>("");
+    private final MutableLiveData<BTConnection> _btConnection = new MutableLiveData<>(null);
+    private final MutableLiveData<String> _btConnectionDeviceName = new MutableLiveData<>(null);
     private final MutableLiveData<BTServerState> _btServerStatus = new MutableLiveData<>(BTServerState.OFF);
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
     private final MutableLiveData<String> _uiMessage = new MutableLiveData<>(null);
@@ -29,7 +29,6 @@ public class BluetoothViewModel extends AndroidViewModel {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         btClient = new BTClient(bluetoothAdapter);
         btServer = new BTServer(bluetoothAdapter);
-        _btConnection = new MutableLiveData<>(null);
         _pairedDevices = new MutableLiveData<>(BTUtils.getPairedDevice(application.getApplicationContext()));
     }
 
@@ -57,7 +56,22 @@ public class BluetoothViewModel extends AndroidViewModel {
         return _btServerStatus;
     }
 
-    private void closeExistingConnection() {
+    // Close current connection for UI
+    public void closeExistingConnection() {
+        BTConnection old = _btConnection.getValue();
+        if (old != null) {
+            old.closeSocket();
+            _uiMessage.setValue(String.format("Closed connection with %s", old.getRemoteDeviceName()));
+            _btConnection.setValue(null);
+            _btConnectionDeviceName.setValue(null);
+        } else {
+            _uiMessage.setValue("No connection exist");
+        }
+
+    }
+
+    // Close current connection private
+    private void closeCurrentConnection() {
         BTConnection old = _btConnection.getValue();
         if (old != null) {
             old.closeSocket();
@@ -65,10 +79,16 @@ public class BluetoothViewModel extends AndroidViewModel {
     }
 
     public void connectToDevice(BluetoothDevice bluetoothDevice) {
+        // Check _btConnection if connection already exist
+        if (_btConnection.getValue() != null && bluetoothDevice.getAddress().equals(_btConnection.getValue().getRemoteDeviceAddress())) {
+            _uiMessage.postValue("Already connected to this device!");
+            return;
+        }
+
         btClient.connectToDevice(bluetoothDevice).thenAccept(btConnectResult -> {
             switch (btConnectResult.status) {
                 case SUCCEEDED -> {
-                    closeExistingConnection();
+                    closeCurrentConnection();
                     _btConnection.postValue(btConnectResult.connection);
                     _btConnectionDeviceName.postValue(btConnectResult.connection.getRemoteDeviceName());
                     _uiMessage.postValue(String.format("Successfully connected to %s",btConnectResult.connection.getRemoteDeviceName()));
@@ -92,7 +112,7 @@ public class BluetoothViewModel extends AndroidViewModel {
         btServer.startServerListening().thenAccept(btServerResult -> {
             switch (btServerResult.event) {
                 case CONNECT_SUCCESS ->{
-                    closeExistingConnection();
+                    closeCurrentConnection();
                     _btConnection.postValue(btServerResult.connection);
                     _btConnectionDeviceName.postValue(btServerResult.connection.getRemoteDeviceName());
                     _btServerStatus.postValue(BTServerState.OFF);

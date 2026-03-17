@@ -3,13 +3,14 @@ package com.frcteam1939.scouting2026.android.sync.bluetooth;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-
+import android.util.Log;
 import java.io.IOException;
 
 @SuppressLint("MissingPermission")
 public class BTConnection {
     private final BluetoothSocket bluetoothSocket;
     private final BluetoothDevice bluetoothDevice;
+    private static final String TAG = "BTConnection";
 
     public BTConnection(BluetoothSocket bluetoothSocket) {
         this.bluetoothSocket = bluetoothSocket;
@@ -31,6 +32,8 @@ public class BTConnection {
     public void closeSocket() {
         try {
             bluetoothSocket.close();
-        } catch (NullPointerException | IOException ignored) {}
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to close socket. May already closed", e);
+        }
     }
 }

@@ -41,10 +41,10 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     // BT Variables
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var fileContent by remember { mutableStateOf("") }
-    val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
-    val deviceName by bluetoothViewModel.btConnectionDeviceName.observeAsState("")
-    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerState.OFF)
     val uiMsg by bluetoothViewModel.uiMessage.observeAsState(null)
+    val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
+    val deviceName by bluetoothViewModel.btConnectionDeviceName.observeAsState()
+    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerState.OFF)
 
     LaunchedEffect(pairedDevices) {
         if (selectedDevice != null &&
@@ -87,7 +87,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
             onClick = {
                 bluetoothViewModel.startBTServerAutoAccept()
             },
-            text = "Start BT Server",
+            text = "Start BT Server (Auto accept)",
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
@@ -108,6 +108,14 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
                 }
             },
             text = "Connect",
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = {
+                bluetoothViewModel.closeExistingConnection();
+            },
+            text = "Disconnect",
             modifier = Modifier.padding(vertical = 4.dp)
         )
 

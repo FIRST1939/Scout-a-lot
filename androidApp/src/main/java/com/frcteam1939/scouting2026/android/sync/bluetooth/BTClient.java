@@ -64,5 +64,4 @@ public class BTClient {
     public void shutdown() {
         bluetoothClientExecutor.shutdownNow();
     }
-
 }
