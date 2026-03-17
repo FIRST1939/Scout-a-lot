@@ -40,7 +40,6 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     val context = LocalContext.current
     // BT Variables
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
-    var fileContent by remember { mutableStateOf("") }
     val uiMsg by bluetoothViewModel.uiMessage.observeAsState(null)
     val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
     val deviceName by bluetoothViewModel.btConnectionDeviceName.observeAsState()
@@ -229,20 +228,5 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
                 .padding(top = 12.dp),
             textAlign = TextAlign.Start
         )
-
-        if (fileContent.isNotEmpty()) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                Text(
-                    text = fileContent,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(12.dp)
-                )
-            }
-        }
     }
 }
