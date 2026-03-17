@@ -18,10 +18,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun WarningBox(warningText: String) {
     Box(
-        modifier = Modifier.background(
-            color = MaterialTheme.colorScheme.errorContainer,
-            shape = MaterialTheme.shapes.medium
-        )
+        modifier = Modifier
+            .padding(all = 16.dp)
+            .background(
+                color = MaterialTheme.colorScheme.errorContainer,
+                shape = MaterialTheme.shapes.medium
+            )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
