@@ -113,4 +113,11 @@ public class BluetoothViewModel extends AndroidViewModel {
             _uiMessage.setValue("Failed to close BT server.");
         }
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        btClient.shutdown();
+        btServer.shutdown();
+    }
 }

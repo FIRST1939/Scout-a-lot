@@ -63,4 +63,10 @@ public class BTServer {
         }
         return BTServerEvent.OFF;
     }
+
+    public void shutdown() {
+        closeBTServer();
+        bluetoothServerExecutor.shutdownNow();
+    }
+
 }

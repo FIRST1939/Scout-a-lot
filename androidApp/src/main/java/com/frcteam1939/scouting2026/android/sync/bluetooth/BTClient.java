@@ -60,4 +60,9 @@ public class BTClient {
             }
         },bluetoothClientExecutor);
     }
+
+    public void shutdown() {
+        bluetoothClientExecutor.shutdownNow();
+    }
+
 }
