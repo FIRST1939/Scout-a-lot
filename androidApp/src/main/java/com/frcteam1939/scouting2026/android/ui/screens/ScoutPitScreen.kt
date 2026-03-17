@@ -1,7 +1,11 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
+import android.R
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,19 +34,52 @@ import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import com.frcteam1939.scouting2026.android.ui.WarningBox
 import kotlinx.coroutines.launch
 
 @Composable
 fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     var teamList by remember { mutableStateOf<List<String>>(emptyList()) }
+    val deviceRobotAssignment = scoutingViewModel.settings.collectAsState().value?.deviceRobotAssignment
+    val robotAssignmentColor = when (deviceRobotAssignment?.take(3)) {
+        "Red" -> Color(0xFFFF0000)
+        "Blu" -> Color(0xFF0000FF)
+        else -> MaterialTheme.colorScheme.error
+    }
+
     LaunchedEffect(true) {
         teamList = scoutingViewModel.getPitTeamList()
     }
+
     Column(
-        verticalArrangement = Arrangement.Top
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val coroutineScope = rememberCoroutineScope()
+        Row(
+            modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Pit scouting assignments for ",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Text(
+                text = deviceRobotAssignment ?: "Error",
+                style = MaterialTheme.typography.headlineMedium,
+                color = robotAssignmentColor
+            )
+        }
+        if (teamList.isEmpty()) {
+            WarningBox("Could not generate pit scouting assignments. Have you created and selected an event?")
+        }
         teamList.forEach { team ->
             UserInputs.OutlinedButtonTextBarInput(
                 text = team,
