@@ -135,11 +135,13 @@ public class BluetoothViewModel extends AndroidViewModel {
     }
 
     public void closeBTServer() {
-        if (btServer.closeBTServer().equals(BTServerEvent.OFF)) {
-            _uiMessage.setValue("Successfully closed BT server.");
-            _btServerStatus.setValue(BTServerState.OFF);
-        } else {
-            _uiMessage.setValue("Failed to close BT server.");
+        switch (btServer.closeBTServer()) {
+            case OFF -> {
+                _uiMessage.setValue("Successfully closed BT server.");
+                _btServerStatus.setValue(BTServerState.OFF);
+            }
+            case OFF_SKIPPED -> _uiMessage.setValue("Already closed");
+            case OFF_FAILED -> _uiMessage.setValue("Failed to close BT server");
         }
     }
 
