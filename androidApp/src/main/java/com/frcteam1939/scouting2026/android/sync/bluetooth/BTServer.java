@@ -23,29 +23,30 @@ public class BTServer {
     }
 
     // Auto accept
-    public CompletableFuture<BTServerResult> startServerListening() {
+    public BTServerEvent startServerListening() {
         if (isListening) {
-            return CompletableFuture.completedFuture(
-                    new BTServerResult(BTServerEvent.ON_SKIPPED, null)
-            );
+            return BTServerEvent.ON_SKIPPED;
         }
         isListening = true;
+        try {
+            bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", BTUtils.BT_UUID);
+            return BTServerEvent.ON;
+        } catch (IOException e) {
+            Log.e(TAG, "ERROR starting server", e);
+            isListening = false;
+            return BTServerEvent.ON_FAILED;
+        }
+    }
+
+    public CompletableFuture<BTServerResult> acceptRemoteConnection() {
         return CompletableFuture.supplyAsync(() -> {
-            BluetoothSocket bluetoothSocket;
             try {
-                bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Sync", BTUtils.BT_UUID);
+                BluetoothSocket bluetoothSocket;
                 bluetoothSocket = bluetoothServerSocket.accept();
-                bluetoothServerSocket.close();
-                isListening = false;
                 return new BTServerResult(BTServerEvent.CONNECT_SUCCESS,new BTConnection(bluetoothSocket));
             } catch (IOException e) {
-                if (isListening) {
-                    Log.e(TAG, "ERROR Listening", e);
-                    isListening = false;
-                    return new BTServerResult(BTServerEvent.FAILED, null);
-                } else {
-                    return new BTServerResult(BTServerEvent.OFF, null);
-                }
+                Log.e(TAG,"Error while accepting connection", e);
+                return new BTServerResult(BTServerEvent.CONNECT_FAILED,null);
             }
         },bluetoothServerExecutor);
     }

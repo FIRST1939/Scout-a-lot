@@ -11,6 +11,7 @@ import com.frcteam1939.scouting2026.android.sync.bluetooth.BTClient;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTConnection;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServer;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerEvent;
+import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerResult;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils;
 import java.util.List;
@@ -109,29 +110,30 @@ public class BluetoothViewModel extends AndroidViewModel {
 
     public void startBTServerAutoAccept() {
         _btServerStatus.postValue(BTServerState.LISTENING);
-        btServer.startServerListening().thenAccept(btServerResult -> {
-            switch (btServerResult.event) {
-                case CONNECT_SUCCESS ->{
-                    closeCurrentConnection();
-                    _btConnection.postValue(btServerResult.connection);
-                    _btConnectionDeviceName.postValue(btServerResult.connection.getRemoteDeviceName());
-                    _btServerStatus.postValue(BTServerState.OFF);
-                    _uiMessage.postValue(String.format("Successfully auto accept connection from %s", btServerResult.connection.getRemoteDeviceName()));
-                }
-                case ON_SKIPPED -> {
-                    _uiMessage.postValue("Already listening! Skipped");
-                }
-                case OFF -> {
-                    _btServerStatus.postValue(BTServerState.OFF);
-                }
-                case FAILED -> {
-                    _uiMessage.postValue("Failed to start the server");
-                    _btServerStatus.postValue(BTServerState.OFF);
-                }
-
+        switch (btServer.startServerListening()) {
+            case ON -> {
+                _uiMessage.setValue("BT server started, waiting for connection...");
+                btServer.acceptRemoteConnection().thenAccept(this::handleServerAcceptResult);
             }
-        });
-        _uiMessage.setValue("BT server started, waiting for connection...");
+            case ON_SKIPPED -> _uiMessage.postValue("Already listening! Skipped");
+            case ON_FAILED -> {
+                _uiMessage.postValue("Failed to start the server");
+                _btServerStatus.postValue(BTServerState.OFF);
+            }
+        }
+    }
+
+    private void handleServerAcceptResult(BTServerResult btServerResult) {
+        if (btServerResult.event == BTServerEvent.CONNECT_SUCCESS) {
+            closeCurrentConnection();
+            _btConnection.postValue(btServerResult.connection);
+            _btConnectionDeviceName.postValue(btServerResult.connection.getRemoteDeviceName());
+            _uiMessage.postValue(String.format("Successfully auto accept connection from %s",
+                    btServerResult.connection.getRemoteDeviceName()));
+            btServer.acceptRemoteConnection().thenAccept(this::handleServerAcceptResult);
+        } else {
+            _uiMessage.postValue("Failed to accept connection");
+        }
     }
 
     public void closeBTServer() {
