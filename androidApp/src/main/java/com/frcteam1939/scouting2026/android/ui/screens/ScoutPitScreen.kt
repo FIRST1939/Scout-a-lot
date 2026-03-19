@@ -41,6 +41,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import com.frcteam1939.scouting2026.android.ui.WarningBox
 import kotlinx.coroutines.launch
 
@@ -89,6 +90,9 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
             var pitDataStatus by remember { mutableStateOf("Fetching...") }
             coroutineScope.launch { pitDataStatus = scoutingViewModel.getPitDataStatus(team) }
 
+            var teamName by remember { mutableStateOf("") }
+            coroutineScope.launch { teamName = scoutingViewModel.getTeamNameByNumber(team) }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,9 +101,15 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
+                    modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = team, color = MaterialTheme.colorScheme.onBackground)
+                    Text(
+                        text = "$team - $teamName",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -210,8 +210,8 @@ class ScoutingViewModel(
         val jsonString = event.first()?.matchInfo
         val matches = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
 
-        val currentAlliance = this.alliance ?: return "ERROR: COULD NOT FIND TEAM"
-        val currentRobotNumber = this.robotNumber ?: return "ERROR: COULD NOT FIND TEAM"
+        val currentAlliance = this.alliance ?: return "Could not find team"
+        val currentRobotNumber = this.robotNumber ?: return "Could not find team"
 
         for (match in matches) {
             val isPlayoff = match.compLevel != "qm"
@@ -226,7 +226,21 @@ class ScoutingViewModel(
                 }
             }
         }
-        return "ERROR: COULD NOT FIND TEAM"
+        return "ERROR: Could not find team"
+    }
+
+    suspend fun getTeamNameByNumber(teamNumber: String): String {
+        val eventName = settings.value?.currentEvent ?: ""
+        val event = eventsRepository.getEventByName(eventName).first()
+        val teamList = event?.eventTeamList ?: emptyList()
+        val teamNameList = event?.eventTeamNameList ?: emptyList()
+        val teamIndex = teamList.indexOf(teamNumber)
+
+        if (teamIndex != -1 && teamIndex < teamNameList.size) {
+            return teamNameList[teamIndex]
+        } else {
+            return "ERROR: Team name not found"
+        }
     }
 
     fun savePitData(team: String) {

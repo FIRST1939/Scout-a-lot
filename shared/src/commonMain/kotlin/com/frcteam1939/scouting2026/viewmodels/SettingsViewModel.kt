@@ -56,6 +56,7 @@ class SettingsViewModel(
     suspend fun createEvent(name: String, code: String, year: Int) {
         val matchInfo = tbaInfo.pullEventMatches("$year$code")
         val teamList = tbaInfo.pullEventTeams("$year$code")
+        val teamNameList = tbaInfo.pullEventTeamNames("$year$code")
         eventsRepository.createEvent(Event(
             id = 0,
             customEventName = name,
@@ -63,6 +64,7 @@ class SettingsViewModel(
             eventYear = year,
             matchInfo = matchInfo,
             eventTeamList = teamList,
+            eventTeamNameList = teamNameList,
             pitForm = "",
             matchForm = ""
         ))

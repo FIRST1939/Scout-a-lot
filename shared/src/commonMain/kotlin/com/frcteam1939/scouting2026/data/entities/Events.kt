@@ -13,6 +13,7 @@ data class Event(
     @ColumnInfo(name = "year") val eventYear: Int,
     @ColumnInfo(name = "match_info") val matchInfo: String,
     @ColumnInfo(name = "team_list") val eventTeamList: List<String>,
+    @ColumnInfo(name = "team_name_list") val eventTeamNameList: List<String>,
     @ColumnInfo(name = "pit_form_name") val pitForm: String,
     @ColumnInfo(name = "match_form_name") val matchForm: String
 )
