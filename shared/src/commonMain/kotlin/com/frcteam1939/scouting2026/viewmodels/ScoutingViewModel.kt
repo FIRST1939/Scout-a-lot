@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable
@@ -152,7 +153,6 @@ class ScoutingViewModel(
     val selectedTeam: StateFlow<String> = _selectedTeam.asStateFlow()
     fun changeSelectedTeam(newTeam: String) {
         _selectedTeam.value = newTeam
-        println("new selected team: $newTeam")
     }
 
     suspend fun getPitTeamList(): List<String> {
@@ -189,6 +189,20 @@ class ScoutingViewModel(
             "match" -> event.matchForm
             else -> "ERROR: Invalid form type"
         }
+    }
+
+    // returns "Not Started" for no data, "Incomplete" for incomplete data, "Complete" for complete data
+    suspend fun getPitDataStatus(team: String): String {
+        val rawPitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026").first()?.scoutedData
+            ?: return "Not Started"
+
+        val pitData = Json.decodeFromString<List<Field>>(rawPitData)
+
+        val isIncomplete = pitData.any { field ->
+            field.fieldContent.isBlank() || field.fieldContent == "[]" || field.fieldContent == "null"
+        }
+
+        return if (isIncomplete) "Incomplete" else "Complete"
     }
 
     suspend fun getCurrentTeam(): String {

@@ -1,11 +1,13 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
-import android.R
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,9 +35,11 @@ import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import com.frcteam1939.scouting2026.android.ui.WarningBox
 import kotlinx.coroutines.launch
@@ -45,8 +49,8 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
     var teamList by remember { mutableStateOf<List<String>>(emptyList()) }
     val deviceRobotAssignment = scoutingViewModel.settings.collectAsState().value?.deviceRobotAssignment
     val robotAssignmentColor = when (deviceRobotAssignment?.take(3)) {
-        "Red" -> Color(0xFFFF0000)
-        "Blu" -> Color(0xFF0000FF)
+        "Red" -> Color.Red
+        "Blu" -> Color.Blue
         else -> MaterialTheme.colorScheme.error
     }
 
@@ -77,25 +81,71 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
                 color = robotAssignmentColor
             )
         }
+        Divider(thickness = 1.dp)
         if (teamList.isEmpty()) {
             WarningBox("Could not generate pit scouting assignments. Have you created and selected an event?")
         }
         teamList.forEach { team ->
-            UserInputs.OutlinedButtonTextBarInput(
-                text = team,
-                buttonText = String(),
-                onClick = {
-                    scoutingViewModel.resetFormJsons()
-                    scoutingViewModel.changeSelectedTeam(team)
-                    scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
-                    coroutineScope.launch {
-                        scoutingViewModel.loadPreviousPitData()
+            var pitDataStatus by remember { mutableStateOf("Fetching...") }
+            coroutineScope.launch { pitDataStatus = scoutingViewModel.getPitDataStatus(team) }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = team, color = MaterialTheme.colorScheme.onBackground)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // pit form status indicator
+                    val pitDataStatusColor = when (pitDataStatus) {
+                        "Fetching..." -> Color(0xFFFFC107)
+                        "Not Started" -> Color(0xFFD50000)
+                        "Incomplete" -> Color(0xFFFFC107)
+                        "Complete" -> Color(0xFF078502)
+                        else -> Color(0xFFD50000)
                     }
-                    navController.navigate(AppRoutes.PitScouting.SCOUT_PITS_FORM)
-                },
-                icon = Icons.Default.ArrowForward,
-                textColor = MaterialTheme.colorScheme.onBackground
-            )
+
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = pitDataStatusColor,
+                                shape = MaterialTheme.shapes.extraLarge
+                            )
+                            .padding(ButtonDefaults.ContentPadding)
+                    ) {
+                        Text(
+                            text = pitDataStatus,
+                            color = Color.White
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            scoutingViewModel.resetFormJsons()
+                            scoutingViewModel.changeSelectedTeam(team)
+                            scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
+                            coroutineScope.launch {
+                                scoutingViewModel.loadPreviousPitData()
+                            }
+                            navController.navigate(AppRoutes.PitScouting.SCOUT_PITS_FORM)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = ""
+                        )
+                    }
+                }
+            }
+            Divider(thickness = 1.dp)
         }
     }
 }
