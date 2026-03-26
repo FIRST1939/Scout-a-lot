@@ -229,20 +229,6 @@ class ScoutingViewModel(
         return "ERROR: Could not find team"
     }
 
-    suspend fun getTeamNameByNumber(teamNumber: String): String {
-        val eventName = settings.value?.currentEvent ?: ""
-        val event = eventsRepository.getEventByName(eventName).first()
-        val teamList = event?.eventTeamList ?: emptyList()
-        val teamNameList = event?.eventTeamNameList ?: emptyList()
-        val teamIndex = teamList.indexOf(teamNumber)
-
-        if (teamIndex != -1 && teamIndex < teamNameList.size) {
-            return teamNameList[teamIndex]
-        } else {
-            return "ERROR: Team name not found"
-        }
-    }
-
     fun savePitData(team: String) {
         scoutedDataRepository.insertPitData(
             ScoutedData(

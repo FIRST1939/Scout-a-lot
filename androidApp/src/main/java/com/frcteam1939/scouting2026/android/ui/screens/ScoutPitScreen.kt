@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.frcteam1939.scouting2026.android.ui.WarningBox
+import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import kotlinx.coroutines.launch
 
 @Composable
@@ -91,7 +92,7 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
             coroutineScope.launch { pitDataStatus = scoutingViewModel.getPitDataStatus(team) }
 
             var teamName by remember { mutableStateOf("") }
-            coroutineScope.launch { teamName = scoutingViewModel.getTeamNameByNumber(team) }
+            coroutineScope.launch { teamName = getTeamNameByNumber(team) }
 
             Row(
                 modifier = Modifier

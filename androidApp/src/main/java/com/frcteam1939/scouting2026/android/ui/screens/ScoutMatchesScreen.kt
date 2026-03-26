@@ -38,12 +38,15 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
+import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlin.text.ifEmpty
@@ -180,7 +183,11 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
 fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
     val matchNumber by scoutingViewModel.matchNumber.collectAsState()
     var teamNumber by remember { mutableStateOf("") }
-    LaunchedEffect(matchNumber) { teamNumber = scoutingViewModel.getCurrentTeam() }
+    var teamName by remember { mutableStateOf("") }
+    LaunchedEffect(matchNumber) {
+        teamNumber = scoutingViewModel.getCurrentTeam()
+        teamName = getTeamNameByNumber(teamNumber)
+    }
 
     var noShowPopup by remember { mutableStateOf(false) }
 
@@ -234,8 +241,12 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
             modifier = Modifier.padding(all = 50.dp)
         )
         Text(
-            text = "You're scouting team $teamNumber",
-            style = MaterialTheme.typography.headlineLarge
+            text = "$teamNumber - $teamName",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(all = 16.dp),
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis
         )
         Text(text = "Can you locate this robot on the field?")
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {

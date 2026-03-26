@@ -30,6 +30,7 @@ import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.WarningBox
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
+import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
@@ -67,8 +68,13 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             teamList.forEach { team ->
+                var teamName by remember { mutableStateOf("Loading team name...") }
+                coroutineScope.launch {
+                    teamName = getTeamNameByNumber(team)
+                }
+
                 UserInputs.OutlinedButtonTextBarInput(
-                    text = team,
+                    text = "$team - $teamName",
                     icon = Icons.Default.ArrowForward,
                     onClick = {
                         dataViewModel.changeCurrentTeam(team)
