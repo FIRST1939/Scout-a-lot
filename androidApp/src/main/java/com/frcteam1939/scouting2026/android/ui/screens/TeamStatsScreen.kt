@@ -91,6 +91,13 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
 
 @Composable
 fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavController) {
+    val teamNumber = dataViewModel.currentTeam.collectAsState().value
+    var teamName by remember { mutableStateOf("Loading team name...") }
+
+    LaunchedEffect(dataViewModel.currentTeam.collectAsState().value) {
+        teamName = getTeamNameByNumber(dataViewModel.currentTeam.value)
+    }
+
     var autoCycleAvg by remember { mutableStateOf("Fetching...") }
     var autoHubStats: List<String> by remember { mutableStateOf(listOf("Fetching...", "Fetching...")) }
     var teleopCycleAvg by remember { mutableStateOf("Fetching...") }
@@ -136,7 +143,7 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "Stats for team ${dataViewModel.currentTeam.collectAsState().value}",
+            text = "$teamNumber - $teamName",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(all = 16.dp)
         )

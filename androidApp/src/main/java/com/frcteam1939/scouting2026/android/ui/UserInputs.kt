@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import kotlin.math.roundToInt
 import kotlin.text.toIntOrNull
 
@@ -383,7 +384,13 @@ object UserInputs {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = text, color = textColor)
+                Text(
+                    text = text,
+                    color = textColor,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f)
+                )
                 OutlinedButton(
                     onClick = { onClick() },
                 ) {
@@ -416,7 +423,7 @@ object UserInputs {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = text)
+                Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                         onClick = { onButtonTwoClick() },
@@ -462,7 +469,7 @@ object UserInputs {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = text)
+                Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                         onClick = { onButtonThreeClick() },
