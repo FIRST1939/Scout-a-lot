@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.tba
+package com.frcteam1939.scouting2026.api
 
 import com.frcteam1939.scouting2026.applicationContext
 import okio.IOException

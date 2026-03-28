@@ -1,7 +1,6 @@
 package com.frcteam1939.scouting2026.viewmodels
 
 // android ViewModel import can be replaced with a general ViewModel class later, im too lazy
-import androidx.collection.DoubleList
 import androidx.lifecycle.ViewModel
 
 import com.frcteam1939.scouting2026.data.entities.AppSettings
@@ -10,13 +9,12 @@ import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 import com.frcteam1939.scouting2026.showAlert
-import com.frcteam1939.scouting2026.tba.models.TBAMatch
+import com.frcteam1939.scouting2026.api.models.TBAMatch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable

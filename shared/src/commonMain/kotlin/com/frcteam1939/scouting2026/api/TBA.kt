@@ -1,7 +1,7 @@
-package com.frcteam1939.scouting2026.tba
+package com.frcteam1939.scouting2026.api
 
 import com.frcteam1939.scouting2026.showAlert
-import com.frcteam1939.scouting2026.tba.models.TBATeam
+import com.frcteam1939.scouting2026.api.models.TBATeam
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -13,7 +13,7 @@ expect class TBAAuth() {
     fun getTBAKey(): String
 }
 
-class TBAInfo(private val tbaAuth: TBAAuth) {
+class TBA(private val tbaAuth: TBAAuth) {
     private val client = HttpClient()
 
     suspend fun pullFromTBA(endpoint: String): String {

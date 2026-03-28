@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.tba.models
+package com.frcteam1939.scouting2026.api.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
