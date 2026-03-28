@@ -288,7 +288,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(start = 10.dp, end = 10.dp, ),
-            text = "Ask the team if you can take a picture of their robot. Take it with your phone or the tablet.",
+            text = "Ask the team if you can take a picture of their robot. Take it with this tablet.",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
 

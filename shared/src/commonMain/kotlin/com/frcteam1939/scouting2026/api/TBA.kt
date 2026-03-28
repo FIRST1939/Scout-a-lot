@@ -30,7 +30,7 @@ class TBA(private val tbaAuth: TBAAuth) {
             println(e.stackTraceToString())
             showAlert(
                 title = "Network Error",
-                message = "Failed to pull event keys from TBA. " +
+                message = "Failed to pull data from TBA. " +
                         "Please check internet connection and try again."
             )
             ""

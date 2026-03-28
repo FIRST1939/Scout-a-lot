@@ -1,5 +1,7 @@
 package com.frcteam1939.scouting2026.data
 
+import com.frcteam1939.scouting2026.api.FRCEvents
+import com.frcteam1939.scouting2026.api.FRCEventsAuth
 import com.frcteam1939.scouting2026.api.TBA
 import com.frcteam1939.scouting2026.api.TBAAuth
 import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
@@ -19,6 +21,7 @@ object DataDependencyContainer {
     private val database: AppDatabase by lazy { getDatabase() }
 
     val tba: TBA by lazy { TBA(TBAAuth()) }
+    val frcEvents: FRCEvents by lazy { FRCEvents(FRCEventsAuth()) }
 
     val settingsRepository: SettingsRepository by lazy {
         SettingsRepository(database, applicationScope)
