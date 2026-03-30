@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0c3f90957a90e42c97002a6e0f2c4e2c",
+    "identityHash": "6d9162fe2d7afcbcd7a375ac6472fff4",
     "entities": [
       {
         "tableName": "app_settings",
@@ -160,12 +160,18 @@
       },
       {
         "tableName": "scouted_data",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `team` TEXT NOT NULL, `match_number` TEXT NOT NULL, `form_name` TEXT NOT NULL, `form_type` TEXT NOT NULL, `scouted_data` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `event_name` TEXT NOT NULL, `team` TEXT NOT NULL, `match_number` TEXT NOT NULL, `form_name` TEXT NOT NULL, `form_type` TEXT NOT NULL, `scouted_data` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventName",
+            "columnName": "event_name",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -256,7 +262,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c3f90957a90e42c97002a6e0f2c4e2c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d9162fe2d7afcbcd7a375ac6472fff4')"
     ]
   }
 }
