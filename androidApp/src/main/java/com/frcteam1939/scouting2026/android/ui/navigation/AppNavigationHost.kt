@@ -39,7 +39,7 @@ import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
-import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
+import com.frcteam1939.scouting2026.viewmodels.SyncViewModel
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
@@ -353,7 +353,7 @@ fun getDataViewModel(
 }
 
 @Composable
-fun getBluetoothViewModel(): BluetoothViewModel {
+fun getBluetoothViewModel(): SyncViewModel {
     val activity = LocalContext.current as ComponentActivity
     return viewModel(viewModelStoreOwner = activity)
 }

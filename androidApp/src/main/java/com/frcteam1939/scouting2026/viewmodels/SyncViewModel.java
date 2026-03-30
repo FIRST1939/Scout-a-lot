@@ -16,7 +16,7 @@ import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState;
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils;
 import java.util.List;
 
-public class BluetoothViewModel extends AndroidViewModel {
+public class SyncViewModel extends AndroidViewModel {
     private final BTClient btClient;
     private final BTServer btServer;
     private final MutableLiveData<BTConnection> _btConnection = new MutableLiveData<>(null);
@@ -25,7 +25,7 @@ public class BluetoothViewModel extends AndroidViewModel {
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
     private final MutableLiveData<String> _uiMessage = new MutableLiveData<>(null);
 
-    public BluetoothViewModel(@NonNull Application application) {
+    public SyncViewModel(@NonNull Application application) {
         super(application);
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         btClient = new BTClient(bluetoothAdapter);

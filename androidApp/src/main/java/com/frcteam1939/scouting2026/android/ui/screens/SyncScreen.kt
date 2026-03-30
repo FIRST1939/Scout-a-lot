@@ -29,21 +29,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerEvent
 import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
-import com.frcteam1939.scouting2026.viewmodels.BluetoothViewModel
+import com.frcteam1939.scouting2026.viewmodels.SyncViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
+fun SyncScreen (syncViewModel: SyncViewModel) {
     val context = LocalContext.current
     // BT Variables
     var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
-    val uiMsg by bluetoothViewModel.uiMessage.observeAsState(null)
-    val pairedDevices by bluetoothViewModel.pairedDevices.observeAsState(emptyList())
-    val deviceName by bluetoothViewModel.btConnectionDeviceName.observeAsState()
-    val btServerStatus by bluetoothViewModel.btServerStatus.observeAsState(BTServerState.OFF)
+    val uiMsg by syncViewModel.uiMessage.observeAsState(null)
+    val pairedDevices by syncViewModel.pairedDevices.observeAsState(emptyList())
+    val deviceName by syncViewModel.btConnectionDeviceName.observeAsState()
+    val btServerStatus by syncViewModel.btServerStatus.observeAsState(BTServerState.OFF)
 
     LaunchedEffect(pairedDevices) {
         if (selectedDevice != null &&
@@ -55,7 +54,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
     LaunchedEffect(uiMsg) {
         if (uiMsg != null) {
             Toast.makeText(context, uiMsg, Toast.LENGTH_LONG).show()
-            bluetoothViewModel.clearUiMessage()
+            syncViewModel.clearUiMessage()
         }
     }
 
@@ -84,7 +83,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                bluetoothViewModel.startBTServerAutoAccept()
+                syncViewModel.startBTServerAutoAccept()
             },
             text = "Start BT Server (Auto accept)",
             modifier = Modifier.padding(vertical = 4.dp)
@@ -92,7 +91,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                bluetoothViewModel.closeBTServer()
+                syncViewModel.closeBTServer()
             },
             text = "Kill BT Server",
             modifier = Modifier.padding(vertical = 4.dp)
@@ -103,7 +102,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
                 if (selectedDevice == null) {
                     Toast.makeText(context, "Please select a device first", Toast.LENGTH_SHORT).show()
                 } else {
-                    bluetoothViewModel.connectToDevice(selectedDevice)
+                    syncViewModel.connectToDevice(selectedDevice)
                 }
             },
             text = "Connect",
@@ -112,7 +111,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                bluetoothViewModel.closeExistingConnection();
+                syncViewModel.closeExistingConnection();
             },
             text = "Disconnect",
             modifier = Modifier.padding(vertical = 4.dp)
@@ -128,7 +127,7 @@ fun SyncScreen (bluetoothViewModel: BluetoothViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                bluetoothViewModel.refreshPairedDevices()
+                syncViewModel.refreshPairedDevices()
                 Toast.makeText(context, "Device list refreshed", Toast.LENGTH_SHORT).show()
             },
             text = "Refresh Devices",
