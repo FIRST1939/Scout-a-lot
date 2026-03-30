@@ -1,18 +1,24 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,11 +30,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.WarningBox
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
+import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
 import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
@@ -73,17 +82,45 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
                     teamName = getTeamNameByNumber(team)
                 }
 
-                UserInputs.OutlinedButtonTextBarInput(
-                    text = "$team - $teamName",
-                    icon = Icons.Default.ArrowForward,
-                    onClick = {
-                        dataViewModel.changeCurrentTeam(team)
-                        coroutineScope.launch {
-                            dataViewModel.updateRawData(team)
-                        }
-                        navController.navigate(AppRoutes.TeamStats.VIEW_TEAM_STATS)
-                    },
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            bitmap = getTeamAvatar(team),
+                            contentDescription = "Team Avatar",
+                            modifier = Modifier.size(48.dp).padding(end = 8.dp)
+                        )
+                        Text(
+                            text = "$team - $teamName",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            dataViewModel.changeCurrentTeam(team)
+                            coroutineScope.launch {
+                                dataViewModel.updateRawData(team)
+                            }
+                            navController.navigate(AppRoutes.TeamStats.VIEW_TEAM_STATS)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = ""
+                        )
+                    }
+                }
+                Divider()
             }
         }
     }
@@ -91,7 +128,7 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
 
 @Composable
 fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavController) {
-    val teamNumber = dataViewModel.currentTeam.collectAsState().value
+    val team = dataViewModel.currentTeam.collectAsState().value
     var teamName by remember { mutableStateOf("Loading team name...") }
 
     LaunchedEffect(dataViewModel.currentTeam.collectAsState().value) {
@@ -142,11 +179,23 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Text(
-            text = "$teamNumber - $teamName",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(all = 16.dp)
-        )
+        Row(
+            modifier = Modifier.padding(bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                bitmap = getTeamAvatar(team),
+                contentDescription = "Team Avatar",
+                modifier = Modifier.size(64.dp).padding(end = 8.dp)
+            )
+            Text(
+                text = "$team - $teamName",
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()

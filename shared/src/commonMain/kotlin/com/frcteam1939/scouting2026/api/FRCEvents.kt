@@ -9,7 +9,6 @@ import io.ktor.client.statement.bodyAsText
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 import kotlin.time.ExperimentalTime
@@ -48,7 +47,7 @@ class FRCEvents(private val frcEventsAuth: FRCEventsAuth) {
 
     // returns a list of avatars as pairs where A is team number string, and B is encoded avatar byte array
     suspend fun pullTeamAvatarsByEvent(eventKey: String): List<Pair<String, ByteArray>> {
-        val jsonString = this.pullFromFRCEvents("/$currentYear/avatars?eventCode=${eventKey}")
+        val jsonString = this.pullFromFRCEvents("$currentYear/avatars?eventCode=${eventKey}")
         val avatars = Json.decodeFromString<FRCAvatars>(jsonString)
 
         return avatars.teams.map { avatar ->

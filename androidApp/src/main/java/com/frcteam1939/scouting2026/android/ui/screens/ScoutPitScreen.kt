@@ -1,5 +1,6 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -35,14 +36,17 @@ import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.frcteam1939.scouting2026.android.ui.WarningBox
+import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
 import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import kotlinx.coroutines.launch
 
@@ -105,6 +109,11 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Image(
+                        bitmap = getTeamAvatar(team),
+                        contentDescription = "Team Avatar",
+                        modifier = Modifier.size(48.dp).padding(end = 8.dp)
+                    )
                     Text(
                         text = "$team - $teamName",
                         color = MaterialTheme.colorScheme.onBackground,
@@ -291,7 +300,6 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             text = "Ask the team if you can take a picture of their robot. Take it with this tablet.",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
-
         )
         Text(
             modifier = Modifier

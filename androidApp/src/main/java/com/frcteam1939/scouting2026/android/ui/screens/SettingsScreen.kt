@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.android.utils.loadTeamAvatarsByEvent
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import kotlinx.coroutines.launch
 
@@ -257,6 +258,7 @@ fun AddEventScreen(navController: NavController, settingsViewModel: SettingsView
                                 ?: false
                     if (isValid) {
                         settingsViewModel.createEvent(eventName, eventCode, eventYear.toInt())
+                        loadTeamAvatarsByEvent(eventCode)
                         navController.navigate(AppRoutes.Settings.EDIT_EVENTS)
                         makeText(context, "Event creation successful!", Toast.LENGTH_SHORT)
                             .show()
