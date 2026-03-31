@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.viewmodels;
+package com.frcteam1939.scouting2026.android.feature.sync;
 
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
@@ -7,13 +7,13 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTClient;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTConnection;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServer;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerEvent;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerResult;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTServerState;
-import com.frcteam1939.scouting2026.android.sync.bluetooth.BTUtils;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.BTClient;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.BTServer;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.BTUtils;
 import java.util.List;
 
 public class SyncViewModel extends AndroidViewModel {

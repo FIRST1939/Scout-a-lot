@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.sync.bluetooth;
+package com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;

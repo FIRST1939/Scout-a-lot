@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.sync.bluetooth;
+package com.frcteam1939.scouting2026.android.feature.sync.bluetooth;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;

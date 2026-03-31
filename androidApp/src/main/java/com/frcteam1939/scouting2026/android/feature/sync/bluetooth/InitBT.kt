@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.sync.bluetooth
+package com.frcteam1939.scouting2026.android.feature.sync.bluetooth
 
 import android.Manifest
 import android.app.Activity
@@ -179,8 +179,8 @@ fun InitBT() {
         rememberLauncherForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            val connectGranted = permissions[android.Manifest.permission.BLUETOOTH_CONNECT] ?: false
-            val scanGranted = permissions[android.Manifest.permission.BLUETOOTH_SCAN] ?: false
+            val connectGranted = permissions[Manifest.permission.BLUETOOTH_CONNECT] ?: false
+            val scanGranted = permissions[Manifest.permission.BLUETOOTH_SCAN] ?: false
 
             if (connectGranted && scanGranted) {
                 showBluetoothStatusToast()
@@ -203,8 +203,8 @@ fun InitBT() {
                 } else {
                     permissionLauncher.launch(
                         arrayOf(
-                            android.Manifest.permission.BLUETOOTH_CONNECT,
-                            android.Manifest.permission.BLUETOOTH_SCAN
+                            Manifest.permission.BLUETOOTH_CONNECT,
+                            Manifest.permission.BLUETOOTH_SCAN
                         )
                     )
                 }

@@ -35,11 +35,11 @@ import com.frcteam1939.scouting2026.android.ui.screens.ScoutPitScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutTeleopScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SelectScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
-import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
+import com.frcteam1939.scouting2026.android.feature.sync.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
-import com.frcteam1939.scouting2026.viewmodels.SyncViewModel
+import com.frcteam1939.scouting2026.android.feature.sync.SyncViewModel
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
