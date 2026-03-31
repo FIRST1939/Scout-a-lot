@@ -41,6 +41,7 @@ fun MainScreenScaffold(
         Screen.MatchReports,
         Screen.TeamStats,
         Screen.Sync,
+        Screen.DataChecklist,
         Screen.EditForms,
     )
 

@@ -8,12 +8,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.frcteam1939.scouting2026.android.getChecklistViewModel
 import com.frcteam1939.scouting2026.android.getDataViewModel
 import com.frcteam1939.scouting2026.android.getEditFormsViewModel
 import com.frcteam1939.scouting2026.android.getScoutingViewModel
 import com.frcteam1939.scouting2026.android.getSettingsViewModel
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.AssignFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.ChecklistScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditMatchFormsScreen
@@ -90,8 +92,9 @@ fun AppNavigationHost(
             startDestination = AppRoutes.PitScouting.SCOUT_PITS, route = AppRoutes.PitScouting.GRAPH
         ) {
             composable(AppRoutes.PitScouting.SCOUT_PITS) { backStackEntry ->
-                val scoutingViewModel =
-                    getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
+                val scoutingViewModel = getScoutingViewModel(
+                    backStackEntry, navController, AppRoutes.PitScouting.GRAPH
+                )
                 MainScreenScaffold(navController, drawerState, scope) {
                     ScoutingScaffold(navController) {
                         ScoutPitScreen(scoutingViewModel, navController)
@@ -131,12 +134,20 @@ fun AppNavigationHost(
             }
         }
         composable(AppRoutes.SYNC) { backStackEntry ->
-            // TODO: device & data synchronization
+            // add a sync viewmodel
             val scoutingViewModel = getScoutingViewModel(
                 backStackEntry, navController, AppRoutes.SYNC
             )
             MainScreenScaffold(navController, drawerState, scope) {
                 SyncScreen(scoutingViewModel, navController)
+            }
+        }
+        composable(AppRoutes.DATA_CHECKLIST) { backStackEntry ->
+            val checklistViewModel = getChecklistViewModel(
+                backStackEntry, navController, AppRoutes.DATA_CHECKLIST
+            )
+            MainScreenScaffold(navController, drawerState, scope) {
+                ChecklistScreen(navController, checklistViewModel)
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {

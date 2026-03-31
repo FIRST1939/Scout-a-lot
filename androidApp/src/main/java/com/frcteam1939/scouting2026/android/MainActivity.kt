@@ -17,6 +17,7 @@ import com.frcteam1939.scouting2026.setActivity
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
 import com.frcteam1939.scouting2026.android.sync.bluetooth.InitBT
+import com.frcteam1939.scouting2026.viewmodels.ChecklistViewModel
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
@@ -47,6 +48,14 @@ class MainActivity : ComponentActivity() {
 fun getScoutingViewModel(
     backStackEntry: NavBackStackEntry, navController: NavController, route: String
 ): ScoutingViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+@Composable
+fun getChecklistViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): ChecklistViewModel {
     val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
     return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }

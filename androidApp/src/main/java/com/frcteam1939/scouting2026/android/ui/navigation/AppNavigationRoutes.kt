@@ -2,6 +2,7 @@ package com.frcteam1939.scouting2026.android.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
@@ -23,6 +24,7 @@ object AppRoutes {
         TeamStats.TEAM_STATS to "Team Stats",
         TeamStats.VIEW_TEAM_STATS to "View Team Stats",
         SYNC to "Sync",
+        DATA_CHECKLIST to "Data Checklist",
         EditForms.EDIT_FORMS to "Edit Forms",
         EditForms.EDIT_PIT_FORM to "Edit Pit Form",
         EditForms.EDIT_MATCH_FORM to "Edit Match Form",
@@ -63,6 +65,8 @@ object AppRoutes {
 
     const val SYNC = "sync"
 
+    const val DATA_CHECKLIST = "data_checklist"
+
     object EditForms {
         const val GRAPH = "edit_forms_graph"
         const val EDIT_FORMS = "edit_forms"
@@ -91,6 +95,7 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object MatchReports : Screen(AppRoutes.MatchReports.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
     object TeamStats : Screen(AppRoutes.TeamStats.TEAM_STATS, "Team Stats", Icons.Default.List)
     object Sync : Screen(AppRoutes.SYNC, "Sync", Icons.Default.Refresh)
+    object DataChecklist : Screen(AppRoutes.DATA_CHECKLIST, "Data Checklist", Icons.Default.Checklist)
     object EditForms : Screen(AppRoutes.EditForms.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.Settings.SETTINGS, "Settings", Icons.Default.Settings)
 }
