@@ -182,11 +182,11 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
 @Composable
 fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: ScoutingViewModel) {
     val matchNumber by scoutingViewModel.matchNumber.collectAsState()
-    var teamNumber by remember { mutableStateOf("") }
+    var team by remember { mutableStateOf("") }
     var teamName by remember { mutableStateOf("") }
     LaunchedEffect(matchNumber) {
-        teamNumber = scoutingViewModel.getCurrentTeam()
-        teamName = getTeamNameByNumber(teamNumber)
+        team = scoutingViewModel.getCurrentTeam()
+        teamName = getTeamNameByNumber(team)
     }
 
     var noShowPopup by remember { mutableStateOf(false) }
@@ -236,12 +236,12 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = rememberDrawablePainter(getTeamImage(teamNumber)),
+            painter = rememberDrawablePainter(getTeamImage(team)),
             contentDescription = "robot image",
             modifier = Modifier.padding(all = 50.dp)
         )
         Text(
-            text = "$teamNumber - $teamName",
+            text = "$team - $teamName",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(all = 16.dp),
             maxLines = 1,
@@ -253,7 +253,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
             // Yes button
             UserInputs.TextButtonInput(
                 onClick = {
-                    scoutingViewModel.changeSelectedTeam(teamNumber)
+                    scoutingViewModel.changeSelectedTeam(team)
                     navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO)
                     scoutingViewModel.changeCurrentPage(newCurrentPage = "Auto")
                 },

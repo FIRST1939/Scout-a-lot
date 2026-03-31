@@ -78,7 +78,8 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
         ) {
             teamList.forEach { team ->
                 var teamName by remember { mutableStateOf("Loading team name...") }
-                coroutineScope.launch {
+
+                LaunchedEffect(team) {
                     teamName = getTeamNameByNumber(team)
                 }
 
@@ -131,8 +132,8 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
     val team = dataViewModel.currentTeam.collectAsState().value
     var teamName by remember { mutableStateOf("Loading team name...") }
 
-    LaunchedEffect(dataViewModel.currentTeam.collectAsState().value) {
-        teamName = getTeamNameByNumber(dataViewModel.currentTeam.value)
+    LaunchedEffect(team) {
+        teamName = getTeamNameByNumber(team)
     }
 
     var autoCycleAvg by remember { mutableStateOf("Fetching...") }

@@ -4,16 +4,16 @@ import com.frcteam1939.scouting2026.data.DataDependencyContainer.eventsRepositor
 import com.frcteam1939.scouting2026.data.DataDependencyContainer.settingsRepository
 import kotlinx.coroutines.flow.first
 
-suspend fun getTeamNameByNumber(teamNumber: String): String {
+suspend fun getTeamNameByNumber(team: String): String {
     val eventName = settingsRepository.settings.value?.currentEvent ?: ""
     val event = eventsRepository.getEventByName(eventName).first()
     val teamList = event?.eventTeamList ?: emptyList()
     val teamNameList = event?.eventTeamNameList ?: emptyList()
-    val teamIndex = teamList.indexOf(teamNumber)
+    val teamIndex = teamList.indexOf(team)
 
-    if (teamIndex != -1 && teamIndex < teamNameList.size) {
-        return teamNameList[teamIndex]
+    return if (teamIndex != -1 && teamIndex < teamNameList.size) {
+        teamNameList[teamIndex]
     } else {
-        return "ERROR: Team name not found"
+        "ERROR: Team name not found"
     }
 }
