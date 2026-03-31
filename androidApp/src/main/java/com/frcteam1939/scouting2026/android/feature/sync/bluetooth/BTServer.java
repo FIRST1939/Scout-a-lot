@@ -5,11 +5,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
-
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
-
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
