@@ -6,15 +6,17 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState;
 import java.util.List;
+import java.util.Map;
 
 public class SyncViewModel extends AndroidViewModel {
     private final SyncRepository repository;
-    private final MutableLiveData<String> _btConnectionDeviceName = new MutableLiveData<>(null);
     private final MutableLiveData<BTServerState> _btServerStatus = new MutableLiveData<>(BTServerState.OFF);
+    private final MutableLiveData<Map<String, BTConnection>> _currentConnection = new MutableLiveData<>();
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
     private final MutableLiveData<String> _uiMessage = new MutableLiveData<>(null);
 
@@ -40,21 +42,25 @@ public class SyncViewModel extends AndroidViewModel {
         _uiMessage.setValue(null);
     }
 
-    public LiveData<String> getBTConnectionDeviceName() {
-        return _btConnectionDeviceName;
-    }
-
     public LiveData<BTServerState> getBTServerStatus() {
         return _btServerStatus;
     }
 
-    public void closeExistingConnection() {
-        String deviceName = repository.closeExistingConnection();
+    public LiveData<Map<String, BTConnection>> getCurrentConnection() {
+        return _currentConnection;
+    }
+
+    public void refreshCurrentConnection() {
+        _currentConnection.postValue(repository.getCurrentConnection());
+    }
+
+    public void closeExistingConnection(BTConnection btConnection) {
+        String deviceName = repository.closeExistingConnection(btConnection);
         if (deviceName != null) {
             _uiMessage.setValue(String.format("Closed connection with %s", deviceName));
-            _btConnectionDeviceName.setValue(null);
+            refreshCurrentConnection();
         } else {
-            _uiMessage.setValue("No connection exist");
+            _uiMessage.setValue("No connection exist with such device");
         }
     }
 
@@ -62,7 +68,7 @@ public class SyncViewModel extends AndroidViewModel {
         repository.connectToDevice(bluetoothDevice).thenAccept(result -> {
             switch (result.status) {
                 case SUCCEEDED -> {
-                    _btConnectionDeviceName.postValue(result.connection.getRemoteDeviceName());
+                    refreshCurrentConnection();
                     _uiMessage.postValue(String.format("Successfully connected to %s",
                             result.connection.getRemoteDeviceName()));
                 }
@@ -97,7 +103,7 @@ public class SyncViewModel extends AndroidViewModel {
 
     private void handleServerAcceptResult(BTServerResult result) {
         if (result.event == BTServerEvent.CONNECT_SUCCESS) {
-            _btConnectionDeviceName.postValue(result.connection.getRemoteDeviceName());
+            refreshCurrentConnection();
             _uiMessage.postValue(String.format("Successfully auto accept connection from %s",
                     result.connection.getRemoteDeviceName()));
             repository.acceptRemoteConnection().thenAccept(this::handleServerAcceptResult);
@@ -122,4 +128,5 @@ public class SyncViewModel extends AndroidViewModel {
         super.onCleared();
         repository.shutdown();
     }
+
 }

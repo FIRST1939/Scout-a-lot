@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 
@@ -37,16 +38,17 @@ import com.frcteam1939.scouting2026.android.ui.UserInputs
 fun SyncScreen (syncViewModel: SyncViewModel) {
     val context = LocalContext.current
     // BT Variables
-    var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
+    var selectedPairedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
+    var selectedConnectedDevice by remember { mutableStateOf<BTConnection?>(null) }
     val uiMsg by syncViewModel.uiMessage.observeAsState(null)
     val pairedDevices by syncViewModel.pairedDevices.observeAsState(emptyList())
-    val deviceName by syncViewModel.btConnectionDeviceName.observeAsState()
+    val currentConnection by syncViewModel.currentConnection.observeAsState(emptyMap())
     val btServerStatus by syncViewModel.btServerStatus.observeAsState(BTServerState.OFF)
 
     LaunchedEffect(pairedDevices) {
-        if (selectedDevice != null &&
-            pairedDevices.none { it.address == selectedDevice?.address }) {
-            selectedDevice = null
+        if (selectedPairedDevice != null &&
+            pairedDevices.none { it.address == selectedPairedDevice?.address }) {
+            selectedPairedDevice = null
         }
     }
 
@@ -98,10 +100,10 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                if (selectedDevice == null) {
-                    Toast.makeText(context, "Please select a device first", Toast.LENGTH_SHORT).show()
+                if (selectedPairedDevice == null) {
+                    Toast.makeText(context, "Please select a device to connect first", Toast.LENGTH_SHORT).show()
                 } else {
-                    syncViewModel.connectToDevice(selectedDevice)
+                    syncViewModel.connectToDevice(selectedPairedDevice)
                 }
             },
             text = "Connect",
@@ -110,7 +112,11 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                syncViewModel.closeExistingConnection();
+                if (selectedPairedDevice == null) {
+                    Toast.makeText(context, "Please select a device to disconnect first", Toast.LENGTH_SHORT).show()
+                } else {
+                    syncViewModel.closeExistingConnection(selectedConnectedDevice)
+                }
             },
             text = "Disconnect",
             modifier = Modifier.padding(vertical = 4.dp)
@@ -161,9 +167,9 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
                     .weight(1f, fill = false)
             ) {
                 items(items = pairedDevices.orEmpty(), key = { it.address }) { device ->
-                    val isSelected = selectedDevice?.address == device.address
+                    val isSelected = selectedPairedDevice?.address == device.address
                     Card(
-                        onClick = { selectedDevice = device },
+                        onClick = { selectedPairedDevice = device },
                         modifier = Modifier
                             .fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -194,7 +200,7 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
             }
         }
 
-        val selectedDeviceText = selectedDevice?.let { device ->
+        val selectedDeviceText = selectedPairedDevice?.let { device ->
             safeDeviceName(device) ?: device.address
         } ?: "None"
         Text(
@@ -207,15 +213,57 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
             textAlign = TextAlign.Start
         )
 
-        Text(
-            text = "Connected: $deviceName",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            textAlign = TextAlign.Start
-        )
+        if (currentConnection.isNullOrEmpty()) {
+            Text(
+                text = "No connected Bluetooth devices found",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 140.dp),
+                contentPadding = PaddingValues(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = false)
+            ) {
+                items(items = currentConnection.values.toList(), key = { it.remoteDeviceAddress }) { connection ->
+                    val isSelected = selectedConnectedDevice?.remoteDeviceAddress == connection.remoteDeviceAddress
+                    Card(
+                        onClick = { selectedConnectedDevice = connection },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        )
+                    ) {
+                        Text(
+                            text = connection.remoteDeviceName,
+                            modifier = Modifier.padding(10.dp),
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = connection.remoteDeviceAddress,
+                            modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
 
         Text(
             text = "Bluetooth Server Status: ${btServerStatus.name}",

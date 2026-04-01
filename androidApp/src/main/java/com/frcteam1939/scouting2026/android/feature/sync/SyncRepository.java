@@ -12,13 +12,15 @@ import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConn
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SyncRepository {
     private final BTClient btClient;
     private final BTServer btServer;
     private final Context context;
-    private BTConnection currentConnection;
+    private final Map<String, BTConnection> currentConnection = new ConcurrentHashMap<>();
 
     public SyncRepository(Context context) {
         this.context = context.getApplicationContext();
@@ -28,16 +30,14 @@ public class SyncRepository {
     }
 
     public CompletableFuture<BTConnectResult> connectToDevice(BluetoothDevice device) {
-        if (currentConnection != null
-                && device.getAddress().equals(currentConnection.getRemoteDeviceAddress())) {
+        if (currentConnection.containsKey(device.getAddress())) {
             return CompletableFuture.completedFuture(
                     new BTConnectResult(BTConnectStatus.SKIPPED_ALREADY_CONNECTED, null));
         }
 
         return btClient.connectToDevice(device).thenApply(result -> {
             if (result.status == BTConnectStatus.SUCCEEDED) {
-                closeCurrentConnection();
-                currentConnection = result.connection;
+                currentConnection.put(result.connection.getRemoteDeviceAddress(),result.connection);
             }
             return result;
         });
@@ -50,8 +50,7 @@ public class SyncRepository {
     public CompletableFuture<BTServerResult> acceptRemoteConnection() {
         return btServer.acceptRemoteConnection().thenApply(result -> {
             if (result.event == BTServerEvent.CONNECT_SUCCESS) {
-                closeCurrentConnection();
-                currentConnection = result.connection;
+                currentConnection.put(result.connection.getRemoteDeviceAddress(),result.connection);
             }
             return result;
         });
@@ -61,23 +60,18 @@ public class SyncRepository {
         return btServer.closeBTServer();
     }
 
-    /**
-     * @return device name if a connection was closed, null if no connection existed
-     */
-    public String closeExistingConnection() {
-        if (currentConnection != null) {
-            String name = currentConnection.getRemoteDeviceName();
-            currentConnection.closeSocket();
-            currentConnection = null;
-            return name;
+    public String closeExistingConnection(BTConnection btConnection) {
+        BTConnection old = currentConnection.remove(btConnection.getRemoteDeviceAddress());
+        if (old != null) {
+            old.closeSocket();
+            return btConnection.getRemoteDeviceName();
         }
         return null;
     }
 
-    private void closeCurrentConnection() {
-        if (currentConnection != null) {
-            currentConnection.closeSocket();
-            currentConnection = null;
+    private void closeAllConnection() {
+        for (BTConnection btConnection : currentConnection.values()) {
+            btConnection.closeSocket();
         }
     }
 
@@ -85,8 +79,12 @@ public class SyncRepository {
         return BTUtils.getPairedDevice(context);
     }
 
+    public Map<String, BTConnection> getCurrentConnection() {
+        return currentConnection;
+    }
+
     public void shutdown() {
-        closeCurrentConnection();
+        closeAllConnection();
         btClient.shutdown();
         btServer.shutdown();
     }

@@ -22,7 +22,8 @@ public class BTConnection {
     }
 
     public String getRemoteDeviceName() {
-        return bluetoothDevice.getName();
+        String name = bluetoothDevice.getName();
+        return name != null ? name : "Unknown";
     }
 
     public String getRemoteDeviceAddress() {
