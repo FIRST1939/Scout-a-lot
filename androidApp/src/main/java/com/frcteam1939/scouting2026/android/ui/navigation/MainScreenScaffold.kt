@@ -41,6 +41,7 @@ fun MainScreenScaffold(
         Screen.MatchReports,
         Screen.TeamStats,
         Screen.Sync,
+        Screen.DataChecklist,
         Screen.EditForms,
     )
 
@@ -97,7 +98,7 @@ fun MainScreenScaffold(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("1939 Scouting Tool") }, navigationIcon = {
+                    title = { Text("Bunny Scout") }, navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
                                 imageVector = Icons.Default.Menu, contentDescription = "Menu"

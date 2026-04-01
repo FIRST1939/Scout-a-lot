@@ -4,7 +4,7 @@ import com.frcteam1939.scouting2026.data.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import com.frcteam1939.scouting2026.data.DataDependencyContainer.tbaInfo
+import com.frcteam1939.scouting2026.data.DataDependencyContainer.tba
 import com.frcteam1939.scouting2026.data.entities.EventCodes
 
 
@@ -16,7 +16,7 @@ class EventCodesRepository(
 
     suspend fun getEventCodes(year: Int): Flow<EventCodes?> {
         if (dao.getEventCodesByYear(year).first() == null) {
-            val eventKeys = tbaInfo.pullEventKeyList(year)
+            val eventKeys = tba.pullEventKeyList(year)
             if (eventKeys.isNotEmpty()) {
                 dao.updateEventCodes(EventCodes(id = 0, year = year, eventCodes = eventKeys))
             }

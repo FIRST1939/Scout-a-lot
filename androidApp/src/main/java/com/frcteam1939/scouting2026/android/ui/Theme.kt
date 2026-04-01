@@ -1,6 +1,5 @@
 package com.frcteam1939.scouting2026.android.ui
 
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme

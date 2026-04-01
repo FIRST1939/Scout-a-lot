@@ -1,13 +1,13 @@
 package com.frcteam1939.scouting2026.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.frcteam1939.scouting2026.data.DataDependencyContainer.tbaInfo
+import com.frcteam1939.scouting2026.data.DataDependencyContainer.tba
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.entities.Event
 import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
-import com.frcteam1939.scouting2026.tba.models.TBAMatch
+import com.frcteam1939.scouting2026.api.models.TBAMatch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,8 +54,9 @@ class SettingsViewModel(
     }
 
     suspend fun createEvent(name: String, code: String, year: Int) {
-        val matchInfo = tbaInfo.pullEventMatches("$year$code")
-        val teamList = tbaInfo.pullEventTeams("$year$code")
+        val matchInfo = tba.pullEventMatches("$year$code")
+        val teamList = tba.pullEventTeams("$year$code")
+        val teamNameList = tba.pullEventTeamNames("$year$code")
         eventsRepository.createEvent(Event(
             id = 0,
             customEventName = name,
@@ -63,6 +64,7 @@ class SettingsViewModel(
             eventYear = year,
             matchInfo = matchInfo,
             eventTeamList = teamList,
+            eventTeamNameList = teamNameList,
             pitForm = "",
             matchForm = ""
         ))
@@ -73,7 +75,7 @@ class SettingsViewModel(
     }
 
     suspend fun updateEventMatchInfo(name: String, code: String, year: Int) {
-        val matchInfo = tbaInfo.pullEventMatches("$year$code")
+        val matchInfo = tba.pullEventMatches("$year$code")
         eventsRepository.updateEventMatchInfo(name, matchInfo)
     }
 

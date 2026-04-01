@@ -20,6 +20,7 @@ import androidx.navigation.navigation
 import com.frcteam1939.scouting2026.android.ui.CupertinoTransitions
 import com.frcteam1939.scouting2026.android.ui.screens.AddEventScreen
 import com.frcteam1939.scouting2026.android.ui.screens.AssignFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.ChecklistScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditMatchFormsScreen
@@ -35,10 +36,12 @@ import com.frcteam1939.scouting2026.android.ui.screens.ScoutPitScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutTeleopScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SelectScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
+import com.frcteam1939.scouting2026.android.feature.sync.FileSyncScreen
 import com.frcteam1939.scouting2026.android.feature.sync.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
+import com.frcteam1939.scouting2026.viewmodels.ChecklistViewModel
 import com.frcteam1939.scouting2026.android.feature.sync.SyncViewModel
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
@@ -59,6 +62,7 @@ fun AppNavigationHost(
             AppRoutes.MatchReports.MATCH_REPORTS,
             AppRoutes.TeamStats.TEAM_STATS,
             AppRoutes.SYNC,
+            AppRoutes.DATA_CHECKLIST,
             AppRoutes.EditForms.EDIT_FORMS,
         )
 
@@ -218,7 +222,24 @@ fun AppNavigationHost(
             // WIP
             val bluetoothViewModel = getBluetoothViewModel()
             MainScreenScaffold(navController, drawerState, scope) {
-                SyncScreen(bluetoothViewModel)
+                SyncScreen(
+                    syncViewModel = bluetoothViewModel,
+                    onOpenFileSync = { navController.navigate(AppRoutes.FILE_SYNC) }
+                )
+            }
+        }
+        composable(AppRoutes.FILE_SYNC) { backStackEntry ->
+            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.FILE_SYNC)
+            SubScreenScaffold(navController) {
+                FileSyncScreen(scoutingViewModel)
+            }
+        }
+        composable(AppRoutes.DATA_CHECKLIST) { backStackEntry ->
+            val checklistViewModel = getChecklistViewModel(
+                backStackEntry, navController, AppRoutes.DATA_CHECKLIST
+            )
+            MainScreenScaffold(navController, drawerState, scope) {
+                ChecklistScreen(navController, checklistViewModel)
             }
         }
         navigation(startDestination = AppRoutes.EditForms.EDIT_FORMS, route = AppRoutes.EditForms.GRAPH) {
@@ -348,6 +369,14 @@ fun getSettingsViewModel(
 fun getDataViewModel(
     backStackEntry: NavBackStackEntry, navController: NavController, route: String
 ): DataViewModel {
+    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
+    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+@Composable
+fun getChecklistViewModel(
+    backStackEntry: NavBackStackEntry, navController: NavController, route: String
+): ChecklistViewModel {
     val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
     return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
 }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6fdd5d386c31738b7ca6ea2f026b9d0f",
+    "identityHash": "6d9162fe2d7afcbcd7a375ac6472fff4",
     "entities": [
       {
         "tableName": "app_settings",
@@ -42,7 +42,7 @@
       },
       {
         "tableName": "events",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `code` TEXT NOT NULL, `year` INTEGER NOT NULL, `match_info` TEXT NOT NULL, `team_list` TEXT NOT NULL, `pit_form_name` TEXT NOT NULL, `match_form_name` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `code` TEXT NOT NULL, `year` INTEGER NOT NULL, `match_info` TEXT NOT NULL, `team_list` TEXT NOT NULL, `team_name_list` TEXT NOT NULL, `pit_form_name` TEXT NOT NULL, `match_form_name` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -77,6 +77,12 @@
           {
             "fieldPath": "eventTeamList",
             "columnName": "team_list",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventTeamNameList",
+            "columnName": "team_name_list",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -154,12 +160,18 @@
       },
       {
         "tableName": "scouted_data",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `team` TEXT NOT NULL, `match_number` TEXT NOT NULL, `form_name` TEXT NOT NULL, `form_type` TEXT NOT NULL, `scouted_data` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `event_name` TEXT NOT NULL, `team` TEXT NOT NULL, `match_number` TEXT NOT NULL, `form_name` TEXT NOT NULL, `form_type` TEXT NOT NULL, `scouted_data` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventName",
+            "columnName": "event_name",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -250,7 +262,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6fdd5d386c31738b7ca6ea2f026b9d0f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d9162fe2d7afcbcd7a375ac6472fff4')"
     ]
   }
 }

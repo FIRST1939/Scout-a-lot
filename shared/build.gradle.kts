@@ -41,6 +41,7 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             api(libs.androidx.lifecycle.viewmodel)

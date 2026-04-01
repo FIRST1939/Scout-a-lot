@@ -1,7 +1,6 @@
 package com.frcteam1939.scouting2026.viewmodels
 
 // android ViewModel import can be replaced with a general ViewModel class later, im too lazy
-import androidx.collection.DoubleList
 import androidx.lifecycle.ViewModel
 
 import com.frcteam1939.scouting2026.data.entities.AppSettings
@@ -10,13 +9,13 @@ import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 import com.frcteam1939.scouting2026.showAlert
-import com.frcteam1939.scouting2026.tba.models.TBAMatch
+import com.frcteam1939.scouting2026.api.models.TBAMatch
+import com.frcteam1939.scouting2026.assignPitTeams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable
@@ -139,6 +138,7 @@ class ScoutingViewModel(
     }
 
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
+    val currentEvent = settings.value?.currentEvent ?: ""
     val alliance: String?
         get() = settings.value?.deviceRobotAssignment?.dropLast(2)
     val robotNumber: Int?
@@ -153,34 +153,17 @@ class ScoutingViewModel(
     val selectedTeam: StateFlow<String> = _selectedTeam.asStateFlow()
     fun changeSelectedTeam(newTeam: String) {
         _selectedTeam.value = newTeam
-        println("new selected team: $newTeam")
     }
 
-    suspend fun getTeamList(): List<String> {
+    suspend fun getPitTeamList(): List<String> {
         val deviceName = settings.value?.deviceRobotAssignment
-        var deviceTag = 0
         val eventName = settings.value?.currentEvent
         if (eventName == null || eventName == "") {
             showAlert("Error getting event teams:", "Current event not found. Make sure you select an event!")
             return emptyList()
         }
-        var teamList = eventsRepository.getEventByName(eventName).first()?.eventTeamList ?: emptyList()
-        // sorts the teamList to make it consistent and smallest to largest
-        teamList = teamList.mapNotNull { it.toIntOrNull() }.sorted().map { it.toString() }
-        val deviceTeamList = mutableListOf<String>()
-        when(deviceName) {
-            "Red 1" -> deviceTag = 0
-            "Red 2" -> deviceTag = 1
-            "Red 3" -> deviceTag = 2
-            "Blue 1" -> deviceTag = 3
-            "Blue 2" -> deviceTag = 4
-            "Blue 3" -> deviceTag = 5
-        }
-        while (deviceTag < teamList.size) {
-            deviceTeamList.add(teamList[deviceTag])
-            deviceTag += 6
-        }
-        return (deviceTeamList)
+        val teamList = eventsRepository.getEventByName(eventName).first()?.eventTeamList ?: emptyList()
+        return assignPitTeams(teamList, deviceName ?: "")
     }
 
     suspend fun getCurrentForm(currentEvent: String, formType: String): String {
@@ -192,13 +175,27 @@ class ScoutingViewModel(
         }
     }
 
+    // returns "Not Started" for no data, "Incomplete" for incomplete data, "Complete" for complete data
+    suspend fun getPitDataStatus(team: String): String {
+        val rawPitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026", currentEvent).first()?.scoutedData
+            ?: return "Not Started"
+
+        val pitData = Json.decodeFromString<List<Field>>(rawPitData)
+
+        val isIncomplete = pitData.any { field ->
+            field.fieldContent.isBlank() || field.fieldContent == "[]" || field.fieldContent == "null"
+        }
+
+        return if (isIncomplete) "Incomplete" else "Complete"
+    }
+
     suspend fun getCurrentTeam(): String {
         val event = eventsRepository.getEventByName(settings.value?.currentEvent ?: "")
         val jsonString = event.first()?.matchInfo
         val matches = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
 
-        val currentAlliance = this.alliance ?: return "ERROR: COULD NOT FIND TEAM"
-        val currentRobotNumber = this.robotNumber ?: return "ERROR: COULD NOT FIND TEAM"
+        val currentAlliance = this.alliance ?: return "Could not find team"
+        val currentRobotNumber = this.robotNumber ?: return "Could not find team"
 
         for (match in matches) {
             val isPlayoff = match.compLevel != "qm"
@@ -213,25 +210,26 @@ class ScoutingViewModel(
                 }
             }
         }
-        return "ERROR: COULD NOT FIND TEAM"
+        return "ERROR: Could not find team"
     }
 
     fun savePitData(team: String) {
         scoutedDataRepository.insertPitData(
             ScoutedData(
                 id = 0,
+                eventName = currentEvent,
                 team = team,
                 matchNumber = "0",
                 formName = "OKC Pit Form 2026",
                 formType = "pit",
                 scoutedData = Json.encodeToString(pitJson.value)
             ),
-            team = team
+            eventName = currentEvent
         )
     }
 
     suspend fun loadPreviousPitData() {
-        val oldData = scoutedDataRepository.getPitData(selectedTeam.value, "OKC Pit Form 2026").first()?.scoutedData
+        val oldData = scoutedDataRepository.getPitData(selectedTeam.value, "OKC Pit Form 2026", currentEvent).first()?.scoutedData
         if (oldData != null) {
             changePitJson(newPitJson = Json.decodeFromString(oldData))
         }
@@ -241,6 +239,7 @@ class ScoutingViewModel(
         scoutedDataRepository.insertMatchData(
             ScoutedData(
                 id = 0,
+                eventName = currentEvent,
                 team = selectedTeam.value,
                 matchNumber = matchNumber.value,
                 formName = "OKC Match Form 2026",
@@ -261,7 +260,7 @@ class ScoutingViewModel(
         val teamList = eventsRepository.getEventByName(eventName).first()?.eventTeamList ?: emptyList()
 
         val pitDataList: List<Pair<String, String>> = teamList.map { team ->
-            val pitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026").first()
+            val pitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026", currentEvent).first()
             val teamName = pitData?.team ?: ""
             val scoutedData = pitData?.scoutedData ?: ""
             teamName to scoutedData
@@ -273,7 +272,7 @@ class ScoutingViewModel(
     }
 
     suspend fun getMatchDataForExport(): String {
-        val matchData = scoutedDataRepository.getMatchData("OKC Match Form 2026").first()
+        val matchData = scoutedDataRepository.getMatchData("OKC Match Form 2026", currentEvent).first()
 
         return matchData.joinToString("\n") { data ->
             "${data.team},${data.matchNumber},${data.scoutedData}"
@@ -293,8 +292,16 @@ class ScoutingViewModel(
 
                 if (team.isNotBlank()) {
                     scoutedDataRepository.insertPitData(
-                        scoutedData = ScoutedData(id = 0, team = team, matchNumber = "0", formName = "OKC Pit Form 2026", formType = "pit", scoutedData),
-                        team = team
+                        scoutedData = ScoutedData(
+                            id = 0,
+                            eventName = currentEvent,
+                            team = team,
+                            matchNumber = "0",
+                            formName = "OKC Pit Form 2026",
+                            formType = "pit",
+                            scoutedData = scoutedData
+                        ),
+                        eventName = currentEvent
                     )
                 }
             }
@@ -314,10 +321,11 @@ class ScoutingViewModel(
                 val scoutedData = line.substring(secondCommaIndex + 1).trim()
 
                 if (team.isNotBlank() && matchNumber.isNotBlank()) {
-                    if (scoutedDataRepository.getMatchByTeamAndNumber(team, matchNumber.toInt(), "OKC Match Form 2026").first() == null) {
+                    if (scoutedDataRepository.getMatchByTeamAndNumber(team, matchNumber.toInt(), "OKC Match Form 2026", currentEvent).first() == null) {
                         scoutedDataRepository.insertMatchData(
                             ScoutedData(
                                 id = 0,
+                                eventName = currentEvent,
                                 team = team,
                                 matchNumber = matchNumber,
                                 formName = "OKC Match Form 2026",

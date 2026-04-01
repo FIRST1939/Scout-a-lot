@@ -1,6 +1,7 @@
-package com.frcteam1939.scouting2026.tba
+package com.frcteam1939.scouting2026.api
 
 import com.frcteam1939.scouting2026.showAlert
+import com.frcteam1939.scouting2026.api.models.TBATeam
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -12,7 +13,7 @@ expect class TBAAuth() {
     fun getTBAKey(): String
 }
 
-class TBAInfo(private val tbaAuth: TBAAuth) {
+class TBA(private val tbaAuth: TBAAuth) {
     private val client = HttpClient()
 
     suspend fun pullFromTBA(endpoint: String): String {
@@ -29,7 +30,7 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
             println(e.stackTraceToString())
             showAlert(
                 title = "Network Error",
-                message = "Failed to pull event keys from TBA. " +
+                message = "Failed to pull data from TBA. " +
                         "Please check internet connection and try again."
             )
             ""
@@ -55,12 +56,22 @@ class TBAInfo(private val tbaAuth: TBAAuth) {
 
     suspend fun pullEventTeams(eventKey: String): List<String> {
         val jsonString = this.pullFromTBA("/event/${eventKey}/teams/keys")
-        println("it worked: $jsonString")
         if(jsonString.isNotBlank()) {
             val keyList = Json.decodeFromString<List<String>>(jsonString)
             return keyList.map { it.substring(3) }
         } else {
             return emptyList()
         }
+    }
+
+    suspend fun pullEventTeamNames(eventKey: String): List<String> {
+        val jsonString = this.pullFromTBA("/event/${eventKey}/teams/simple")
+        var teamNames = emptyList<String>()
+
+        Json.decodeFromString<List<TBATeam>>(jsonString).forEach { team ->
+            teamNames = teamNames.plus(team.nickname)
+        }
+
+        return teamNames
     }
 }

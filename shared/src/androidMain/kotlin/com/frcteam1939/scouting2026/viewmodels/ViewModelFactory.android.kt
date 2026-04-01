@@ -26,11 +26,14 @@ actual class ViewModelFactory actual constructor(
             modelClass.isAssignableFrom(ScoutingViewModel::class.java) -> {
                 ScoutingViewModel(settingsRepository, eventsRepository, scoutedDataRepository) as T
             }
-            modelClass.isAssignableFrom(EditFormsViewModel::class.java) -> {
-                EditFormsViewModel(eventsRepository, formsRepository) as T
+            modelClass.isAssignableFrom(ChecklistViewModel::class.java) -> {
+                ChecklistViewModel(settingsRepository, eventsRepository, scoutedDataRepository) as T
             }
             modelClass.isAssignableFrom(DataViewModel::class.java) -> {
                 DataViewModel(settingsRepository, eventsRepository, scoutedDataRepository) as T
+            }
+            modelClass.isAssignableFrom(EditFormsViewModel::class.java) -> {
+                EditFormsViewModel(eventsRepository, formsRepository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.simpleName}")
         }

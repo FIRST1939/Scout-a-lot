@@ -1,7 +1,14 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,45 +29,142 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
-import com.frcteam1939.scouting2026.android.ui.templates.ButtonBarTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.CheckboxFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
-import com.frcteam1939.scouting2026.data.structuring.ButtonBar
 import com.frcteam1939.scouting2026.data.structuring.Checkbox
 import com.frcteam1939.scouting2026.data.structuring.Textbox
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import com.frcteam1939.scouting2026.android.ui.WarningBox
+import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
+import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import kotlinx.coroutines.launch
 
 @Composable
 fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     var teamList by remember { mutableStateOf<List<String>>(emptyList()) }
-    LaunchedEffect(true) {
-        teamList = scoutingViewModel.getTeamList()
+    val deviceRobotAssignment = scoutingViewModel.settings.collectAsState().value?.deviceRobotAssignment
+    val robotAssignmentColor = when (deviceRobotAssignment?.take(3)) {
+        "Red" -> Color.Red
+        "Blu" -> Color.Blue
+        else -> MaterialTheme.colorScheme.error
     }
+
+    LaunchedEffect(true) {
+        teamList = scoutingViewModel.getPitTeamList()
+    }
+
     Column(
-        verticalArrangement = Arrangement.Top
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val coroutineScope = rememberCoroutineScope()
-        teamList.forEach { team ->
-            UserInputs.OutlinedButtonTextBarInput(
-                text = team,
-                buttonText = String(),
-                onClick = {
-                    scoutingViewModel.resetFormJsons()
-                    scoutingViewModel.changeSelectedTeam(team)
-                    scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
-                    coroutineScope.launch {
-                        scoutingViewModel.loadPreviousPitData()
-                    }
-                    navController.navigate(AppRoutes.PitScouting.SCOUT_PITS_FORM)
-                },
-                icon = Icons.Default.ArrowForward,
-                textColor = MaterialTheme.colorScheme.onBackground
+        Row(
+            modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Pit scouting assignments for ",
+                style = MaterialTheme.typography.headlineMedium
             )
+            Text(
+                text = deviceRobotAssignment ?: "Error",
+                style = MaterialTheme.typography.headlineMedium,
+                color = robotAssignmentColor
+            )
+        }
+        Divider(thickness = 1.dp)
+        if (teamList.isEmpty()) {
+            WarningBox("Could not generate pit scouting assignments. Have you created and selected an event?")
+        }
+        teamList.forEach { team ->
+            var pitDataStatus by remember { mutableStateOf("Fetching...") }
+            coroutineScope.launch { pitDataStatus = scoutingViewModel.getPitDataStatus(team) }
+
+            var teamName by remember { mutableStateOf("") }
+            coroutineScope.launch { teamName = getTeamNameByNumber(team) }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        bitmap = getTeamAvatar(team),
+                        contentDescription = "Team Avatar",
+                        modifier = Modifier.size(48.dp).padding(end = 8.dp)
+                    )
+                    Text(
+                        text = "$team - $teamName",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // pit form status indicator
+                    val pitDataStatusColor = when (pitDataStatus) {
+                        "Fetching..." -> Color(0xFFFFC107)
+                        "Not Started" -> Color(0xFFD50000)
+                        "Incomplete" -> Color(0xFFFFC107)
+                        "Complete" -> Color(0xFF078502)
+                        else -> Color(0xFFD50000)
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = pitDataStatusColor,
+                                shape = MaterialTheme.shapes.extraLarge
+                            )
+                            .padding(ButtonDefaults.ContentPadding)
+                    ) {
+                        Text(
+                            text = pitDataStatus,
+                            color = Color.White
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            scoutingViewModel.resetFormJsons()
+                            scoutingViewModel.changeSelectedTeam(team)
+                            scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
+                            coroutineScope.launch {
+                                scoutingViewModel.loadPreviousPitData()
+                            }
+                            navController.navigate(AppRoutes.PitScouting.SCOUT_PITS_FORM)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = ""
+                        )
+                    }
+                }
+            }
+            Divider(thickness = 1.dp)
         }
     }
 }
@@ -192,10 +296,9 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(start = 10.dp, end = 10.dp, ),
-            text = "Ask the team if you can take a picture of their robot. Take it with your phone or the tablet.",
+            text = "Ask the team if you can take a picture of their robot. Take it with this tablet.",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
-
         )
         Text(
             modifier = Modifier

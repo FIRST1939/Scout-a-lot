@@ -7,7 +7,7 @@ import com.frcteam1939.scouting2026.applicationContext
 import java.io.IOException
 
 fun getTeamImage(team: String): Drawable? {
-    val imageName = "frc$team.jpg"
+    val imageName = "frc${team}robot.jpg"
     return try {
         val inputStream = applicationContext.assets.open(imageName)
         val drawable = Drawable.createFromStream(inputStream, null)

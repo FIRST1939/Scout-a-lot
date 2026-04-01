@@ -35,7 +35,10 @@ import com.frcteam1939.scouting2026.android.ui.UserInputs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SyncScreen (syncViewModel: SyncViewModel) {
+fun SyncScreen(
+    syncViewModel: SyncViewModel,
+    onOpenFileSync: () -> Unit,
+) {
     val context = LocalContext.current
     // BT Variables
     var selectedPairedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
@@ -88,6 +91,12 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
             text = "Sync",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = onOpenFileSync,
+            text = "Open File Sync",
+            modifier = Modifier.padding(vertical = 4.dp)
         )
 
         UserInputs.TextButtonInput(

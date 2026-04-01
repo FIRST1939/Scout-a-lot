@@ -50,5 +50,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.compose.foundation)
     implementation("com.google.accompanist:accompanist-drawablepainter:0.37.3")
+    implementation(libs.androidx.foundation)
     debugImplementation(libs.compose.ui.tooling)
 }
