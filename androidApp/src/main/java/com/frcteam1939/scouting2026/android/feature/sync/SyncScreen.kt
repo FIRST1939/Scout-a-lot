@@ -43,6 +43,7 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
     val uiMsg by syncViewModel.uiMessage.observeAsState(null)
     val pairedDevices by syncViewModel.pairedDevices.observeAsState(emptyList())
     val currentConnection by syncViewModel.currentConnection.observeAsState(emptyMap())
+    val connectionList = currentConnection.values.toList()
     val btServerStatus by syncViewModel.btServerStatus.observeAsState(BTServerState.OFF)
 
     LaunchedEffect(pairedDevices) {
@@ -52,9 +53,16 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
         }
     }
 
+    LaunchedEffect(currentConnection) {
+        if (selectedConnectedDevice != null &&
+            connectionList.none { it.remoteDeviceAddress == selectedConnectedDevice?.remoteDeviceAddress }) {
+            selectedConnectedDevice = null
+        }
+    }
+
     LaunchedEffect(uiMsg) {
         if (uiMsg != null) {
-            Toast.makeText(context, uiMsg, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, uiMsg, Toast.LENGTH_SHORT).show()
             syncViewModel.clearUiMessage()
         }
     }
@@ -112,7 +120,7 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
 
         UserInputs.TextButtonInput(
             onClick = {
-                if (selectedPairedDevice == null) {
+                if (selectedConnectedDevice == null) {
                     Toast.makeText(context, "Please select a device to disconnect first", Toast.LENGTH_SHORT).show()
                 } else {
                     syncViewModel.closeExistingConnection(selectedConnectedDevice)
@@ -137,6 +145,16 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
             },
             text = "Refresh Devices",
             modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        Text(
+            text = "Bluetooth Server Status: ${btServerStatus.name}",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            textAlign = TextAlign.Start
         )
 
         Text(
@@ -166,7 +184,7 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
                     .fillMaxWidth()
                     .weight(1f, fill = false)
             ) {
-                items(items = pairedDevices.orEmpty(), key = { it.address }) { device ->
+                items(items = pairedDevices, key = { it.address }) { device ->
                     val isSelected = selectedPairedDevice?.address == device.address
                     Card(
                         onClick = { selectedPairedDevice = device },
@@ -200,6 +218,7 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
             }
         }
 
+        /***
         val selectedDeviceText = selectedPairedDevice?.let { device ->
             safeDeviceName(device) ?: device.address
         } ?: "None"
@@ -210,6 +229,16 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp),
+            textAlign = TextAlign.Start
+        )
+        ***/
+
+        Text(
+            text = "Connected Devices",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, bottom = 8.dp),
             textAlign = TextAlign.Start
         )
 
@@ -231,7 +260,7 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
                     .fillMaxWidth()
                     .weight(1f, fill = false)
             ) {
-                items(items = currentConnection.values.toList(), key = { it.remoteDeviceAddress }) { connection ->
+                items(items = connectionList, key = { it.remoteDeviceAddress }) { connection ->
                     val isSelected = selectedConnectedDevice?.remoteDeviceAddress == connection.remoteDeviceAddress
                     Card(
                         onClick = { selectedConnectedDevice = connection },
@@ -264,15 +293,5 @@ fun SyncScreen (syncViewModel: SyncViewModel) {
                 }
             }
         }
-
-        Text(
-            text = "Bluetooth Server Status: ${btServerStatus.name}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            textAlign = TextAlign.Start
-        )
     }
 }
