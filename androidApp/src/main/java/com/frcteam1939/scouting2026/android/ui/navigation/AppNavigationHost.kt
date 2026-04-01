@@ -214,10 +214,22 @@ fun AppNavigationHost(
         }
         composable(
             route = AppRoutes.SYNC,
-            enterTransition = { fadeIn(tween(300)) },
-            exitTransition = { fadeOut(tween(300)) },
-            popEnterTransition = { fadeIn(tween(300)) },
-            popExitTransition = { fadeOut(tween(300)) },
+            enterTransition = {
+                if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                else CupertinoTransitions.popEnterTransition
+            },
+            exitTransition = {
+                if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                else CupertinoTransitions.exitTransition
+            },
+            popEnterTransition = {
+                if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
+                else CupertinoTransitions.popEnterTransition
+            },
+            popExitTransition = {
+                if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
+                else CupertinoTransitions.popExitTransition
+            },
         ) { _ ->
             // WIP
             val bluetoothViewModel = getBluetoothViewModel()
@@ -228,13 +240,7 @@ fun AppNavigationHost(
                 )
             }
         }
-        composable(
-            route = AppRoutes.FILE_SYNC,
-            enterTransition = { CupertinoTransitions.enterTransition },
-            exitTransition = { CupertinoTransitions.exitTransition },
-            popEnterTransition = { CupertinoTransitions.popEnterTransition },
-            popExitTransition = { CupertinoTransitions.popExitTransition },
-        ) { backStackEntry ->
+        composable(AppRoutes.FILE_SYNC) { backStackEntry ->
             val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.FILE_SYNC)
             SubScreenScaffold(navController) {
                 FileSyncScreen(scoutingViewModel)
