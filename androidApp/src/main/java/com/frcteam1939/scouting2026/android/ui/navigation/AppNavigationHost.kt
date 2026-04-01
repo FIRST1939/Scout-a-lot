@@ -228,13 +228,25 @@ fun AppNavigationHost(
                 )
             }
         }
-        composable(AppRoutes.FILE_SYNC) { backStackEntry ->
+        composable(
+            route = AppRoutes.FILE_SYNC,
+            enterTransition = { CupertinoTransitions.enterTransition },
+            exitTransition = { CupertinoTransitions.exitTransition },
+            popEnterTransition = { CupertinoTransitions.popEnterTransition },
+            popExitTransition = { CupertinoTransitions.popExitTransition },
+        ) { backStackEntry ->
             val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.FILE_SYNC)
             SubScreenScaffold(navController) {
                 FileSyncScreen(scoutingViewModel)
             }
         }
-        composable(AppRoutes.DATA_CHECKLIST) { backStackEntry ->
+        composable(
+            route = AppRoutes.DATA_CHECKLIST,
+            enterTransition = { fadeIn(tween(300)) },
+            exitTransition = { fadeOut(tween(300)) },
+            popEnterTransition = { fadeIn(tween(300)) },
+            popExitTransition = { fadeOut(tween(300)) },
+        ) { backStackEntry ->
             val checklistViewModel = getChecklistViewModel(
                 backStackEntry, navController, AppRoutes.DATA_CHECKLIST
             )
