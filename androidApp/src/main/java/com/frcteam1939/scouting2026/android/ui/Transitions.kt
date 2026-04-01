@@ -33,6 +33,10 @@ object CupertinoTransitions {
     // Background page offset ratio (iOS slides the underlying page ~25% of screen width)
     private const val SlideFactor = 0.25f
 
+    // compose-cupertino uses a black scrim with alpha ~= 0.25f.
+    // Against a black host background, 0.75 content alpha produces the same visual dim.
+    private const val BackgroundPageAlpha = 0.75f
+
     private val animSpec =
             tween<IntOffset>(durationMillis = TransitionDuration, easing = CupertinoEasing)
 
@@ -43,16 +47,16 @@ object CupertinoTransitions {
     // New page slides in from the right (100%)
     val enterTransition: EnterTransition = slideInHorizontally(animationSpec = animSpec) { it }
 
-    // Old page slides left 25% (+ slight fade to simulate iOS dimming overlay)
+    // The outgoing page moves left by ~25% of the screen width and dims against a black host background.
     val exitTransition: ExitTransition =
             slideOutHorizontally(animationSpec = animSpec) { -(it * SlideFactor).toInt() } +
-                    fadeOut(animationSpec = fadeSpec, targetAlpha = 0.9f)
+                    fadeOut(animationSpec = fadeSpec, targetAlpha = BackgroundPageAlpha)
 
     // ── Pop (back) ──────────────────────────────
-    // Underlying page slides back in from -25% position
+    // Underlying page slides back in from -25% position and undims back to full opacity.
     val popEnterTransition: EnterTransition =
             slideInHorizontally(animationSpec = animSpec) { -(it * SlideFactor).toInt() } +
-                    fadeIn(animationSpec = fadeSpec, initialAlpha = 0.9f)
+                    fadeIn(animationSpec = fadeSpec, initialAlpha = BackgroundPageAlpha)
 
     // Top page slides out to the right (100%)
     val popExitTransition: ExitTransition = slideOutHorizontally(animationSpec = animSpec) { it }
