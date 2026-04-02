@@ -193,11 +193,18 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             iconTwo = Icons.Default.Clear,
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            text = "Scouter Name(s)",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
         TextboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Textbox(
                 id = 0,
-                label = "Scouter Name",
+                label = "Type here",
                 singleLine = true,
                 forceNumberInput = false
             )
@@ -208,7 +215,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             fieldContent = Checkbox(
                 id = 1,
                 label = "Robot picks up from...",
-                options = listOf("Depot", "Outpost", "Alliance Zone", "Neutral Zone")
+                options = listOf("Depot", "Outpost", "Ground")
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
@@ -311,7 +318,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 100.dp, start = 10.dp, end = 10.dp, ),
-            text = "If you took it with your phone, send it in the #robopics channel in Discord with the team's number",
+            text = "Please make sure the team number is visible in the photo.",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
             )
