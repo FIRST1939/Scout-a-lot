@@ -37,6 +37,8 @@ import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -172,18 +174,23 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
 @Composable
 fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()),
+        modifier = Modifier.verticalScroll(rememberScrollState()).padding(top = 32.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        UserInputs.OutlinedButtonTextBarInput(
+        UserInputs.DoubleOutlinedButtonTextBarInput(
             text = scoutingViewModel.selectedTeam.collectAsState().value,
-            buttonText = String(),
-            onClick = {
+            buttonOneText = "Submit",
+            onButtonOneClick = {
                 scoutingViewModel.savePitData(scoutingViewModel.selectedTeam.value)
                 navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
             },
-            icon = Icons.Default.Check,
+            iconOne = Icons.Default.Check,
+            buttonTwoText = "Cancel",
+            onButtonTwoClick = {
+                navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
+            },
+            iconTwo = Icons.Default.Clear,
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         TextboxFieldTemplate(
