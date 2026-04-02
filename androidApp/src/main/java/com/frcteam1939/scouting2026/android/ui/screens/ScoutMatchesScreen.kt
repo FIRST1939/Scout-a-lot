@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +47,7 @@ import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
 import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
@@ -184,6 +187,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
     val matchNumber by scoutingViewModel.matchNumber.collectAsState()
     var team by remember { mutableStateOf("") }
     var teamName by remember { mutableStateOf("") }
+
     LaunchedEffect(matchNumber) {
         team = scoutingViewModel.getCurrentTeam()
         teamName = getTeamNameByNumber(team)
@@ -238,16 +242,26 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
         Image(
             painter = rememberDrawablePainter(getTeamImage(team)),
             contentDescription = "robot image",
-            modifier = Modifier.padding(all = 50.dp)
+            modifier = Modifier.padding(start = 50.dp, end = 50.dp, bottom = 25.dp)
         )
-        Text(
-            text = "$team - $teamName",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(all = 16.dp),
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                bitmap = getTeamAvatar(team),
+                contentDescription = "Team Avatar",
+                modifier = Modifier.size(64.dp)
+            )
+            Text(
+                text = "$team - $teamName",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(all = 16.dp),
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
         Text(text = "Can you locate this robot on the field?")
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             // Yes button
