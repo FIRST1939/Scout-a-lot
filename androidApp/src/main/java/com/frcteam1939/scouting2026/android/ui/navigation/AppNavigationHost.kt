@@ -20,6 +20,7 @@ import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditMatchFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditPitFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.MatchReportsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
@@ -34,6 +35,7 @@ import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
+import com.frcteam1939.scouting2026.android.ui.screens.ViewMatchReportScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
 import kotlinx.coroutines.CoroutineScope
 
@@ -111,9 +113,16 @@ fun AppNavigationHost(
         navigation(
             startDestination = AppRoutes.MatchReports.MATCH_REPORTS, route = AppRoutes.MatchReports.GRAPH
         ) {
-            composable(AppRoutes.MatchReports.MATCH_REPORTS) {
+            composable(AppRoutes.MatchReports.MATCH_REPORTS) { backStackEntry ->
+                val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.MatchReports.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
-                    // TODO: match report generation
+                    MatchReportsScreen(navController, dataViewModel)
+                }
+            }
+            composable(AppRoutes.MatchReports.VIEW_MATCH_REPORT) { backStackEntry ->
+                val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.MatchReports.GRAPH)
+                MainScreenScaffold(navController, drawerState, scope) {
+                    ViewMatchReportScreen(navController, dataViewModel)
                 }
             }
         }
