@@ -17,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -104,7 +103,6 @@ fun SyncScreen(
         )
 
         val checked = btServerStatus == BTServerState.LISTENING
-
         UserInputs.SwitchTextBarInput(
             checked = checked,
             onCheckedChange = { isChecked ->
@@ -116,7 +114,6 @@ fun SyncScreen(
             },
             text = "BT Server"
         )
-
 
         UserInputs.TextButtonInput(
             onClick = {

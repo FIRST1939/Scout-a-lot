@@ -101,6 +101,8 @@ public class SyncViewModel extends AndroidViewModel {
             _uiMessage.postValue(String.format("Successfully auto accept connection from %s",
                     result.connection.getRemoteDeviceName()));
             repository.acceptRemoteConnection().thenAccept(this::handleServerAcceptResult);
+        } else if (result.event == BTServerEvent.OFF) {
+            return;
         } else {
             _uiMessage.postValue("Failed to accept connection");
         }

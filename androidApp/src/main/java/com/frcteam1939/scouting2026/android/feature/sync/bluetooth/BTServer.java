@@ -48,8 +48,13 @@ public class BTServer {
                 bluetoothSocket = bluetoothServerSocket.accept();
                 return new BTServerResult(BTServerEvent.CONNECT_SUCCESS,new BTConnection(bluetoothSocket));
             } catch (IOException e) {
-                Log.e(TAG,"Error while accepting connection", e);
-                return new BTServerResult(BTServerEvent.CONNECT_FAILED,null);
+                if (isListening) {
+                    Log.e(TAG,"Error while accepting connection", e);
+                    return new BTServerResult(BTServerEvent.CONNECT_FAILED,null);
+                } else {
+                    return new BTServerResult(BTServerEvent.OFF,null);
+                }
+
             }
         },bluetoothServerExecutor);
     }
