@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -102,21 +103,20 @@ fun SyncScreen(
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
-        UserInputs.TextButtonInput(
-            onClick = {
-                syncViewModel.startBTServerAutoAccept()
+        val checked = btServerStatus == BTServerState.LISTENING
+
+        UserInputs.SwitchTextBarInput(
+            checked = checked,
+            onCheckedChange = { isChecked ->
+                if (isChecked) {
+                    syncViewModel.startBTServerAutoAccept()
+                } else {
+                    syncViewModel.closeBTServer()
+                }
             },
-            text = "Start BT Server (Auto accept)",
-            modifier = Modifier.padding(vertical = 4.dp)
+            text = "BT Server"
         )
 
-        UserInputs.TextButtonInput(
-            onClick = {
-                syncViewModel.closeBTServer()
-            },
-            text = "Kill BT Server",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
 
         UserInputs.TextButtonInput(
             onClick = {
@@ -157,16 +157,6 @@ fun SyncScreen(
             },
             text = "Refresh Devices",
             modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        Text(
-            text = "Bluetooth Server Status: ${btServerStatus.name}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            textAlign = TextAlign.Start
         )
 
         Text(
@@ -229,21 +219,6 @@ fun SyncScreen(
                 }
             }
         }
-
-        /***
-        val selectedDeviceText = selectedPairedDevice?.let { device ->
-            safeDeviceName(device) ?: device.address
-        } ?: "None"
-        Text(
-            text = "Selected: $selectedDeviceText",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            textAlign = TextAlign.Start
-        )
-        ***/
 
         Text(
             text = "Connected Devices",
