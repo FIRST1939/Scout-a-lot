@@ -1,4 +1,6 @@
-package com.frcteam1939.scouting2026.android.ui.screens
+package com.frcteam1939.scouting2026.android.feature.sync
+
+// TODO: Merge FileSyncScreen into the Bluetooth Sync page after the unified sync UX is designed.
 
 import android.net.Uri
 import android.widget.Toast
@@ -14,29 +16,27 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavController) {
+fun FileSyncScreen(scoutingViewModel: ScoutingViewModel) {
     val context = LocalContext.current
     var pitFileContent by remember { mutableStateOf("") }
     var matchFileContent by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    // Result launcher for picking pit data file
     val pitFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -49,13 +49,12 @@ fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavControlle
                     scoutingViewModel.importPitData(pitFileContent)
                     makeText(context, "Pit data imported successfully", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 makeText(context, "Failed to read pit data file", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // Result launcher for picking match data file
     val matchFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -68,7 +67,7 @@ fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavControlle
                     scoutingViewModel.importMatchData(matchFileContent)
                     makeText(context, "Match data imported successfully", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 makeText(context, "Failed to read match data file", Toast.LENGTH_SHORT).show()
             }
         }
@@ -80,12 +79,11 @@ fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavControlle
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Sync",
+            text = "File Sync",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(all = 16.dp)
         )
 
-        // Pit Data Section
         Text(
             text = "Pit Data",
             style = MaterialTheme.typography.titleMedium,
@@ -112,13 +110,12 @@ fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavControlle
                         fileName = pitFileName,
                         content = scoutingViewModel.getPitDataForExport(),
                     )
-                    makeText(context, "Pit data exported ✅", Toast.LENGTH_SHORT).show()
+                    makeText(context, "Pit data exported", Toast.LENGTH_SHORT).show()
                 }
             },
             text = "Export Pit Data"
         )
 
-        // Match Data Section
         Text(
             text = "Match Data",
             style = MaterialTheme.typography.titleMedium,
@@ -145,13 +142,12 @@ fun SyncScreen(scoutingViewModel: ScoutingViewModel, navController: NavControlle
                         fileName = matchFileName,
                         content = scoutingViewModel.getMatchDataForExport(),
                     )
-                    makeText(context, "Match data exported ✅", Toast.LENGTH_SHORT).show()
+                    makeText(context, "Match data exported", Toast.LENGTH_SHORT).show()
                 }
             },
             text = "Export Match Data"
         )
 
-        // Display imported content
         if (pitFileContent.isNotEmpty()) {
             Card(
                 modifier = Modifier.padding(16.dp),

@@ -7,20 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.frcteam1939.scouting2026.android.ui.MyApplicationTheme
 import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
-import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
-import com.frcteam1939.scouting2026.android.sync.bluetooth.InitBT
-import com.frcteam1939.scouting2026.viewmodels.ChecklistViewModel
-import com.frcteam1939.scouting2026.viewmodels.DataViewModel
-import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
-import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.InitBT
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,56 +34,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Get scoutingViewModel based on location
-@Composable
-fun getScoutingViewModel(
-    backStackEntry: NavBackStackEntry, navController: NavController, route: String
-): ScoutingViewModel {
-    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
-    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
-}
-
-@Composable
-fun getChecklistViewModel(
-    backStackEntry: NavBackStackEntry, navController: NavController, route: String
-): ChecklistViewModel {
-    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
-    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
-}
-
-@Composable
-fun getEditFormsViewModel(
-    backStackEntry: NavBackStackEntry, navController: NavController, route: String
-): EditFormsViewModel {
-    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
-    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
-}
-
-@Composable
-fun getSettingsViewModel(
-    backStackEntry: NavBackStackEntry, navController: NavController, route: String
-): SettingsViewModel {
-    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
-    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
-}
-
-@Composable
-fun getDataViewModel(
-    backStackEntry: NavBackStackEntry, navController: NavController, route: String
-): DataViewModel {
-    val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
-    return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-// navigation controller
 fun ScoutingApp() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // Initialize Bluetooth
     InitBT()
 
     // NaviHost

@@ -5,8 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Request legacy Bluetooth permissions on older devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30"
-        android:requiredFeature="true"/>
+        android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
         android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -31,7 +30,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="Bunny Scout"
+            android:label="${appLabel}"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>

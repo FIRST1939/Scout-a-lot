@@ -81,7 +81,13 @@ class SettingsViewModel(
 
     suspend fun checkQualsMatchLoadStatus(name: String): Boolean {
         val jsonString = eventsRepository.getEventByName(name).first()?.matchInfo
-        val matchInfo = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
+        if (jsonString.isNullOrBlank()) return false
+
+        val matchInfo = try {
+            Json.decodeFromString<List<TBAMatch>>(jsonString)
+        } catch (_: Exception) {
+            return false
+        }
         for (match in matchInfo) {
             if (match.compLevel == "qm") {
                 return true
@@ -92,7 +98,13 @@ class SettingsViewModel(
 
     suspend fun checkPlayoffMatchLoadStatus(name: String): Boolean {
         val jsonString = eventsRepository.getEventByName(name).first()?.matchInfo
-        val matchInfo = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
+        if (jsonString.isNullOrBlank()) return false
+
+        val matchInfo = try {
+            Json.decodeFromString<List<TBAMatch>>(jsonString)
+        } catch (_: Exception) {
+            return false
+        }
         for (match in matchInfo) {
             //TODO: add ALL playoff match types
             if (match.compLevel == "f" || match.compLevel == "sf" || match.compLevel == "qf") {

@@ -37,7 +37,7 @@ fun MainScreenScaffold(
 ) {
     // List of items to show in the Navigation Drawer
     val items = listOf(
-        Screen.Scouting,
+        Screen.ScoutMatches,
         Screen.MatchReports,
         Screen.TeamStats,
         Screen.Sync,
@@ -46,7 +46,7 @@ fun MainScreenScaffold(
     )
 
     val currentRoute = navController.currentBackStackEntry?.destination?.route
-    val selectedItem = items.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
+    val selectedItem = items.indexOfFirst { it.route == currentRoute }
 
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
@@ -63,15 +63,23 @@ fun MainScreenScaffold(
                             )
                         },
                         label = { Text(screen.label) },
-                        selected = index == selectedItem,
+                        selected = run {
+                            if (screen == Screen.ScoutMatches) {
+                                PackedScreen.ScoutAndSettings.screens.any { it.route == currentRoute }
+                            } else {
+                                index == selectedItem
+                            }
+                        },
                         onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                            if (screen.route != currentRoute) {
+                                scope.launch { drawerState.close() }
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),

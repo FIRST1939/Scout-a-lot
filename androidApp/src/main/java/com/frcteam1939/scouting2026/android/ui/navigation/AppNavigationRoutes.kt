@@ -25,6 +25,7 @@ object AppRoutes {
         TeamStats.TEAM_STATS to "Team Stats",
         TeamStats.VIEW_TEAM_STATS to "View Team Stats",
         SYNC to "Sync",
+        FILE_SYNC to "File Sync",
         DATA_CHECKLIST to "Data Checklist",
         EditForms.EDIT_FORMS to "Edit Forms",
         EditForms.EDIT_PIT_FORM to "Edit Pit Form",
@@ -66,6 +67,8 @@ object AppRoutes {
 
     const val SYNC = "sync"
 
+    const val FILE_SYNC = "file_sync"
+
     const val DATA_CHECKLIST = "data_checklist"
 
     object EditForms {
@@ -90,7 +93,6 @@ object AppRoutes {
 
 // Properties specific to the Navigation Rail
 sealed class Screen(val route: String, val label: String, val icon: ImageVector) {
-    object Scouting : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scouting", Icons.Default.Build)
     object ScoutMatches : Screen(AppRoutes.MatchScouting.SCOUT_MATCHES, "Scout Matches", Icons.Default.Build)
     object ScoutPits : Screen(AppRoutes.PitScouting.SCOUT_PITS, "Scout Pits", Icons.Default.Person)
     object MatchReports : Screen(AppRoutes.MatchReports.MATCH_REPORTS, "Match Reports", Icons.Default.Info)
@@ -99,4 +101,8 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object DataChecklist : Screen(AppRoutes.DATA_CHECKLIST, "Data Checklist", Icons.Default.Checklist)
     object EditForms : Screen(AppRoutes.EditForms.EDIT_FORMS, "Edit Forms", Icons.Default.Edit)
     object Settings : Screen(AppRoutes.Settings.SETTINGS, "Settings", Icons.Default.Settings)
+}
+
+sealed class PackedScreen(val screens: List<Screen>) {
+    object ScoutAndSettings : PackedScreen(listOf(Screen.ScoutMatches,Screen.ScoutPits,Screen.Settings))
 }
