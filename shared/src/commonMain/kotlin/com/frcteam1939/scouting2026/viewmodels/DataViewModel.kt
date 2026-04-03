@@ -59,7 +59,8 @@ class DataViewModel(
     suspend fun getMatches(): List<String> {
         val event = eventsRepository.getEventByName(settings.value?.currentEvent ?: "")
         val jsonString = event.first()?.matchInfo
-        val matches = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
+        if (jsonString.isNullOrEmpty()) return emptyList()
+        val matches = Json.decodeFromString<List<TBAMatch>>(jsonString)
 
         val levelOrder = mapOf(
             "qm" to 0,
