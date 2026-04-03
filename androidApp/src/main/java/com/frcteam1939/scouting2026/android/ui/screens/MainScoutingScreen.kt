@@ -77,16 +77,13 @@ fun MatchScoutingBottomBar(navController: NavController, scoutingViewModel: Scou
                 },
                 icon = { Icon(icon, contentDescription = label) },
                 label = { Text(label) },
-                colors =
-                    NavigationBarItemDefaults.colors(
-                        // TODO: fix this color bruh (shouldn't be an absolute color)
-                        selectedIconColor = Color(0xFF000000),
-                        unselectedIconColor =
-                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                        unselectedTextColor =
-                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                    )
+                colors = NavigationBarItemDefaults.colors(
+                    // TODO: fix this color bruh (shouldn't be an absolute color)
+                    selectedIconColor = Color(0xFF000000),
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                )
             )
         }
     }

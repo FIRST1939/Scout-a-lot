@@ -1,6 +1,7 @@
 package com.frcteam1939.scouting2026.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.frcteam1939.scouting2026.api.models.TBAMatch
 import com.frcteam1939.scouting2026.data.entities.AppSettings
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.ScoutedDataRepository
@@ -25,6 +26,12 @@ class DataViewModel(
         _currentTeam.value = newCurrentTeam
     }
 
+    private val _currentMatch = MutableStateFlow("")
+    val currentMatch: StateFlow<String> = _currentMatch.asStateFlow()
+    fun changeCurrentMatch(newCurrentMatch: String) {
+        _currentMatch.value = newCurrentMatch
+    }
+
     private val _currentPitData = MutableStateFlow<List<Field>>(emptyList())
     val currentPitData: StateFlow<List<Field>> = _currentPitData.asStateFlow()
     fun changeCurrentPitData(newCurrentPitData: List<Field>) {
@@ -47,6 +54,34 @@ class DataViewModel(
     val currentEndgameData: StateFlow<List<List<Field>>> = _currentEndgameData.asStateFlow()
     fun changeCurrentEndgameData(newCurrentEndgameData: List<List<Field>>) {
         _currentEndgameData.value = newCurrentEndgameData
+    }
+
+    suspend fun getMatches(): List<String> {
+        val event = eventsRepository.getEventByName(settings.value?.currentEvent ?: "")
+        val jsonString = event.first()?.matchInfo
+        val matches = Json.decodeFromString<List<TBAMatch>>(jsonString ?: "")
+
+        val levelOrder = mapOf(
+            "qm" to 0,
+            "sf" to 1,
+            "f" to 2
+        )
+
+        return matches
+            .sortedWith(
+                compareBy<TBAMatch> { levelOrder[it.compLevel] ?: Int.MAX_VALUE }
+                    .thenBy { it.matchNumber }
+            )
+            .map { match ->
+                val type = when (match.compLevel) {
+                    "qm" -> "Qualification"
+                    "sf" -> "Semifinals"
+                    "f" -> "Finals"
+                    else -> "Unknown"
+                }
+
+                "$type ${match.matchNumber}"
+            }
     }
 
     fun averageList(list: List<Int>): Double {

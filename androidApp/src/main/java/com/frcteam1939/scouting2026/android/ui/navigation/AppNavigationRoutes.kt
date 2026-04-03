@@ -21,6 +21,7 @@ object AppRoutes {
         PitScouting.SCOUT_PITS to "Scout Pits",
         PitScouting.SCOUT_PITS_FORM to "Scout Pit Form",
         MatchReports.MATCH_REPORTS to "Match Reports",
+        MatchReports.VIEW_MATCH_REPORT to "View Match Report",
         TeamStats.TEAM_STATS to "Team Stats",
         TeamStats.VIEW_TEAM_STATS to "View Team Stats",
         SYNC to "Sync",
@@ -55,7 +56,7 @@ object AppRoutes {
     object MatchReports {
         const val GRAPH = "match_reports_graph"
         const val MATCH_REPORTS = "match_reports"
-        const val VIEW_MATCH_REPORTS = "view_match_reports"
+        const val VIEW_MATCH_REPORT = "view_match_report"
     }
 
     object TeamStats {

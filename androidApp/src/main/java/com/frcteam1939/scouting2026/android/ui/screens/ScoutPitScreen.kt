@@ -37,6 +37,8 @@ import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -172,25 +174,37 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
 @Composable
 fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()),
+        modifier = Modifier.verticalScroll(rememberScrollState()).padding(top = 32.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        UserInputs.OutlinedButtonTextBarInput(
+        UserInputs.DoubleOutlinedButtonTextBarInput(
             text = scoutingViewModel.selectedTeam.collectAsState().value,
-            buttonText = String(),
-            onClick = {
+            buttonOneText = "Submit",
+            onButtonOneClick = {
                 scoutingViewModel.savePitData(scoutingViewModel.selectedTeam.value)
                 navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
             },
-            icon = Icons.Default.Check,
+            iconOne = Icons.Default.Check,
+            buttonTwoText = "Cancel",
+            onButtonTwoClick = {
+                navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
+            },
+            iconTwo = Icons.Default.Clear,
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            text = "Scouter Name(s)",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
         TextboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Textbox(
                 id = 0,
-                label = "Scouter Name",
+                label = "Type here",
                 singleLine = true,
                 forceNumberInput = false
             )
@@ -201,7 +215,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             fieldContent = Checkbox(
                 id = 1,
                 label = "Robot picks up from...",
-                options = listOf("Depot", "Outpost", "Alliance Zone", "Neutral Zone")
+                options = listOf("Depot", "Outpost", "Ground")
             )
         )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
@@ -304,7 +318,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 100.dp, start = 10.dp, end = 10.dp, ),
-            text = "If you took it with your phone, send it in the #robopics channel in Discord with the team's number",
+            text = "Please make sure the team number is visible in the photo.",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
             )

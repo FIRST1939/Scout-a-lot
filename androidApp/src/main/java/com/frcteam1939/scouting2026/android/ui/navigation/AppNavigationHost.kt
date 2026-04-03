@@ -29,6 +29,7 @@ import com.frcteam1939.scouting2026.android.ui.screens.EditEventsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditMatchFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.EditPitFormsScreen
+import com.frcteam1939.scouting2026.android.ui.screens.MatchReportsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
@@ -44,6 +45,7 @@ import com.frcteam1939.scouting2026.android.feature.sync.FileSyncScreen
 import com.frcteam1939.scouting2026.android.feature.sync.SyncScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
+import com.frcteam1939.scouting2026.android.ui.screens.ViewMatchReportScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
 import com.frcteam1939.scouting2026.viewmodels.ChecklistViewModel
 import com.frcteam1939.scouting2026.android.feature.sync.SyncViewModel
@@ -193,9 +195,16 @@ fun AppNavigationHost(
                 exitTransition = { fadeOut(tween(300)) },
                 popEnterTransition = { fadeIn(tween(300)) },
                 popExitTransition = { fadeOut(tween(300)) },
-            ) {
+            ) { backStackEntry ->
+                val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.MatchReports.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
-                    // TODO: match report generation
+                    MatchReportsScreen(navController, dataViewModel)
+                }
+            }
+            composable(AppRoutes.MatchReports.VIEW_MATCH_REPORT) { backStackEntry ->
+                val dataViewModel = getDataViewModel(backStackEntry, navController, AppRoutes.MatchReports.GRAPH)
+                MainScreenScaffold(navController, drawerState, scope) {
+                    ViewMatchReportScreen(navController, dataViewModel)
                 }
             }
         }
