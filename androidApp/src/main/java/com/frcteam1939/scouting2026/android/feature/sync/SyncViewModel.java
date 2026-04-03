@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTIOEvent;
+import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTIOResult;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState;
@@ -25,6 +27,26 @@ public class SyncViewModel extends AndroidViewModel {
         repository = new SyncRepository(application.getApplicationContext());
         _pairedDevices = new MutableLiveData<>(repository.getPairedDevices());
         repository.setOnConnectionChangeListener(_currentConnection::postValue);
+        repository.setOnIOListener(new SyncRepository.OnIOListener() {
+            @Override
+            public void onBTInputEvent(BTIOResult btIOResult) {
+                if (btIOResult.btioEvent() == BTIOEvent.RECEIVED) {
+                    String msg = new String(btIOResult.bytes());
+                    _uiMessage.postValue("Received: " + msg);
+                } else {
+                    _uiMessage.postValue("Failed to receive message");
+                }
+            }
+
+            @Override
+            public void onBTOutputEvent(BTIOEvent btIOEvent) {
+                if (btIOEvent == BTIOEvent.SENT) {
+                    _uiMessage.postValue("Sent!");
+                } else {
+                    _uiMessage.postValue("Failed to send message");
+                }
+            }
+        });
     }
 
     public LiveData<List<BluetoothDevice>> getPairedDevices() {
@@ -62,10 +84,10 @@ public class SyncViewModel extends AndroidViewModel {
 
     public void connectToDevice(BluetoothDevice bluetoothDevice) {
         repository.connectToDevice(bluetoothDevice).thenAccept(result -> {
-            switch (result.status) {
+            switch (result.status()) {
                 case SUCCEEDED -> {
                     _uiMessage.postValue(String.format("Successfully connected to %s",
-                            result.connection.getRemoteDeviceName()));
+                            result.connection().getRemoteDeviceName()));
                 }
                 case SKIPPED_ALREADY_CONNECTED ->
                         _uiMessage.postValue("Already connected to this device!");
@@ -97,11 +119,11 @@ public class SyncViewModel extends AndroidViewModel {
     }
 
     private void handleServerAcceptResult(BTServerResult result) {
-        if (result.event == BTServerEvent.CONNECT_SUCCESS) {
+        if (result.event() == BTServerEvent.CONNECT_SUCCESS) {
             _uiMessage.postValue(String.format("Successfully auto accept connection from %s",
-                    result.connection.getRemoteDeviceName()));
+                    result.connection().getRemoteDeviceName()));
             repository.acceptRemoteConnection().thenAccept(this::handleServerAcceptResult);
-        } else if (result.event == BTServerEvent.OFF) {
+        } else if (result.event() == BTServerEvent.OFF) {
             return;
         } else {
             _uiMessage.postValue("Failed to accept connection");
@@ -119,10 +141,13 @@ public class SyncViewModel extends AndroidViewModel {
         }
     }
 
+    public void sendMsg(BTConnection btConnection, String msg) {
+        repository.sendMsg(btConnection,msg);
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
         repository.shutdown();
     }
-
 }

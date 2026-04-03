@@ -13,11 +13,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -139,13 +142,45 @@ fun SyncScreen(
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
+        var showDialog by remember { mutableStateOf(false) }
+        var text by remember { mutableStateOf("") }
         UserInputs.TextButtonInput(
             onClick = {
-                // TODO()
+                if (selectedConnectedDevice == null) {
+                    Toast.makeText(context, "Please select a connected device first", Toast.LENGTH_SHORT).show()
+                } else {
+                    showDialog = true
+                }
             },
             text = "Test Connection",
             modifier = Modifier.padding(vertical = 4.dp)
         )
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Enter message") },
+                text = {
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        label = { Text("Message") }
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDialog = false
+                        syncViewModel.sendMsg(selectedConnectedDevice,text)
+                    }) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
 
         UserInputs.TextButtonInput(
             onClick = {

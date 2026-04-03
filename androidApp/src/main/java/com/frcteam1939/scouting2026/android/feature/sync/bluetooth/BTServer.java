@@ -54,7 +54,6 @@ public class BTServer {
                 } else {
                     return new BTServerResult(BTServerEvent.OFF,null);
                 }
-
             }
         },bluetoothServerExecutor);
     }
