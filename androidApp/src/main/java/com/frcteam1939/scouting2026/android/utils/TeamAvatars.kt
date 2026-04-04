@@ -37,7 +37,7 @@ fun getTeamAvatar(team: String): ImageBitmap {
         val file = File(applicationContext.filesDir, "frc${team}avatar")
 
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-            ?: BitmapFactory.decodeResource(applicationContext.resources, R.drawable.missing_image)
+            ?: BitmapFactory.decodeResource(applicationContext.resources, R.drawable.noicon)
 
         bitmap.asImageBitmap()
     } catch (e: IOException) {
