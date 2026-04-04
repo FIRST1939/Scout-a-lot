@@ -27,7 +27,10 @@ android {
             versionNameSuffix = "-dev"
             manifestPlaceholders["appLabel"] = "FRC Scout Maker Dev"
         }
-        getByName("release") { isMinifyEnabled = false }
+        getByName("release") {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
