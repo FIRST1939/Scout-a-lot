@@ -42,6 +42,6 @@ fun getTeamAvatar(team: String): ImageBitmap {
         bitmap.asImageBitmap()
     } catch (e: IOException) {
         e.printStackTrace()
-        BitmapFactory.decodeResource(applicationContext.resources, R.drawable.missing_image).asImageBitmap()
+        BitmapFactory.decodeResource(applicationContext.resources, R.drawable.noicon).asImageBitmap()
     }
 }
