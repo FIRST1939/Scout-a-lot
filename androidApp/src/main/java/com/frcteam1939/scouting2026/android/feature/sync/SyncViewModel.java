@@ -12,15 +12,20 @@ import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTIORe
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 public class SyncViewModel extends AndroidViewModel {
+    private static final String PIT_TRANSFER_PREFIX = "BT_SYNC_PIT\n";
+    private static final String MATCH_TRANSFER_PREFIX = "BT_SYNC_MATCH\n";
+
     private final SyncRepository repository;
     private final MutableLiveData<BTServerState> _btServerStatus = new MutableLiveData<>(BTServerState.OFF);
     private final MutableLiveData<Map<String, BTConnection>> _currentConnection = new MutableLiveData<>();
     private final MutableLiveData<List<BluetoothDevice>> _pairedDevices;
     private final MutableLiveData<String> _uiMessage = new MutableLiveData<>(null);
+    private final MutableLiveData<IncomingBluetoothTransfer> _incomingTransfer = new MutableLiveData<>(null);
 
     public SyncViewModel(@NonNull Application application) {
         super(application);
@@ -31,8 +36,14 @@ public class SyncViewModel extends AndroidViewModel {
             @Override
             public void onBTInputEvent(BTIOResult btIOResult) {
                 if (btIOResult.btioEvent() == BTIOEvent.RECEIVED) {
-                    String msg = new String(btIOResult.bytes());
-                    _uiMessage.postValue("Received: " + msg);
+                    String msg = new String(btIOResult.bytes(), StandardCharsets.UTF_8);
+                    IncomingBluetoothTransfer incomingTransfer = parseIncomingTransfer(msg);
+
+                    if (incomingTransfer != null) {
+                        _incomingTransfer.postValue(incomingTransfer);
+                    } else {
+                        _uiMessage.postValue("Received: " + msg);
+                    }
                 } else {
                     _uiMessage.postValue("Failed to receive message");
                 }
@@ -65,6 +76,14 @@ public class SyncViewModel extends AndroidViewModel {
         _uiMessage.setValue(null);
     }
 
+    public LiveData<IncomingBluetoothTransfer> getIncomingTransfer() {
+        return _incomingTransfer;
+    }
+
+    public void clearIncomingTransfer() {
+        _incomingTransfer.setValue(null);
+    }
+
     public LiveData<BTServerState> getBTServerStatus() {
         return _btServerStatus;
     }
@@ -74,12 +93,8 @@ public class SyncViewModel extends AndroidViewModel {
     }
 
     public void closeExistingConnection(BTConnection btConnection) {
-        String deviceName = repository.closeExistingConnection(btConnection);
-        if (deviceName != null) {
-            _uiMessage.setValue(String.format("Closed connection with %s", deviceName));
-        } else {
-            _uiMessage.setValue("No connection exist with such device");
-        }
+        repository.closeExistingConnection(btConnection);
+        _uiMessage.setValue("Closing connection...");
     }
 
     public void connectToDevice(BluetoothDevice bluetoothDevice) {
@@ -143,6 +158,45 @@ public class SyncViewModel extends AndroidViewModel {
 
     public void sendMsg(BTConnection btConnection, String msg) {
         repository.sendMsg(btConnection,msg);
+    }
+
+    public void sendPitData(BTConnection btConnection, String exportedData) {
+        sendTransfer(btConnection, IncomingBluetoothTransferType.PIT, exportedData);
+    }
+
+    public void sendMatchData(BTConnection btConnection, String exportedData) {
+        sendTransfer(btConnection, IncomingBluetoothTransferType.MATCH, exportedData);
+    }
+
+    private void sendTransfer(BTConnection btConnection, IncomingBluetoothTransferType type, String exportedData) {
+        if (btConnection == null) {
+            _uiMessage.setValue("No connected device selected.");
+            return;
+        }
+
+        String prefix = type == IncomingBluetoothTransferType.PIT
+                ? PIT_TRANSFER_PREFIX
+                : MATCH_TRANSFER_PREFIX;
+
+        repository.sendMsg(btConnection, prefix + exportedData);
+    }
+
+    private IncomingBluetoothTransfer parseIncomingTransfer(String msg) {
+        if (msg.startsWith(PIT_TRANSFER_PREFIX)) {
+            return new IncomingBluetoothTransfer(
+                    IncomingBluetoothTransferType.PIT,
+                    msg.substring(PIT_TRANSFER_PREFIX.length())
+            );
+        }
+
+        if (msg.startsWith(MATCH_TRANSFER_PREFIX)) {
+            return new IncomingBluetoothTransfer(
+                    IncomingBluetoothTransferType.MATCH,
+                    msg.substring(MATCH_TRANSFER_PREFIX.length())
+            );
+        }
+
+        return null;
     }
 
     @Override

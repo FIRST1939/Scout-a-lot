@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,7 @@ import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConn
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,10 +49,12 @@ fun SyncScreen(
     onOpenFileSync: () -> Unit,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     // BT Variables
     var selectedPairedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     var selectedConnectedDevice by remember { mutableStateOf<BTConnection?>(null) }
     val uiMsg by syncViewModel.uiMessage.observeAsState(null)
+    val incomingTransfer by syncViewModel.incomingTransfer.observeAsState(null)
     val pairedDevices by syncViewModel.pairedDevices.observeAsState(emptyList())
     val currentConnection by syncViewModel.currentConnection.observeAsState(emptyMap())
     val connectionList = currentConnection.values.toList()
@@ -75,6 +79,31 @@ fun SyncScreen(
             Toast.makeText(context, uiMsg, Toast.LENGTH_SHORT).show()
             syncViewModel.clearUiMessage()
         }
+    }
+
+    LaunchedEffect(incomingTransfer) {
+        val transfer = incomingTransfer ?: return@LaunchedEffect
+
+        when (transfer.type()) {
+            IncomingBluetoothTransferType.PIT -> {
+                if (transfer.content().isBlank()) {
+                    Toast.makeText(context, "Received empty pit data", Toast.LENGTH_SHORT).show()
+                } else {
+                    fileSyncViewModel.importPitData(transfer.content())
+                    Toast.makeText(context, "Pit data imported successfully", Toast.LENGTH_SHORT).show()
+                }
+            }
+            IncomingBluetoothTransferType.MATCH -> {
+                if (transfer.content().isBlank()) {
+                    Toast.makeText(context, "Received empty match data", Toast.LENGTH_SHORT).show()
+                } else {
+                    fileSyncViewModel.importMatchData(transfer.content())
+                    Toast.makeText(context, "Match data imported successfully", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        syncViewModel.clearIncomingTransfer()
     }
 
     fun safeDeviceName(device: BluetoothDevice): String? {
@@ -144,6 +173,46 @@ fun SyncScreen(
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
+        UserInputs.TextButtonInput(
+            onClick = {
+                val connection = selectedConnectedDevice
+                if (connection == null) {
+                    Toast.makeText(context, "Please select a connected device first", Toast.LENGTH_SHORT).show()
+                } else {
+                    coroutineScope.launch {
+                        val pitData = fileSyncViewModel.getPitDataForExport()
+                        if (pitData.isBlank()) {
+                            Toast.makeText(context, "No pit data to send", Toast.LENGTH_SHORT).show()
+                        } else {
+                            syncViewModel.sendPitData(connection, pitData)
+                        }
+                    }
+                }
+            },
+            text = "Send Pit Data",
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        UserInputs.TextButtonInput(
+            onClick = {
+                val connection = selectedConnectedDevice
+                if (connection == null) {
+                    Toast.makeText(context, "Please select a connected device first", Toast.LENGTH_SHORT).show()
+                } else {
+                    coroutineScope.launch {
+                        val matchData = fileSyncViewModel.getMatchDataForExport()
+                        if (matchData.isBlank()) {
+                            Toast.makeText(context, "No match data to send", Toast.LENGTH_SHORT).show()
+                        } else {
+                            syncViewModel.sendMatchData(connection, matchData)
+                        }
+                    }
+                }
+            },
+            text = "Send Match Data",
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
         var showDialog by remember { mutableStateOf(false) }
         var text by remember { mutableStateOf("") }
         UserInputs.TextButtonInput(
@@ -171,7 +240,13 @@ fun SyncScreen(
                 confirmButton = {
                     TextButton(onClick = {
                         showDialog = false
-                        syncViewModel.sendMsg(selectedConnectedDevice,text)
+                        selectedConnectedDevice?.let { connection ->
+                            syncViewModel.sendMsg(connection, text)
+                        } ?: Toast.makeText(
+                            context,
+                            "Please select a connected device first",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }) {
                         Text("OK")
                     }
