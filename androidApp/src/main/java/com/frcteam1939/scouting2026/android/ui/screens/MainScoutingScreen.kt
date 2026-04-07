@@ -170,7 +170,7 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         SwitchFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Switch(
-                id = 6,
+                id = 5,
                 label = "Robot climbs tower?"
             )
         )
