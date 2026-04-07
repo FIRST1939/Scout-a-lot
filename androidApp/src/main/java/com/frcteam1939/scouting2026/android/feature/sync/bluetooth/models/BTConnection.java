@@ -10,20 +10,20 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 @SuppressLint("MissingPermission")
 public class BTConnection {
     private final BluetoothSocket bluetoothSocket;
     private final BluetoothDevice bluetoothDevice;
-    private final InputStream inputStream;
-    private final OutputStream outputStream;
     private final DataOutputStream dataOutputStream;
     private final DataInputStream dataInputStream;
-    private static final String TAG = "BTConnection";
+    private final String TAG;
 
     public BTConnection(BluetoothSocket bluetoothSocket) {
         this.bluetoothSocket = bluetoothSocket;
         bluetoothDevice = bluetoothSocket.getRemoteDevice();
+        TAG = getRemoteDeviceAddress();
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
 
@@ -38,8 +38,8 @@ public class BTConnection {
             Log.e(TAG, "Error occurred when creating output stream", e);
         }
 
-        inputStream = tmpIn;
-        outputStream = tmpOut;
+        InputStream inputStream = tmpIn;
+        OutputStream outputStream = tmpOut;
         dataOutputStream = new DataOutputStream(outputStream);
         dataInputStream = new DataInputStream(inputStream);
     }
@@ -66,7 +66,7 @@ public class BTConnection {
     }
 
     public void sendMsg(String msg) throws IOException {
-        byte[] bytes = msg.getBytes();
+        byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
         dataOutputStream.writeInt(bytes.length);
         dataOutputStream.write(bytes);
         dataOutputStream.flush();

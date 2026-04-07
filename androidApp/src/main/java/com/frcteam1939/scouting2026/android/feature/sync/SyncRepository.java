@@ -14,6 +14,7 @@ import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTIORe
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTIOStreamDataType;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
+import java.util.HashMap;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class SyncRepository {
 
     private void notifyConnectionChanged() {
         if (listener != null) {
-            listener.onChanged(currentConnection);
+            listener.onChanged(new HashMap<>(currentConnection));
         }
     }
 
@@ -97,14 +98,12 @@ public class SyncRepository {
         return btServer.closeBTServer();
     }
 
-    public String closeExistingConnection(BTConnection btConnection) {
+    public void closeExistingConnection(BTConnection btConnection) {
         BTConnection old = currentConnection.remove(btConnection.getRemoteDeviceAddress());
         if (old != null) {
             old.closeSocket();
             notifyConnectionChanged();
-            return btConnection.getRemoteDeviceName();
         }
-        return null;
     }
 
     private void closeAllConnection() {
@@ -142,6 +141,7 @@ public class SyncRepository {
                     ioListener.onBTInputEvent(new BTIOResult(BTIOEvent.RECEIVED, BTIOStreamDataType.STRING,bytes));
                 } catch (IOException e) {
                     ioListener.onBTInputEvent(new BTIOResult(BTIOEvent.RECEIVE_FAILED, null,null));
+                    closeExistingConnection(btConnection);
                     break;
                 }
             }

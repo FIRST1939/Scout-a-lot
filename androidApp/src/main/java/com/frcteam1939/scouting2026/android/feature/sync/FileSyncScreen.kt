@@ -27,11 +27,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.storage.exportTextFile
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun FileSyncScreen(scoutingViewModel: ScoutingViewModel) {
+fun FileSyncScreen(fileSyncViewModel: FileSyncViewModel) {
     val context = LocalContext.current
     var pitFileContent by remember { mutableStateOf("") }
     var matchFileContent by remember { mutableStateOf("") }
@@ -46,7 +46,7 @@ fun FileSyncScreen(scoutingViewModel: ScoutingViewModel) {
                     pitFileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
                 }
                 coroutineScope.launch {
-                    scoutingViewModel.importPitData(pitFileContent)
+                    fileSyncViewModel.importPitData(pitFileContent)
                     makeText(context, "Pit data imported successfully", Toast.LENGTH_SHORT).show()
                 }
             } catch (_: Exception) {
@@ -64,7 +64,7 @@ fun FileSyncScreen(scoutingViewModel: ScoutingViewModel) {
                     matchFileContent = inputStream.bufferedReader().use { reader -> reader.readText() }
                 }
                 coroutineScope.launch {
-                    scoutingViewModel.importMatchData(matchFileContent)
+                    fileSyncViewModel.importMatchData(matchFileContent)
                     makeText(context, "Match data imported successfully", Toast.LENGTH_SHORT).show()
                 }
             } catch (_: Exception) {
@@ -108,7 +108,7 @@ fun FileSyncScreen(scoutingViewModel: ScoutingViewModel) {
                 coroutineScope.launch {
                     exportTextFile(
                         fileName = pitFileName,
-                        content = scoutingViewModel.getPitDataForExport(),
+                        content = fileSyncViewModel.getPitDataForExport(),
                     )
                     makeText(context, "Pit data exported", Toast.LENGTH_SHORT).show()
                 }
@@ -140,7 +140,7 @@ fun FileSyncScreen(scoutingViewModel: ScoutingViewModel) {
                 coroutineScope.launch {
                     exportTextFile(
                         fileName = matchFileName,
-                        content = scoutingViewModel.getMatchDataForExport(),
+                        content = fileSyncViewModel.getMatchDataForExport(),
                     )
                     makeText(context, "Match data exported", Toast.LENGTH_SHORT).show()
                 }
