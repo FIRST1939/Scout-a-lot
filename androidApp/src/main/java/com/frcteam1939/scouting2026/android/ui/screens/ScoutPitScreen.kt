@@ -174,7 +174,10 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
 @Composable
 fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavController) {
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()).padding(top = 32.dp),
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .padding(top = 32.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
