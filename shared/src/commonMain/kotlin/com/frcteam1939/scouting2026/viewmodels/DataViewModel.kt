@@ -209,8 +209,8 @@ class DataViewModel(
 
             data.forEach { scoutedData ->
                 // Use isNotBlank() to avoid processing empty/whitespace strings
-                if (scoutedData.getOrNull(5)?.fieldContent?.isNotBlank() == true) {
-                    val scoring = parseRebuiltHubData(scoutedData[5].fieldContent)
+                if (scoutedData.getOrNull(4)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[4].fieldContent)
                     val flattened = scoring.flatten()
                     println("scoring: $scoring")
                     println("flattened: $flattened")

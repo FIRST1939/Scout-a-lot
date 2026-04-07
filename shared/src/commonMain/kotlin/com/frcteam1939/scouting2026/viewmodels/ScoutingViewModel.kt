@@ -43,10 +43,9 @@ class ScoutingViewModel(
   { "id": 0, "fieldName": "Scouter Name", "fieldType": "textbox", "fieldContent": "" },
   { "id": 1, "fieldName": "Starting Position", "fieldType": "starting_position", "fieldContent": "null" },
   { "id": 2, "fieldName": "Robot is preloaded?", "fieldType": "switch", "fieldContent": "false" },
-  { "id": 3, "fieldName": "Robot shoots?", "fieldType": "switch", "fieldContent": "false" },
-  { "id": 4, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "" },
-  { "id": 5, "fieldName": "Hub Scoring", "fieldType": "hub_scoring_auto", "fieldContent": "null" },
-  { "id": 6, "fieldName": "Robot climbs tower?", "fieldType": "switch", "fieldContent": "false" }
+  { "id": 3, "fieldName": "Robot picks up from...", "fieldType": "checkbox", "fieldContent": "" },
+  { "id": 4, "fieldName": "Hub Scoring", "fieldType": "hub_scoring_auto", "fieldContent": "null" },
+  { "id": 5, "fieldName": "Robot climbs tower?", "fieldType": "switch", "fieldContent": "false" }
 ]
 """.trimIndent()
     val DEFAULT_FORM_MATCH_TELEOP_JSON = """

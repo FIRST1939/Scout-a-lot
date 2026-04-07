@@ -148,18 +148,11 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
                 label = "Robot is preloaded?"
             )
         )
-        SwitchFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Switch(
-                id = 3,
-                label = "Robot shoots?"
-            )
-        )
         Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
         CheckboxFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = Checkbox(
-                id = 4,
+                id = 3,
                 label = "Robot picks up from...",
                 options = listOf("Depot", "Outpost", "Alliance Zone (Ground)", "Neutral Zone")
             )
@@ -168,7 +161,7 @@ fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = M
         RebuiltHubScoringFieldTemplate(
             scoutingViewModel = scoutingViewModel,
             fieldContent = RebuiltHubScoring(
-                id = 5,
+                id = 4,
                 label = "Hub Scoring"
             ),
             auto = true
