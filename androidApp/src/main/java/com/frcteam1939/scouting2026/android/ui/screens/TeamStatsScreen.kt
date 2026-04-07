@@ -242,4 +242,5 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
             Text("Robot has died in $robotDeathCount matches", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.tertiary)
         }
     }
+    TODO()
 }
