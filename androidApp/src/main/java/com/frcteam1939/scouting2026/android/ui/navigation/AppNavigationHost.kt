@@ -51,6 +51,7 @@ import com.frcteam1939.scouting2026.viewmodels.ChecklistViewModel
 import com.frcteam1939.scouting2026.android.feature.sync.SyncViewModel
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
 import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
+import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
 import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
@@ -248,20 +249,22 @@ fun AppNavigationHost(
                 if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
                 else CupertinoTransitions.popExitTransition
             },
-        ) { _ ->
+        ) { backStackEntry ->
             // WIP
             val bluetoothViewModel = getBluetoothViewModel()
+            val fileSyncViewModel = getFileSyncViewModel(backStackEntry)
             MainScreenScaffold(navController, drawerState, scope) {
                 SyncScreen(
                     syncViewModel = bluetoothViewModel,
+                    fileSyncViewModel = fileSyncViewModel,
                     onOpenFileSync = { navController.navigate(AppRoutes.FILE_SYNC) }
                 )
             }
         }
         composable(AppRoutes.FILE_SYNC) { backStackEntry ->
-            val scoutingViewModel = getScoutingViewModel(backStackEntry, navController, AppRoutes.FILE_SYNC)
+            val fileSyncViewModel = getFileSyncViewModel(backStackEntry)
             SubScreenScaffold(navController) {
-                FileSyncScreen(scoutingViewModel)
+                FileSyncScreen(fileSyncViewModel)
             }
         }
         composable(
@@ -416,6 +419,11 @@ fun getChecklistViewModel(
 ): ChecklistViewModel {
     val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(route) }
     return viewModel(viewModelStoreOwner = parentEntry, factory = getViewModelFactory())
+}
+
+@Composable
+fun getFileSyncViewModel(backStackEntry: NavBackStackEntry): FileSyncViewModel {
+    return viewModel(viewModelStoreOwner = backStackEntry, factory = getViewModelFactory())
 }
 
 @Composable

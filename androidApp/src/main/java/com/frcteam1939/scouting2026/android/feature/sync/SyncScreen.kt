@@ -37,11 +37,13 @@ import androidx.compose.ui.unit.dp
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection
 import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
+import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SyncScreen(
     syncViewModel: SyncViewModel,
+    fileSyncViewModel: FileSyncViewModel,
     onOpenFileSync: () -> Unit,
 ) {
     val context = LocalContext.current

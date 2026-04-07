@@ -26,6 +26,9 @@ actual class ViewModelFactory actual constructor(
             modelClass.isAssignableFrom(ScoutingViewModel::class.java) -> {
                 ScoutingViewModel(settingsRepository, eventsRepository, scoutedDataRepository) as T
             }
+            modelClass.isAssignableFrom(FileSyncViewModel::class.java) -> {
+                FileSyncViewModel(settingsRepository, eventsRepository, scoutedDataRepository) as T
+            }
             modelClass.isAssignableFrom(ChecklistViewModel::class.java) -> {
                 ChecklistViewModel(settingsRepository, eventsRepository, scoutedDataRepository) as T
             }
