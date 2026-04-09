@@ -225,7 +225,7 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally),
-            text = "Approximate Fuel Capacity",
+            text = "(Realistic) Approximate Fuel Capacity",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
