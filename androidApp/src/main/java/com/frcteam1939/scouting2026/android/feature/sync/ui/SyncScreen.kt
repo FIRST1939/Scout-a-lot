@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.feature.sync
+package com.frcteam1939.scouting2026.android.feature.sync.ui
 
 import android.bluetooth.BluetoothDevice
 import android.widget.Toast
@@ -35,8 +35,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState
+import com.frcteam1939.scouting2026.android.feature.sync.data.protocol.IncomingBluetoothTransferType
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTConnection
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
 import kotlinx.coroutines.launch

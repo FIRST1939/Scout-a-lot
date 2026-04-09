@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.feature.sync;
+package com.frcteam1939.scouting2026.android.feature.sync.ui;
 
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
@@ -6,12 +6,16 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTIOEvent;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTIOResult;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerEvent;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerResult;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTServerState;
+
+import com.frcteam1939.scouting2026.android.feature.sync.data.protocol.IncomingBluetoothTransfer;
+import com.frcteam1939.scouting2026.android.feature.sync.data.protocol.IncomingBluetoothTransferType;
+import com.frcteam1939.scouting2026.android.feature.sync.data.SyncRepository;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTConnection;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTIOEvent;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTIOResult;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTServerEvent;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTServerResult;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTServerState;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;

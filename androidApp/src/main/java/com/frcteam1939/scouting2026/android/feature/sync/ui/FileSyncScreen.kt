@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.feature.sync
+package com.frcteam1939.scouting2026.android.feature.sync.ui
 
 // TODO: Merge FileSyncScreen into the Bluetooth Sync page after the unified sync UX is designed.
 
