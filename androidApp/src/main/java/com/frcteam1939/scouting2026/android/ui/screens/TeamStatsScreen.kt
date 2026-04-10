@@ -1,9 +1,7 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,11 +27,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.WarningBox
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
@@ -242,5 +237,4 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
             Text("Robot has died in $robotDeathCount matches", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.tertiary)
         }
     }
-    TODO()
 }
