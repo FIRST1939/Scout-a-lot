@@ -238,7 +238,7 @@ class ScoutingViewModel(
         scoutedDataRepository.insertMatchData(
             ScoutedData(
                 id = 0,
-                eventName = settings.value?.currentEvent ?: "GKC 2026",
+                eventName = settings.value?.currentEvent ?: "MOKC 2026",
                 team = selectedTeam.value,
                 matchNumber = matchNumber.value,
                 formName = "OKC Match Form 2026",
