@@ -37,6 +37,7 @@ import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
 import com.frcteam1939.scouting2026.data.getTeamNameByNumber
 import com.frcteam1939.scouting2026.viewmodels.DataViewModel
+import com.frcteam1939.scouting2026.viewmodels.RankingData
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
 
@@ -52,7 +53,7 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         var teamList by remember { mutableStateOf(emptyList<String>()) }
-        var rankings by remember { mutableStateOf<Map<Int, List<Int?>>>(emptyMap()) }
+        var rankings by remember { mutableStateOf<Map<Int, List<RankingData>>>(emptyMap()) }
         val sortOptions = listOf("Team Number", "Auto Accuracy", "Auto Speed", "Auto Cycles", "Teleop Accuracy", "Teleop Speed", "Teleop Cycles", "Ferry Volume")
         val selectedSort by dataViewModel.selectedSort.collectAsState()
 
@@ -67,7 +68,7 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
             } else {
                 val index = sortOptions.indexOf(selectedSort) - 1
                 teamList.sortedBy { it.toIntOrNull() ?: 0 }.sortedBy { team ->
-                    rankings[team.toInt()]?.get(index) ?: Int.MAX_VALUE
+                    rankings[team.toInt()]?.get(index)?.rank ?: Int.MAX_VALUE
                 }
             }
         }
@@ -123,6 +124,16 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
                             color = MaterialTheme.colorScheme.onBackground,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    if (selectedSort != "Team Number") {
+                        val index = sortOptions.indexOf(selectedSort) - 1
+                        val value = rankings[team.toInt()]?.get(index)?.value
+                        Text(
+                            text = value?.toString() ?: "N/A",
+                            color = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(end = 8.dp),
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                     OutlinedButton(
@@ -193,7 +204,7 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
         }
         qualitativeComments = dataViewModel.getQualitativeComments()
         robotDeathCount = dataViewModel.getDeadMatchCount().toString()
-        rankings = dataViewModel.getRankings()[team.toInt()] ?: listOf(0, 0, 0, 0, 0, 0, 0)
+        rankings = dataViewModel.getRankings()[team.toInt()]?.map { it.rank } ?: listOf(0, 0, 0, 0, 0, 0, 0)
     }
 
     Column(

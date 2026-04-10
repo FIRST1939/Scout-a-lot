@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.first
 import kotlin.collections.emptyList
 import kotlinx.serialization.json.Json
 
+data class RankingData(val value: Double?, val rank: Int?)
+
 class DataViewModel(
     private val settingsRepository: SettingsRepository,
     private val eventsRepository: EventsRepository,
@@ -465,7 +467,7 @@ class DataViewModel(
             ?: emptyList()
     }
 
-    suspend fun getRankings(): Map<Int, List<Int?>> {
+    suspend fun getRankings(): Map<Int, List<RankingData>> {
         val teamList = getTeamList()
 
         data class TeamStats(
@@ -523,13 +525,13 @@ class DataViewModel(
 
         return statsList.associate { stats ->
             stats.team to listOf(
-                autoAccRank[stats.team],
-                autoSpeedRank[stats.team],
-                autoCycleRank[stats.team],
-                teleopAccRank[stats.team],
-                teleopSpeedRank[stats.team],
-                teleopCycleRank[stats.team],
-                ferryRank[stats.team]
+                RankingData(stats.autoAcc, autoAccRank[stats.team]),
+                RankingData(stats.autoSpeed, autoSpeedRank[stats.team]),
+                RankingData(stats.autoCycle, autoCycleRank[stats.team]),
+                RankingData(stats.teleopAcc, teleopAccRank[stats.team]),
+                RankingData(stats.teleopSpeed, teleopSpeedRank[stats.team]),
+                RankingData(stats.teleopCycle, teleopCycleRank[stats.team]),
+                RankingData(stats.ferry, ferryRank[stats.team])
             )
         }
     }
