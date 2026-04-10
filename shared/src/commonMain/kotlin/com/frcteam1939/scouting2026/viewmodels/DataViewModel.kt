@@ -56,6 +56,12 @@ class DataViewModel(
         _currentEndgameData.value = newCurrentEndgameData
     }
 
+    private val _selectedSort = MutableStateFlow("Team Number")
+    val selectedSort: StateFlow<String> = _selectedSort.asStateFlow()
+    fun changeSelectedSort(newSelectedSort: String) {
+        _selectedSort.value = newSelectedSort
+    }
+
     suspend fun getMatches(): List<String> {
         val event = eventsRepository.getEventByName(settings.value?.currentEvent ?: "")
         val jsonString = event.first()?.matchInfo
@@ -199,7 +205,7 @@ class DataViewModel(
         }
     }
 
-    fun getAvgSpeedAndAccuracyAuto(): List<String> {
+    fun getAvgAccuracyAndSpeedAuto(): List<String> {
         val data = currentAutoData.value
         if (data.isEmpty()) return listOf("Unknown", "Unknown")
 
@@ -223,8 +229,8 @@ class DataViewModel(
             if (accuracyList.isEmpty() || speedList.isEmpty()) return listOf("Unknown", "Unknown")
 
             // Use average() and format properly
-            val avgAcc = accuracyList.average()
-            val avgSpeed = speedList.average()
+            val avgAcc = accuracyList.average() * 3.33
+            val avgSpeed = speedList.average() * 3.33
 
             // Formats to 1 decimal place (e.g., "85.2")
             listOf(avgAcc.toString().take(4), avgSpeed.toString().take(4))
@@ -233,7 +239,7 @@ class DataViewModel(
         }
     }
 
-    fun getAvgSpeedAndAccuracyTeleop(): List<String> {
+    fun getAvgAccuracyAndSpeedTeleop(): List<String> {
         val data = currentTeleopData.value
         if (data.isEmpty()) return listOf("Unknown", "Unknown")
 
@@ -257,8 +263,8 @@ class DataViewModel(
             if (accuracyList.isEmpty() || speedList.isEmpty()) return listOf("Unknown", "Unknown")
 
             // Use average() and format properly
-            val avgAcc = accuracyList.average()
-            val avgSpeed = speedList.average()
+            val avgAcc = accuracyList.average() * 3.33
+            val avgSpeed = speedList.average() * 3.33
 
             // Formats to 1 decimal place (e.g., "85.2")
             listOf(avgAcc.toString().take(4), avgSpeed.toString().take(4))
@@ -303,8 +309,8 @@ class DataViewModel(
             data.forEach { scoutedData ->
                 var cycles = 0
 
-                if (scoutedData.getOrNull(5)?.fieldContent?.isNotBlank() == true) {
-                    val scoring = parseRebuiltHubData(scoutedData[5].fieldContent)
+                if (scoutedData.getOrNull(4)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[4].fieldContent)
                     scoring.forEach { period ->
                         period.forEach { cycle ->
                             if (cycle.any { it != null }) {
@@ -418,16 +424,12 @@ class DataViewModel(
             if (valueList.isEmpty()) {
                 "Unknown"
             } else {
-                averageList(valueList).toString().take(4)
+                (averageList(valueList) * 3.33).toString().take(4)
             }
         } catch (e: Exception) {
             "Unknown"
         }
     }
-
-    //fun getClimbAbilities(): List<String> {
-
-    //}
 
     fun getDeadMatchCount(): Int {
         if (currentEndgameData.value.isEmpty()) return 0
@@ -461,5 +463,74 @@ class DataViewModel(
             ?.sorted()
             ?.map { it.toString() }
             ?: emptyList()
+    }
+
+    suspend fun getRankings(): Map<Int, List<Int?>> {
+        val teamList = getTeamList()
+
+        data class TeamStats(
+            val team: Int,
+            val autoAcc: Double?,
+            val autoSpeed: Double?,
+            val autoCycle: Double?,
+            val teleopAcc: Double?,
+            val teleopSpeed: Double?,
+            val teleopCycle: Double?,
+            val ferry: Double?
+        )
+
+        // Helper to safely convert
+        fun String.toDoubleOrNullSafe(): Double? {
+            return if (this == "Unknown") null else this.toDoubleOrNull()
+        }
+
+        val statsList = teamList.map { team ->
+            updateRawData(team)
+
+            val autoData = getAvgAccuracyAndSpeedAuto()
+            val teleopData = getAvgAccuracyAndSpeedTeleop()
+
+            TeamStats(
+                team = team.toInt(),
+                autoAcc = autoData[0].toDoubleOrNullSafe(),
+                autoSpeed = autoData[1].toDoubleOrNullSafe(),
+                autoCycle = avgAutoCycleCount().toDoubleOrNullSafe(),
+                teleopAcc = teleopData[0].toDoubleOrNullSafe(),
+                teleopSpeed = teleopData[1].toDoubleOrNullSafe(),
+                teleopCycle = avgTeleopCycleCount().toDoubleOrNullSafe(),
+                ferry = getAvgFerryVolume().toDoubleOrNullSafe()
+            )
+        }
+
+        // Ranking helper (ignores nulls)
+        fun rankBy(selector: (TeamStats) -> Double?): Map<Int, Int> {
+            return statsList
+                .filter { selector(it) != null } // remove "Unknown"
+                .sortedByDescending { selector(it)!! }
+                .mapIndexed { index, stats ->
+                    stats.team to (index + 1)
+                }
+                .toMap()
+        }
+
+        val autoAccRank = rankBy { it.autoAcc }
+        val autoSpeedRank = rankBy { it.autoSpeed }
+        val autoCycleRank = rankBy { it.autoCycle }
+        val teleopAccRank = rankBy { it.teleopAcc }
+        val teleopSpeedRank = rankBy { it.teleopSpeed }
+        val teleopCycleRank = rankBy { it.teleopCycle }
+        val ferryRank = rankBy { it.ferry }
+
+        return statsList.associate { stats ->
+            stats.team to listOf(
+                autoAccRank[stats.team],
+                autoSpeedRank[stats.team],
+                autoCycleRank[stats.team],
+                teleopAccRank[stats.team],
+                teleopSpeedRank[stats.team],
+                teleopCycleRank[stats.team],
+                ferryRank[stats.team]
+            )
+        }
     }
 }

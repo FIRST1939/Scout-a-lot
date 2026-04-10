@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.WarningBox
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
@@ -51,9 +52,24 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         var teamList by remember { mutableStateOf(emptyList<String>()) }
+        var rankings by remember { mutableStateOf<Map<Int, List<Int?>>>(emptyMap()) }
+        val sortOptions = listOf("Team Number", "Auto Accuracy", "Auto Speed", "Auto Cycles", "Teleop Accuracy", "Teleop Speed", "Teleop Cycles", "Ferry Volume")
+        val selectedSort by dataViewModel.selectedSort.collectAsState()
 
         LaunchedEffect(dataViewModel.currentEvent) {
             teamList = dataViewModel.getTeamList()
+            rankings = dataViewModel.getRankings()
+        }
+
+        val sortedTeamList = remember(teamList, selectedSort, rankings) {
+            if (selectedSort == "Team Number") {
+                teamList.sortedBy { it.toIntOrNull() ?: 0 }
+            } else {
+                val index = sortOptions.indexOf(selectedSort) - 1
+                teamList.sortedBy { it.toIntOrNull() ?: 0 }.sortedBy { team ->
+                    rankings[team.toInt()]?.get(index) ?: Int.MAX_VALUE
+                }
+            }
         }
 
         Text(
@@ -61,6 +77,14 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(all = 16.dp)
         )
+
+        UserInputs.DropdownTextBarInput(
+            options = sortOptions,
+            selectedOption = selectedSort,
+            onOptionSelected = { dataViewModel.changeSelectedSort(it) },
+            text = "Sort by"
+        )
+
         if (teamList.isEmpty()) {
             WarningBox(warningText = "No teams detected... have you loaded an event?")
         }
@@ -71,7 +95,7 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            teamList.forEach { team ->
+            sortedTeamList.forEach { team ->
                 var teamName by remember { mutableStateOf("Loading team name...") }
 
                 LaunchedEffect(team) {
@@ -143,13 +167,14 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
     var bump by remember { mutableStateOf("Fetching...") }
     var qualitativeComments: List<String> by remember { mutableStateOf(listOf("Fetching...")) }
     var robotDeathCount by remember { mutableStateOf("Fetching...") }
+    var rankings by remember { mutableStateOf(listOf<Int?>(0, 0, 0, 0, 0, 0, 0)) }
 
     LaunchedEffect(dataViewModel.currentPitData.collectAsState().value) {
         dataViewModel.updateRawData(dataViewModel.currentTeam.value)
         autoCycleAvg = dataViewModel.avgAutoCycleCount()
-        autoHubStats = dataViewModel.getAvgSpeedAndAccuracyAuto()
+        autoHubStats = dataViewModel.getAvgAccuracyAndSpeedAuto()
         teleopCycleAvg = dataViewModel.avgTeleopCycleCount()
-        teleopHubStats = dataViewModel.getAvgSpeedAndAccuracyTeleop()
+        teleopHubStats = dataViewModel.getAvgAccuracyAndSpeedTeleop()
         approximateCapacity = dataViewModel.getApproximateCapacity() ?: "Unknown"
         ferryVolume = dataViewModel.getAvgFerryVolume()
         drivetrain = dataViewModel.getDrivetrain() ?: "Unknown"
@@ -168,6 +193,7 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
         }
         qualitativeComments = dataViewModel.getQualitativeComments()
         robotDeathCount = dataViewModel.getDeadMatchCount().toString()
+        rankings = dataViewModel.getRankings()[team.toInt()] ?: listOf(0, 0, 0, 0, 0, 0, 0)
     }
 
     Column(
@@ -209,18 +235,18 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
 
                 Divider()
                 Text("Auto:", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium)
-                Text("AVG Accuracy: ${autoHubStats[0]}", modifier = Modifier.padding(all = 4.dp))
-                Text("AVG Speed: ${autoHubStats[1]}", modifier = Modifier.padding(all = 4.dp))
-                Text("AVG Cycles: $autoCycleAvg", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Accuracy: ${autoHubStats[0]} (#${rankings[0]})", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Speed: ${autoHubStats[1]} (#${rankings[1]})", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Cycles: $autoCycleAvg (#${rankings[2]})", modifier = Modifier.padding(all = 4.dp))
                 Divider()
                 Text("Teleop:", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium)
-                Text("AVG Accuracy: ${teleopHubStats[0]}", modifier = Modifier.padding(all = 4.dp))
-                Text("AVG Speed: ${teleopHubStats[1]}", modifier = Modifier.padding(all = 4.dp))
-                Text("AVG Cycles: $teleopCycleAvg", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Accuracy: ${teleopHubStats[0]} (#${rankings[3]})", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Speed: ${teleopHubStats[1]} (#${rankings[4]})", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Cycles: $teleopCycleAvg (#${rankings[5]})", modifier = Modifier.padding(all = 4.dp))
                 Divider()
                 Text("Approx. Capacity: $approximateCapacity", modifier = Modifier.padding(all = 4.dp))
                 Divider()
-                Text("AVG Ferry: $ferryVolume", modifier = Modifier.padding(all = 4.dp))
+                Text("AVG Ferry: $ferryVolume (#${rankings[6]})", modifier = Modifier.padding(all = 4.dp))
                 Divider()
             }
         }

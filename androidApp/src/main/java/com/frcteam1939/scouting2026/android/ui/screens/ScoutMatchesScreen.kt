@@ -236,14 +236,14 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
     }
 
     Column(
-        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = rememberDrawablePainter(getTeamImage(team)),
             contentDescription = "robot image",
-            modifier = Modifier.padding(start = 50.dp, end = 50.dp, bottom = 25.dp)
+            modifier = Modifier.padding(start = 50.dp, end = 50.dp, bottom = 25.dp, top = 50.dp)
         )
         Row(
             verticalAlignment = Alignment.CenterVertically
