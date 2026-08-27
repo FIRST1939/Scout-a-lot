@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.frcteam1939.scouting2026.android.ui.MyApplicationTheme
 import com.frcteam1939.scouting2026.initAppContext
 import com.frcteam1939.scouting2026.setActivity
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.InitBT
+import com.frcteam1939.scouting2026.android.feature.sync.platform.InitBT
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

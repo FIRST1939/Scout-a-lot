@@ -1,11 +1,11 @@
-package com.frcteam1939.scouting2026.android.feature.sync.bluetooth
+package com.frcteam1939.scouting2026.android.feature.sync.platform
 
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import android.content.ComponentName
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -217,7 +217,11 @@ fun InitBT() {
                 } catch (e: Exception) {
                     // Safety check for devices with restricted profiles
                     if (!openBluetoothSettingsSafely(context)) {
-                        Toast.makeText(context, "Could not open Bluetooth settings", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            context,
+                            "Could not open Bluetooth settings",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
                 }

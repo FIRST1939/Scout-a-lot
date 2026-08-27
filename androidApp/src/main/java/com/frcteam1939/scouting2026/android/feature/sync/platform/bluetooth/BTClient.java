@@ -1,13 +1,13 @@
-package com.frcteam1939.scouting2026.android.feature.sync.bluetooth;
+package com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnectResult;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnectStatus;
-import com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models.BTConnection;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTConnectResult;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTConnectStatus;
+import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTConnection;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;

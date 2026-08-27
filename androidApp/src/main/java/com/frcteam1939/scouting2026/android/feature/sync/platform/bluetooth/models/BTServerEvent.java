@@ -1,4 +1,4 @@
-package com.frcteam1939.scouting2026.android.feature.sync.bluetooth.models;
+package com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models;
 
 public enum BTServerEvent {
     CONNECT_SUCCESS,
