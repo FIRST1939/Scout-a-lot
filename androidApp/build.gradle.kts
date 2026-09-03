@@ -19,7 +19,11 @@ android {
         versionName = "1.0"
         manifestPlaceholders["appLabel"] = "FRC Scout Maker"
     }
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        // BuildConfig.DEBUG gates the offline demo-event seeding in AddEventScreen.
+        buildConfig = true
+    }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes {
         getByName("debug") {

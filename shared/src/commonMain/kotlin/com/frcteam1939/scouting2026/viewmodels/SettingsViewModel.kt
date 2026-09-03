@@ -8,9 +8,12 @@ import com.frcteam1939.scouting2026.data.repositories.EventCodesRepository
 import com.frcteam1939.scouting2026.data.repositories.EventsRepository
 import com.frcteam1939.scouting2026.data.repositories.SettingsRepository
 import com.frcteam1939.scouting2026.api.models.TBAMatch
+import com.frcteam1939.scouting2026.data.demo.DemoEvent
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlin.Boolean
 
@@ -19,6 +22,10 @@ class SettingsViewModel(
     private val eventsRepository: EventsRepository,
     private val eventCodesRepository: EventCodesRepository
 ) : ViewModel() {
+    private companion object {
+        const val WRITE_TIMEOUT_MILLIS = 5_000L
+    }
+
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
 
     fun updatePlayoffsActive(enabled: Boolean) {
@@ -68,6 +75,32 @@ class SettingsViewModel(
             pitForm = "",
             matchForm = ""
         ))
+    }
+
+    /**
+     * Creates the offline demo event if it isn't there yet, then selects it as the
+     * current event. Needs no network access and no TBA / FRC Events key, so it is the
+     * way to get the scouting flow running on a device without credentials.
+     *
+     * Returns true if a new event was created, false if it already existed.
+     */
+    suspend fun seedDemoEvent(): Boolean {
+        // The settings row loads lazily, and updateCurrentEvent is a no-op while it is
+        // still null, so wait for it before selecting anything.
+        settingsRepository.settings.filterNotNull().first()
+
+        val alreadyExists = eventsRepository.getEventByName(DemoEvent.EVENT_NAME).first() != null
+        if (!alreadyExists) {
+            eventsRepository.createEvent(DemoEvent.buildEvent())
+            // createEvent dispatches onto the application scope, so wait for the row to
+            // land before pointing the settings at it.
+            withTimeoutOrNull(WRITE_TIMEOUT_MILLIS) {
+                eventsRepository.getEventByName(DemoEvent.EVENT_NAME).filterNotNull().first()
+            }
+        }
+
+        settingsRepository.updateCurrentEvent(DemoEvent.EVENT_NAME)
+        return !alreadyExists
     }
 
     fun deleteEvent(name: String) {

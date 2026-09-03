@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -28,9 +30,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.frcteam1939.scouting2026.android.BuildConfig
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.utils.loadTeamAvatarsByEvent
+import com.frcteam1939.scouting2026.data.demo.DemoEvent
 import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
 import kotlinx.coroutines.launch
 
@@ -207,7 +211,7 @@ fun AddEventScreen(navController: NavController, settingsViewModel: SettingsView
     var eventYear by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -267,5 +271,37 @@ fun AddEventScreen(navController: NavController, settingsViewModel: SettingsView
             },
             text = "Add Event"
         )
+
+        // Creating a real event needs both a TBA key and an FRC Events key in assets.
+        // On the dev build, offer a generated event instead so scouting can be tested
+        // with no network and no credentials.
+        if (BuildConfig.DEBUG) {
+            Text(
+                text = "Offline Testing:",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left,
+                modifier = Modifier.fillMaxWidth().padding(all = 16.dp)
+            )
+            Text(
+                text = "Creates \"${DemoEvent.EVENT_NAME}\" with ${DemoEvent.TEAM_NUMBERS.size} teams " +
+                        "and ${DemoEvent.QUALS_COUNT} quals matches, then selects it. No API key needed.",
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            )
+            UserInputs.TextButtonInput(
+                onClick = {
+                    coroutineScope.launch {
+                        val created = settingsViewModel.seedDemoEvent()
+                        makeText(
+                            context,
+                            if (created) "Demo event created and selected!"
+                            else "Demo event already existed, now selected!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        navController.navigate(AppRoutes.Settings.EDIT_EVENTS)
+                    }
+                },
+                text = "Add Offline Demo Event"
+            )
+        }
     }
 }
