@@ -26,8 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.frcteam1939.scouting2026.android.ui.UserInputs
-import com.frcteam1939.scouting2026.storage.exportTextFile
-import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
+import com.frcteam1939.scouting2026.core.storage.exportTextFile
+import com.frcteam1939.scouting2026.feature.sync.FileSyncViewModel
 import kotlinx.coroutines.launch
 
 @Composable

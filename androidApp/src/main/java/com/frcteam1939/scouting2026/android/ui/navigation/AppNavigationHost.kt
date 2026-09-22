@@ -47,14 +47,14 @@ import com.frcteam1939.scouting2026.android.ui.screens.TeamConfirmationScreen
 import com.frcteam1939.scouting2026.android.ui.screens.TeamStatsMainScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewMatchReportScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ViewTeamStatsScreen
-import com.frcteam1939.scouting2026.viewmodels.ChecklistViewModel
+import com.frcteam1939.scouting2026.feature.reports.ChecklistViewModel
 import com.frcteam1939.scouting2026.android.feature.sync.ui.SyncViewModel
-import com.frcteam1939.scouting2026.viewmodels.DataViewModel
-import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
-import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
-import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
-import com.frcteam1939.scouting2026.viewmodels.getViewModelFactory
+import com.frcteam1939.scouting2026.feature.reports.DataViewModel
+import com.frcteam1939.scouting2026.feature.forms.EditFormsViewModel
+import com.frcteam1939.scouting2026.feature.sync.FileSyncViewModel
+import com.frcteam1939.scouting2026.feature.scouting.ScoutingViewModel
+import com.frcteam1939.scouting2026.feature.settings.SettingsViewModel
+import com.frcteam1939.scouting2026.getViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 
 @Composable

@@ -36,14 +36,14 @@ import com.frcteam1939.scouting2026.android.ui.templates.RebuiltHubScoringFieldT
 import com.frcteam1939.scouting2026.android.ui.templates.RebuiltStartingPositionTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
-import com.frcteam1939.scouting2026.data.structuring.ButtonBar
-import com.frcteam1939.scouting2026.data.structuring.Checkbox
-import com.frcteam1939.scouting2026.data.structuring.Dropdown
-import com.frcteam1939.scouting2026.data.structuring.RebuiltHubScoring
-import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
-import com.frcteam1939.scouting2026.data.structuring.Switch
-import com.frcteam1939.scouting2026.data.structuring.Textbox
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.frcteam1939.scouting2026.feature.forms.model.ButtonBar
+import com.frcteam1939.scouting2026.feature.forms.model.Checkbox
+import com.frcteam1939.scouting2026.feature.forms.model.Dropdown
+import com.frcteam1939.scouting2026.feature.forms.model.RebuiltHubScoring
+import com.frcteam1939.scouting2026.feature.forms.model.RebuiltStartingPosition
+import com.frcteam1939.scouting2026.feature.forms.model.Switch
+import com.frcteam1939.scouting2026.feature.forms.model.Textbox
+import com.frcteam1939.scouting2026.feature.scouting.ScoutingViewModel
 import kotlin.collections.contains
 
 @Composable

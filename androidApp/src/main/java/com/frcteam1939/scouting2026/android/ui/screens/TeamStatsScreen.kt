@@ -35,9 +35,9 @@ import com.frcteam1939.scouting2026.android.ui.WarningBox
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
-import com.frcteam1939.scouting2026.data.getTeamNameByNumber
-import com.frcteam1939.scouting2026.viewmodels.DataViewModel
-import com.frcteam1939.scouting2026.viewmodels.RankingData
+import com.frcteam1939.scouting2026.feature.events.getTeamNameByNumber
+import com.frcteam1939.scouting2026.feature.reports.DataViewModel
+import com.frcteam1939.scouting2026.feature.reports.RankingData
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
 

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.WarningBox
-import com.frcteam1939.scouting2026.viewmodels.ChecklistViewModel
+import com.frcteam1939.scouting2026.feature.reports.ChecklistViewModel
 import kotlinx.coroutines.launch
 
 @Composable

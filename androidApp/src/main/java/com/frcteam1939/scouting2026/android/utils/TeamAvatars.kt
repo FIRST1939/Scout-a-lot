@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.applicationContext
-import com.frcteam1939.scouting2026.data.DataDependencyContainer.frcEvents
+import com.frcteam1939.scouting2026.DataDependencyContainer.frcEvents
 import java.io.File
 import java.io.IOException
 

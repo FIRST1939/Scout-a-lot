@@ -39,7 +39,7 @@ import com.frcteam1939.scouting2026.android.feature.sync.data.protocol.IncomingB
 import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTConnection
 import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
-import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
+import com.frcteam1939.scouting2026.feature.sync.FileSyncViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
