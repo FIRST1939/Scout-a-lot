@@ -1,0 +1,30 @@
+package com.frcteam1939.scouting2026.feature.events
+
+import com.frcteam1939.scouting2026.core.database.AppDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import com.frcteam1939.scouting2026.DataDependencyContainer.tba
+import com.frcteam1939.scouting2026.core.database.entity.EventCodes
+
+
+class EventCodesRepository(
+    private val db: AppDatabase,
+    private val applicationScope: CoroutineScope,
+) {
+    private val dao = db.eventCodesDao()
+
+    suspend fun getEventCodes(year: Int): Flow<EventCodes?> {
+        if (dao.getEventCodesByYear(year).first() == null) {
+            val eventKeys = tba.pullEventKeyList(year)
+            if (eventKeys.isNotEmpty()) {
+                dao.updateEventCodes(EventCodes(id = 0, year = year, eventCodes = eventKeys))
+            }
+            else {
+                println("Failed to pull event codes from TBA")
+            }
+        }
+
+        return dao.getEventCodesByYear(year)
+    }
+}

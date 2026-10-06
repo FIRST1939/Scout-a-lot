@@ -20,3 +20,4 @@ androidApp/src/main/assets/X-TBA-Auth-Key.txt
 androidApp/src/main/assets/FRCEventsAuthorization.txt
 /iosApp/DerivedData/
 /gradle/gradle-daemon-jvm.properties
+/AGENTS.md

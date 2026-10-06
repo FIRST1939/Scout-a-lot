@@ -39,7 +39,7 @@ import com.frcteam1939.scouting2026.android.feature.sync.data.protocol.IncomingB
 import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTConnection
 import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models.BTServerState
 import com.frcteam1939.scouting2026.android.ui.UserInputs
-import com.frcteam1939.scouting2026.viewmodels.FileSyncViewModel
+import com.frcteam1939.scouting2026.feature.sync.FileSyncViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,20 +85,20 @@ fun SyncScreen(
     LaunchedEffect(incomingTransfer) {
         val transfer = incomingTransfer ?: return@LaunchedEffect
 
-        when (transfer.type()) {
+        when (transfer.type) {
             IncomingBluetoothTransferType.PIT -> {
-                if (transfer.content().isBlank()) {
+                if (transfer.content.isBlank()) {
                     Toast.makeText(context, "Received empty pit data", Toast.LENGTH_SHORT).show()
                 } else {
-                    fileSyncViewModel.importPitData(transfer.content())
+                    fileSyncViewModel.importPitData(transfer.content)
                     Toast.makeText(context, "Pit data imported successfully", Toast.LENGTH_SHORT).show()
                 }
             }
             IncomingBluetoothTransferType.MATCH -> {
-                if (transfer.content().isBlank()) {
+                if (transfer.content.isBlank()) {
                     Toast.makeText(context, "Received empty match data", Toast.LENGTH_SHORT).show()
                 } else {
-                    fileSyncViewModel.importMatchData(transfer.content())
+                    fileSyncViewModel.importMatchData(transfer.content)
                     Toast.makeText(context, "Match data imported successfully", Toast.LENGTH_SHORT).show()
                 }
             }

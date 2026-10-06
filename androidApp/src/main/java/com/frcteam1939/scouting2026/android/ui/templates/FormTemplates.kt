@@ -30,17 +30,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.frcteam1939.scouting2026.android.ui.UserInputs
-import com.frcteam1939.scouting2026.data.structuring.Checkbox
-import com.frcteam1939.scouting2026.data.structuring.Counter
-import com.frcteam1939.scouting2026.data.structuring.Dropdown
-import com.frcteam1939.scouting2026.data.structuring.RadioButton
-import com.frcteam1939.scouting2026.data.structuring.RebuiltHubScoring
-import com.frcteam1939.scouting2026.data.structuring.Switch
-import com.frcteam1939.scouting2026.data.structuring.Textbox
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.frcteam1939.scouting2026.feature.forms.model.Checkbox
+import com.frcteam1939.scouting2026.feature.forms.model.Counter
+import com.frcteam1939.scouting2026.feature.forms.model.Dropdown
+import com.frcteam1939.scouting2026.feature.forms.model.RadioButton
+import com.frcteam1939.scouting2026.feature.forms.model.RebuiltHubScoring
+import com.frcteam1939.scouting2026.feature.forms.model.Switch
+import com.frcteam1939.scouting2026.feature.forms.model.Textbox
+import com.frcteam1939.scouting2026.feature.scouting.ScoutingViewModel
 import com.frcteam1939.scouting2026.android.R
-import com.frcteam1939.scouting2026.data.structuring.ButtonBar
-import com.frcteam1939.scouting2026.data.structuring.RebuiltStartingPosition
+import com.frcteam1939.scouting2026.feature.forms.model.ButtonBar
+import com.frcteam1939.scouting2026.feature.forms.model.RebuiltStartingPosition
 
 @Composable
 fun TextboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Textbox) {

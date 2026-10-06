@@ -39,8 +39,8 @@ import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.templates.RadiobuttonFieldCTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldCTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldCTemplate
-import com.frcteam1939.scouting2026.data.structuring.FormFieldManager
-import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
+import com.frcteam1939.scouting2026.feature.scouting.FormFieldManager
+import com.frcteam1939.scouting2026.feature.forms.EditFormsViewModel
 import kotlinx.coroutines.launch
 
 @Composable

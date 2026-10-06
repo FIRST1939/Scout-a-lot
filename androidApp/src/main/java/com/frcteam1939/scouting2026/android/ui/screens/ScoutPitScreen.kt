@@ -31,9 +31,9 @@ import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.templates.CheckboxFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
-import com.frcteam1939.scouting2026.data.structuring.Checkbox
-import com.frcteam1939.scouting2026.data.structuring.Textbox
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.frcteam1939.scouting2026.feature.forms.model.Checkbox
+import com.frcteam1939.scouting2026.feature.forms.model.Textbox
+import com.frcteam1939.scouting2026.feature.scouting.ScoutingViewModel
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -48,7 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.frcteam1939.scouting2026.android.ui.WarningBox
 import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
-import com.frcteam1939.scouting2026.data.getTeamNameByNumber
+import com.frcteam1939.scouting2026.feature.events.getTeamNameByNumber
 import kotlinx.coroutines.launch
 
 @Composable

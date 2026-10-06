@@ -1,0 +1,3 @@
+package com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.models
+
+data class BTServerResult(val event: BTServerEvent, val connection: BTConnection?)

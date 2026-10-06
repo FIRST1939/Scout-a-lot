@@ -34,8 +34,8 @@ import com.frcteam1939.scouting2026.android.BuildConfig
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.utils.loadTeamAvatarsByEvent
-import com.frcteam1939.scouting2026.data.demo.DemoEvent
-import com.frcteam1939.scouting2026.viewmodels.SettingsViewModel
+import com.frcteam1939.scouting2026.feature.scouting.DemoEvent
+import com.frcteam1939.scouting2026.feature.settings.SettingsViewModel
 import kotlinx.coroutines.launch
 
 @Composable

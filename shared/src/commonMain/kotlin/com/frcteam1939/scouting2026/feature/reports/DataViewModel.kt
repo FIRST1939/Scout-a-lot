@@ -1,0 +1,540 @@
+package com.frcteam1939.scouting2026.feature.reports
+
+import com.frcteam1939.scouting2026.feature.scouting.Field
+
+import androidx.lifecycle.ViewModel
+import com.frcteam1939.scouting2026.core.network.dto.TBAMatch
+import com.frcteam1939.scouting2026.core.database.entity.AppSettings
+import com.frcteam1939.scouting2026.feature.events.EventsRepository
+import com.frcteam1939.scouting2026.feature.scouting.ScoutedDataRepository
+import com.frcteam1939.scouting2026.feature.settings.SettingsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlin.collections.emptyList
+import kotlinx.serialization.json.Json
+
+data class RankingData(val value: Double?, val rank: Int?)
+
+class DataViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val eventsRepository: EventsRepository,
+    private val scoutedDataRepository: ScoutedDataRepository
+) : ViewModel() {
+    val settings: StateFlow<AppSettings?> = settingsRepository.settings
+    val currentEvent = settings.value?.currentEvent ?: ""
+    private val _currentTeam = MutableStateFlow("")
+    val currentTeam: StateFlow<String> = _currentTeam.asStateFlow()
+    fun changeCurrentTeam(newCurrentTeam: String) {
+        _currentTeam.value = newCurrentTeam
+    }
+
+    private val _currentMatch = MutableStateFlow("")
+    val currentMatch: StateFlow<String> = _currentMatch.asStateFlow()
+    fun changeCurrentMatch(newCurrentMatch: String) {
+        _currentMatch.value = newCurrentMatch
+    }
+
+    private val _currentPitData = MutableStateFlow<List<Field>>(emptyList())
+    val currentPitData: StateFlow<List<Field>> = _currentPitData.asStateFlow()
+    fun changeCurrentPitData(newCurrentPitData: List<Field>) {
+        _currentPitData.value = newCurrentPitData
+    }
+
+    private val _currentAutoData = MutableStateFlow<List<List<Field>>>(emptyList())
+    val currentAutoData: StateFlow<List<List<Field>>> = _currentAutoData.asStateFlow()
+    fun changeCurrentAutoData(newCurrentAutoData: List<List<Field>>) {
+        _currentAutoData.value = newCurrentAutoData
+    }
+
+    private val _currentTeleopData = MutableStateFlow<List<List<Field>>>(emptyList())
+    val currentTeleopData: StateFlow<List<List<Field>>> = _currentTeleopData.asStateFlow()
+    fun changeCurrentTeleopData(newCurrentTeleopData: List<List<Field>>) {
+        _currentTeleopData.value = newCurrentTeleopData
+    }
+
+    private val _currentEndgameData = MutableStateFlow<List<List<Field>>>(emptyList())
+    val currentEndgameData: StateFlow<List<List<Field>>> = _currentEndgameData.asStateFlow()
+    fun changeCurrentEndgameData(newCurrentEndgameData: List<List<Field>>) {
+        _currentEndgameData.value = newCurrentEndgameData
+    }
+
+    private val _selectedSort = MutableStateFlow("Team Number")
+    val selectedSort: StateFlow<String> = _selectedSort.asStateFlow()
+    fun changeSelectedSort(newSelectedSort: String) {
+        _selectedSort.value = newSelectedSort
+    }
+
+    suspend fun getMatches(): List<String> {
+        val event = eventsRepository.getEventByName(settings.value?.currentEvent ?: "")
+        val jsonString = event.first()?.matchInfo
+        if (jsonString.isNullOrEmpty()) return emptyList()
+        val matches = Json.decodeFromString<List<TBAMatch>>(jsonString)
+
+        val levelOrder = mapOf(
+            "qm" to 0,
+            "sf" to 1,
+            "f" to 2
+        )
+
+        return matches
+            .sortedWith(
+                compareBy<TBAMatch> { levelOrder[it.compLevel] ?: Int.MAX_VALUE }
+                    .thenBy { it.matchNumber }
+            )
+            .map { match ->
+                val type = when (match.compLevel) {
+                    "qm" -> "Qualification"
+                    "sf" -> "Semifinals"
+                    "f" -> "Finals"
+                    else -> "Unknown"
+                }
+
+                "$type ${match.matchNumber}"
+            }
+    }
+
+    fun averageList(list: List<Int>): Double {
+        if (list.isEmpty()) return 0.0
+        var total = 0.0
+        list.forEach {
+            total += it
+        }
+        return total / list.size
+    }
+
+    suspend fun updateRawData(team: String) {
+        val rawPitData = scoutedDataRepository.getPitData(team, "OKC Pit Form 2026", currentEvent).first()?.scoutedData ?: "[]"
+        val rawMatchData = scoutedDataRepository.getAllMatchesForTeam(team, "OKC Match Form 2026", currentEvent).first()
+
+        val matches = rawMatchData.map { match ->
+            Json.decodeFromString<List<List<Field>>>(match.scoutedData)
+        }
+
+        changeCurrentPitData(Json.decodeFromString<List<Field>>(rawPitData))
+        changeCurrentAutoData(matches.mapNotNull { it.getOrNull(0) })
+        changeCurrentTeleopData(matches.mapNotNull { it.getOrNull(1) })
+        changeCurrentEndgameData(matches.mapNotNull { it.getOrNull(2) })
+    }
+
+    fun parseRebuiltHubData(input: String): List<List<List<Int?>>> {
+        fun parseCycle(cycleStr: String): List<Int?> {
+            val cleaned = cycleStr.trim().removePrefix("[").removeSuffix("]").trim()
+            return cleaned.split(",").map {
+                it.trim().let { value ->
+                    if (value == "null") null else value.toIntOrNull()
+                }
+            }
+        }
+
+        fun parsePeriod(periodStr: String): List<List<Int?>> {
+            val cleaned = periodStr.trim().removePrefix("[").removeSuffix("]").trim()
+            if (cleaned.isEmpty()) return emptyList()
+
+            val cycles = mutableListOf<List<Int?>>()
+            var depth = 0
+            var currentCycle = StringBuilder()
+
+            for (char in cleaned) {
+                when (char) {
+                    '[' -> {
+                        depth++
+                        currentCycle.append(char)
+                    }
+                    ']' -> {
+                        depth--
+                        currentCycle.append(char)
+                        if (depth == 0) {
+                            cycles.add(parseCycle(currentCycle.toString()))
+                            currentCycle.clear()
+                        }
+                    }
+                    ',' -> {
+                        if (depth == 0) {
+                            continue
+                        } else {
+                            currentCycle.append(char)
+                        }
+                    }
+                    else -> currentCycle.append(char)
+                }
+            }
+
+            return cycles
+        }
+
+        if (input.isBlank()) return emptyList()
+
+        return try {
+            // Remove outer brackets and whitespace
+            val cleaned = input.trim().removePrefix("[").removeSuffix("]").trim()
+            if (cleaned.isEmpty()) return emptyList()
+
+            val result = mutableListOf<List<List<Int?>>>()
+            var depth = 0
+            var currentSegment = StringBuilder()
+
+            for (char in cleaned) {
+                when (char) {
+                    '[' -> {
+                        depth++
+                        currentSegment.append(char)
+                    }
+                    ']' -> {
+                        depth--
+                        currentSegment.append(char)
+                        // When we close a period (depth becomes 0)
+                        if (depth == 0) {
+                            val periodStr = currentSegment.toString()
+                            result.add(parsePeriod(periodStr))
+                            currentSegment.clear()
+                        }
+                    }
+                    ',' -> {
+                        if (depth == 0) {
+                            // Skip commas between periods
+                            continue
+                        } else {
+                            currentSegment.append(char)
+                        }
+                    }
+                    else -> currentSegment.append(char)
+                }
+            }
+
+            result
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun getAvgAccuracyAndSpeedAuto(): List<String> {
+        val data = currentAutoData.value
+        if (data.isEmpty()) return listOf("Unknown", "Unknown")
+
+        return try {
+            val accuracyList = mutableListOf<Int>()
+            val speedList = mutableListOf<Int>()
+
+            data.forEach { scoutedData ->
+                // Use isNotBlank() to avoid processing empty/whitespace strings
+                if (scoutedData.getOrNull(4)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[4].fieldContent)
+                    val flattened = scoring.flatten()
+                    println("scoring: $scoring")
+                    println("flattened: $flattened")
+
+                    accuracyList.addAll(flattened.mapNotNull { it[0] })
+                    speedList.addAll(flattened.mapNotNull { it[1] })
+                }
+            }
+
+            if (accuracyList.isEmpty() || speedList.isEmpty()) return listOf("Unknown", "Unknown")
+
+            // Use average() and format properly
+            val avgAcc = accuracyList.average() * 3.33
+            val avgSpeed = speedList.average() * 3.33
+
+            // Formats to 1 decimal place (e.g., "85.2")
+            listOf(avgAcc.toString().take(4), avgSpeed.toString().take(4))
+        } catch (e: Exception) {
+            listOf("Unknown", "Unknown")
+        }
+    }
+
+    fun getAvgAccuracyAndSpeedTeleop(): List<String> {
+        val data = currentTeleopData.value
+        if (data.isEmpty()) return listOf("Unknown", "Unknown")
+
+        return try {
+            val accuracyList = mutableListOf<Int>()
+            val speedList = mutableListOf<Int>()
+
+            data.forEach { scoutedData ->
+                // Use isNotBlank() to avoid processing empty/whitespace strings
+                if (scoutedData.getOrNull(6)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[6].fieldContent)
+                    val flattened = scoring.flatten()
+                    println("scoring: $scoring")
+                    println("flattened: $flattened")
+
+                    accuracyList.addAll(flattened.mapNotNull { it[0] })
+                    speedList.addAll(flattened.mapNotNull { it[1] })
+                }
+            }
+
+            if (accuracyList.isEmpty() || speedList.isEmpty()) return listOf("Unknown", "Unknown")
+
+            // Use average() and format properly
+            val avgAcc = accuracyList.average() * 3.33
+            val avgSpeed = speedList.average() * 3.33
+
+            // Formats to 1 decimal place (e.g., "85.2")
+            listOf(avgAcc.toString().take(4), avgSpeed.toString().take(4))
+        } catch (e: Exception) {
+            listOf("Unknown", "Unknown")
+        }
+    }
+
+    fun getApproximateCapacity(): String? {
+        if (currentPitData.value.isEmpty()) return "Unknown"
+        return try {
+            if (currentPitData.value[2].fieldContent == "") {
+                "Unknown"
+            } else {
+                currentPitData.value[2].fieldContent
+            }
+        } catch (e: Exception) {
+            "Unknown"
+        }
+    }
+
+    fun getDrivetrain(): String? {
+        if (currentPitData.value.isEmpty()) return "Unknown"
+        return try {
+            if (currentPitData.value[4].fieldContent == "") {
+                "Unknown"
+            } else {
+                currentPitData.value[4].fieldContent
+            }
+        } catch (e: Exception) {
+            "Unknown"
+        }
+    }
+
+    fun avgAutoCycleCount(): String {
+        val data = currentAutoData.value
+        if (data.isEmpty()) return "Unknown"
+
+        return try {
+            val cycleCountList = mutableListOf<Int>()
+
+            data.forEach { scoutedData ->
+                var cycles = 0
+
+                if (scoutedData.getOrNull(4)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[4].fieldContent)
+                    scoring.forEach { period ->
+                        period.forEach { cycle ->
+                            if (cycle.any { it != null }) {
+                                cycles += 1
+                            }
+                        }
+                    }
+                }
+
+                cycleCountList.add(cycles)
+            }
+
+            if (cycleCountList.isEmpty()) return "Unknown"
+
+            val avgCycles = cycleCountList.average()
+            avgCycles.toString().take(4)
+        } catch (e: Exception) {
+            return "Unknown"
+        }
+    }
+
+    fun avgTeleopCycleCount(): String {
+        val data = currentTeleopData.value
+        if (data.isEmpty()) return "Unknown"
+
+        return try {
+            val cycleCountList = mutableListOf<Int>()
+
+            data.forEach { scoutedData ->
+                var cycles = 0
+
+                if (scoutedData.getOrNull(6)?.fieldContent?.isNotBlank() == true) {
+                    val scoring = parseRebuiltHubData(scoutedData[6].fieldContent)
+                    scoring.forEach { period ->
+                        period.forEach { cycle ->
+                            if (cycle.any { it != null }) {
+                                cycles += 1
+                            }
+                        }
+                    }
+                }
+
+                cycleCountList.add(cycles)
+            }
+
+            if (cycleCountList.isEmpty()) return "Unknown"
+
+            val avgCycles = cycleCountList.average()
+            avgCycles.toString().take(4)
+        } catch (e: Exception) {
+            return "Unknown"
+        }
+    }
+
+    fun getPlayedDefense(): Boolean {
+        if (currentTeleopData.value.isEmpty()) return false
+        var playsDefense = false
+
+        currentTeleopData.value.forEach { scoutedData ->
+            if (scoutedData[2].fieldContent == "true") {
+                playsDefense = true
+            }
+        }
+
+        return playsDefense
+    }
+
+    fun getTrenchTravel(): Boolean {
+        if (currentTeleopData.value.isEmpty()) return false
+        var trench = false
+
+        currentTeleopData.value.forEach { scoutedData ->
+            val travelList = scoutedData[0].fieldContent
+                .removeSurrounding("[", "]")
+                .split(",")
+                .map { it.trim() }
+            println("Travel List trench: $travelList")
+            if (travelList.getOrNull(0)?.toBoolean() ?: false) { trench = true }
+        }
+
+        return trench
+    }
+
+    fun getBumpTravel(): Boolean {
+        if (currentTeleopData.value.isEmpty()) return false
+        var bump = false
+
+        currentTeleopData.value.forEach { scoutedData ->
+            val travelList = scoutedData[0].fieldContent
+                .removeSurrounding("[", "]")
+                .split(",")
+                .map { it.trim() }
+            println("Travel List bump: $travelList")
+            if (travelList.getOrNull(1)?.toBoolean() ?: false) { bump = true }
+        }
+
+        return bump
+    }
+
+    fun getAvgFerryVolume(): String {
+        if (currentTeleopData.value.isEmpty()) return "Unknown"
+        return try {
+            val valueList = mutableListOf<Int>()
+
+            currentTeleopData.value.forEach { scoutedData ->
+                if (scoutedData[5].fieldContent.toIntOrNull() != null) {
+                    valueList.add(scoutedData[5].fieldContent.toInt())
+                }
+            }
+
+            if (valueList.isEmpty()) {
+                "Unknown"
+            } else {
+                (averageList(valueList) * 3.33).toString().take(4)
+            }
+        } catch (e: Exception) {
+            "Unknown"
+        }
+    }
+
+    fun getDeadMatchCount(): Int {
+        if (currentEndgameData.value.isEmpty()) return 0
+        var deadMatchCount = 0
+
+        currentEndgameData.value.forEach { scoutedData ->
+            if (scoutedData[1].fieldContent == "true") {
+                deadMatchCount += 1
+            }
+        }
+
+        return deadMatchCount
+    }
+
+    fun getQualitativeComments(): List<String> {
+        if (currentEndgameData.value.isEmpty()) return listOf("Unknown")
+        val commentList = mutableListOf<String>()
+
+        currentEndgameData.value.forEach { scoutedData ->
+            if (scoutedData[2].fieldContent.isNotBlank()) {
+                commentList.add(scoutedData[2].fieldContent)
+            }
+        }
+
+        return commentList
+    }
+
+    suspend fun getTeamList(): List<String> {
+        return eventsRepository.getEventByName(currentEvent).first()?.eventTeamList
+            ?.mapNotNull { it.toIntOrNull() }
+            ?.sorted()
+            ?.map { it.toString() }
+            ?: emptyList()
+    }
+
+    suspend fun getRankings(): Map<Int, List<RankingData>> {
+        val teamList = getTeamList()
+
+        data class TeamStats(
+            val team: Int,
+            val autoAcc: Double?,
+            val autoSpeed: Double?,
+            val autoCycle: Double?,
+            val teleopAcc: Double?,
+            val teleopSpeed: Double?,
+            val teleopCycle: Double?,
+            val ferry: Double?
+        )
+
+        // Helper to safely convert
+        fun String.toDoubleOrNullSafe(): Double? {
+            return if (this == "Unknown") null else this.toDoubleOrNull()
+        }
+
+        val statsList = teamList.map { team ->
+            updateRawData(team)
+
+            val autoData = getAvgAccuracyAndSpeedAuto()
+            val teleopData = getAvgAccuracyAndSpeedTeleop()
+
+            TeamStats(
+                team = team.toInt(),
+                autoAcc = autoData[0].toDoubleOrNullSafe(),
+                autoSpeed = autoData[1].toDoubleOrNullSafe(),
+                autoCycle = avgAutoCycleCount().toDoubleOrNullSafe(),
+                teleopAcc = teleopData[0].toDoubleOrNullSafe(),
+                teleopSpeed = teleopData[1].toDoubleOrNullSafe(),
+                teleopCycle = avgTeleopCycleCount().toDoubleOrNullSafe(),
+                ferry = getAvgFerryVolume().toDoubleOrNullSafe()
+            )
+        }
+
+        // Ranking helper (ignores nulls)
+        fun rankBy(selector: (TeamStats) -> Double?): Map<Int, Int> {
+            return statsList
+                .filter { selector(it) != null } // remove "Unknown"
+                .sortedByDescending { selector(it)!! }
+                .mapIndexed { index, stats ->
+                    stats.team to (index + 1)
+                }
+                .toMap()
+        }
+
+        val autoAccRank = rankBy { it.autoAcc }
+        val autoSpeedRank = rankBy { it.autoSpeed }
+        val autoCycleRank = rankBy { it.autoCycle }
+        val teleopAccRank = rankBy { it.teleopAcc }
+        val teleopSpeedRank = rankBy { it.teleopSpeed }
+        val teleopCycleRank = rankBy { it.teleopCycle }
+        val ferryRank = rankBy { it.ferry }
+
+        return statsList.associate { stats ->
+            stats.team to listOf(
+                RankingData(stats.autoAcc, autoAccRank[stats.team]),
+                RankingData(stats.autoSpeed, autoSpeedRank[stats.team]),
+                RankingData(stats.autoCycle, autoCycleRank[stats.team]),
+                RankingData(stats.teleopAcc, teleopAccRank[stats.team]),
+                RankingData(stats.teleopSpeed, teleopSpeedRank[stats.team]),
+                RankingData(stats.teleopCycle, teleopCycleRank[stats.team]),
+                RankingData(stats.ferry, ferryRank[stats.team])
+            )
+        }
+    }
+}

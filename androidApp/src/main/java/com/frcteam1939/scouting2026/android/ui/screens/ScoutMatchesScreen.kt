@@ -50,8 +50,8 @@ import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
 import com.frcteam1939.scouting2026.android.utils.getTeamImage
-import com.frcteam1939.scouting2026.data.getTeamNameByNumber
-import com.frcteam1939.scouting2026.viewmodels.ScoutingViewModel
+import com.frcteam1939.scouting2026.feature.events.getTeamNameByNumber
+import com.frcteam1939.scouting2026.feature.scouting.ScoutingViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlin.text.ifEmpty
 

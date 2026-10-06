@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.frcteam1939.scouting2026.android.ui.UserInputs
-import com.frcteam1939.scouting2026.viewmodels.EditFormsViewModel
+import com.frcteam1939.scouting2026.feature.forms.EditFormsViewModel
 import kotlin.collections.emptyList
 
 @Composable
