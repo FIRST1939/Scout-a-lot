@@ -17,6 +17,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -41,6 +42,7 @@ import com.frcteam1939.scouting2026.android.feature.sync.platform.bluetooth.mode
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.feature.sync.FileSyncViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.material3.ButtonDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +62,9 @@ fun SyncScreen(
     val currentConnection by syncViewModel.currentConnection.observeAsState(emptyMap())
     val connectionList = currentConnection.values.toList()
     val btServerStatus by syncViewModel.btServerStatus.observeAsState(BTServerState.OFF)
+    val checked = btServerStatus == BTServerState.LISTENING
+    val isServerOn = btServerStatus == BTServerState.LISTENING
+
 
     LaunchedEffect(pairedDevices) {
         if (selectedPairedDevice != null &&
@@ -147,86 +152,14 @@ fun SyncScreen(
                     syncViewModel.closeBTServer()
                 }
             },
-            text = "BT Server"
+            text = "Bluetooth Server"
         )
 
-        UserInputs.TextButtonInput(
-            onClick = {
-                if (selectedPairedDevice == null) {
-                    Toast.makeText(context, "Please select a device to connect first", Toast.LENGTH_SHORT).show()
-                } else {
-                    syncViewModel.connectToDevice(selectedPairedDevice)
-                }
-            },
-            text = "Connect",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        UserInputs.TextButtonInput(
-            onClick = {
-                if (selectedConnectedDevice == null) {
-                    Toast.makeText(context, "Please select a device to disconnect first", Toast.LENGTH_SHORT).show()
-                } else {
-                    syncViewModel.closeExistingConnection(selectedConnectedDevice)
-                }
-            },
-            text = "Disconnect",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        UserInputs.TextButtonInput(
-            onClick = {
-                val connection = selectedConnectedDevice
-                if (connection == null) {
-                    Toast.makeText(context, "Please select a connected device first", Toast.LENGTH_SHORT).show()
-                } else {
-                    coroutineScope.launch {
-                        val pitData = fileSyncViewModel.getPitDataForExport()
-                        if (pitData.isBlank()) {
-                            Toast.makeText(context, "No pit data to send", Toast.LENGTH_SHORT).show()
-                        } else {
-                            syncViewModel.sendPitData(connection, pitData)
-                        }
-                    }
-                }
-            },
-            text = "Send Pit Data",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        UserInputs.TextButtonInput(
-            onClick = {
-                val connection = selectedConnectedDevice
-                if (connection == null) {
-                    Toast.makeText(context, "Please select a connected device first", Toast.LENGTH_SHORT).show()
-                } else {
-                    coroutineScope.launch {
-                        val matchData = fileSyncViewModel.getMatchDataForExport()
-                        if (matchData.isBlank()) {
-                            Toast.makeText(context, "No match data to send", Toast.LENGTH_SHORT).show()
-                        } else {
-                            syncViewModel.sendMatchData(connection, matchData)
-                        }
-                    }
-                }
-            },
-            text = "Send Match Data",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
 
         var showDialog by remember { mutableStateOf(false) }
         var text by remember { mutableStateOf("") }
-        UserInputs.TextButtonInput(
-            onClick = {
-                if (selectedConnectedDevice == null) {
-                    Toast.makeText(context, "Please select a connected device first", Toast.LENGTH_SHORT).show()
-                } else {
-                    showDialog = true
-                }
-            },
-            text = "Test Connection",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
+
+
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
@@ -329,6 +262,23 @@ fun SyncScreen(
                 }
             }
         }
+        if (selectedPairedDevice != null && isServerOn) {
+            UserInputs.TextButtonInput(
+                onClick = {
+                    if (selectedPairedDevice == null) {
+                        Toast.makeText(
+                            context,
+                            "Please select a device to connect first",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        syncViewModel.connectToDevice(selectedPairedDevice)
+                    }
+                },
+                text = "Connect",
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
 
         Text(
             text = "Connected Devices",
@@ -388,6 +338,98 @@ fun SyncScreen(
                         )
                     }
                 }
+            }
+
+            if (selectedConnectedDevice != null && isServerOn) {
+                TextButton(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    shape = MaterialTheme.shapes.small,
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
+                    content = {Text("Disconnect")},
+                    onClick = {
+                        if (selectedConnectedDevice == null) {
+                            Toast.makeText(
+                                context,
+                                "Please select a device to disconnect first",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            syncViewModel.closeExistingConnection(selectedConnectedDevice)
+                        }
+                    }
+                )
+            }
+            if (selectedConnectedDevice != null && isServerOn) {
+                UserInputs.TextButtonInput(
+                    onClick = {
+                        val connection = selectedConnectedDevice
+                        if (connection == null) {
+                            Toast.makeText(
+                                context,
+                                "Please select a connected device first",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            coroutineScope.launch {
+                                val pitData = fileSyncViewModel.getPitDataForExport()
+                                if (pitData.isBlank()) {
+                                    Toast.makeText(context, "No pit data to send", Toast.LENGTH_SHORT)
+                                        .show()
+                                } else {
+                                    syncViewModel.sendPitData(connection, pitData)
+                                }
+                            }
+                        }
+                    },
+                    text = "Send Pit Data",
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+            if (selectedConnectedDevice != null && isServerOn) {
+                UserInputs.TextButtonInput(
+                    onClick = {
+                        val connection = selectedConnectedDevice
+                        if (connection == null) {
+                            Toast.makeText(
+                                context,
+                                "Please select a connected device first",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            coroutineScope.launch {
+                                val matchData = fileSyncViewModel.getMatchDataForExport()
+                                if (matchData.isBlank()) {
+                                    Toast.makeText(context, "No match data to send", Toast.LENGTH_SHORT)
+                                        .show()
+                                } else {
+                                    syncViewModel.sendMatchData(connection, matchData)
+                                }
+                            }
+                        }
+                    },
+                    text = "Send Match Data",
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+            if (selectedConnectedDevice != null && isServerOn) {
+                UserInputs.TextButtonInput(
+                    onClick = {
+                        if (selectedConnectedDevice == null) {
+                            Toast.makeText(
+                                context,
+                                "Please select a connected device first",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            showDialog = true
+                        }
+                    },
+                    text = "Test Connection",
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
         }
     }

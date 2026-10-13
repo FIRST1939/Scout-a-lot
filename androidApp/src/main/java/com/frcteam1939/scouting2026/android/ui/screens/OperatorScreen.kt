@@ -24,7 +24,12 @@ fun OperatorScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "This is for operators.. One pint! 😂😂",
+            "This is for operators.. One pint! 😂😂" +
+                    "..." +
+                    "hey, it's time to go" +
+                    "What?" +
+                    "You will be destroyed soon" +
+                    "😨😨😨😨😨😨😨⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️😮",
             style = MaterialTheme.typography.headlineMedium
         )
         Column(

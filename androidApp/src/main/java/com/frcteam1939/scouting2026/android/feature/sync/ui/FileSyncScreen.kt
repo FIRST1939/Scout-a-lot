@@ -94,7 +94,7 @@ fun FileSyncScreen(fileSyncViewModel: FileSyncViewModel) {
             onClick = {
                 pitFilePickerLauncher.launch(arrayOf("text/plain"))
             },
-            text = "Import Pit Data"
+            text = "Import Pit Data from a file"
         )
 
         var pitFileName by remember { mutableStateOf("PitData.txt") }
