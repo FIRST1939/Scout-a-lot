@@ -249,7 +249,6 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier =
 
 @Composable
 fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
-    // TODO: add endgame scouting screen
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,

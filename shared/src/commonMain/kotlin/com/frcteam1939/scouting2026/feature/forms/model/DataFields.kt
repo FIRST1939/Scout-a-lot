@@ -33,7 +33,7 @@ data class RadioButton(
     override val label: String,
     override val required: Boolean = false,
     override val leadsTo: List<String> = emptyList(),
-    val options: List<String>
+    val options: List<String> = emptyList()
 ) : FormField()
 
 @Serializable

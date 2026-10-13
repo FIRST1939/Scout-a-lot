@@ -4,6 +4,7 @@ import com.frcteam1939.scouting2026.feature.forms.model.ButtonBar
 import com.frcteam1939.scouting2026.feature.forms.model.Checkbox
 import com.frcteam1939.scouting2026.feature.forms.model.Counter
 import com.frcteam1939.scouting2026.feature.forms.model.Dropdown
+import com.frcteam1939.scouting2026.feature.forms.model.FormField
 import com.frcteam1939.scouting2026.feature.forms.model.RadioButton
 import com.frcteam1939.scouting2026.feature.forms.model.RebuiltHubScoring
 import com.frcteam1939.scouting2026.feature.forms.model.RebuiltStartingPosition
@@ -26,6 +27,8 @@ object FormFieldManager {
             this.REBUILT_HUB_SCORING,
             this.REBUILT_STARTING_POSITION
         )
+
+        // Default fields
         const val TEXTBOX: String = "Textbox"
         const val RADIOBUTTON: String = "RadioButton"
         const val SWITCH: String = "Switch"
@@ -33,9 +36,26 @@ object FormFieldManager {
         const val BUTTONBAR: String = "ButtonBar"
         const val COUNTER: String = "Counter"
         const val DROPDOWN: String = "Dropdown"
+
+        // 2026: REBUILT
         const val REBUILT_HUB_SCORING: String = "RebuiltHubScoring"
         const val REBUILT_STARTING_POSITION: String = "RebuiltStartingPosition"
 
+    }
+
+    // Returns a field object of specified type with default values
+    fun getEmptyFormFieldOfType(fieldType: String, id: Int): FormField {
+        return when(fieldType) {
+            FieldTypes.TEXTBOX -> Textbox(id, label = "Unnamed Textbox")
+            FieldTypes.RADIOBUTTON -> RadioButton(id, label = "Unnamed Radio Button")
+            FieldTypes.SWITCH -> Switch(id, label = "Unnamed Switch")
+            FieldTypes.CHECKBOX -> Checkbox(id, label = "Unnamed Checkbox")
+            FieldTypes.COUNTER -> Counter(id, label = "Unnamed Counter")
+            FieldTypes.DROPDOWN -> Dropdown(id, label = "Unnamed Dropdown")
+            FieldTypes.REBUILT_HUB_SCORING -> RebuiltHubScoring(id, label = "Unnamed Rebuilt Hub Scoring")
+            FieldTypes.REBUILT_STARTING_POSITION -> RebuiltStartingPosition(id, label = "Unnamed Rebuilt Starting Position")
+            else -> throw IllegalArgumentException("Invalid field type: $fieldType")
+        }
     }
 
     fun getTextBoxJson(id: Int, label: String, required: Boolean = false, leadsTo: List<String> = emptyList(), singleLine: Boolean = false, forceNumberInput: Boolean = false, characterLimit: Int = 2500): Textbox {

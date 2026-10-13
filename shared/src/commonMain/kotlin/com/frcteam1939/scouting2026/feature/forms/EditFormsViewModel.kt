@@ -58,6 +58,7 @@ class EditFormsViewModel(
         }
     }
 
+    // deletes all content in the form across all pages
     fun resetFormContent() {
         changeFormContent(newFormContent = emptyList(), page = 1)
         changeFormContent(newFormContent = emptyList(), page = 2)
@@ -69,52 +70,16 @@ class EditFormsViewModel(
     }
 
     fun addField() {
+        // new fields are appended to the end, the ID is set to be at the end
         val newID: Int = when (currentPage.value) {
             1 -> formContentPage1.value.size
-            2 -> formContentPage1.value.size
-            3 -> formContentPage1.value.size
+            2 -> formContentPage2.value.size
+            3 -> formContentPage3.value.size
             else -> throw IllegalArgumentException("Invalid page index ${currentPage.value}: must be 1, 2, or 3.")
         }
 
-        val field = when (selectedFieldTypeToAdd.value) {
-            FormFieldManager.FieldTypes.TEXTBOX -> FormFieldManager.getTextBoxJson(
-                id = newID,
-                label = "Unnamed Textbox"
-            )
-            FormFieldManager.FieldTypes.RADIOBUTTON -> FormFieldManager.getRadioButtonJson(
-                id = newID,
-                label = "Unnamed Radiobutton",
-                options = emptyList()
-            )
-            FormFieldManager.FieldTypes.SWITCH -> FormFieldManager.getSwitchJson(
-                id = newID,
-                label = "Unnamed Switch"
-            )
-            FormFieldManager.FieldTypes.CHECKBOX -> FormFieldManager.getCheckboxJson(
-                id = newID,
-                label = "Unnamed Checkbox",
-            )
-            FormFieldManager.FieldTypes.COUNTER -> FormFieldManager.getCounterJson(
-                id = newID,
-                label = "Unnamed Counter",
-            )
-            FormFieldManager.FieldTypes.DROPDOWN -> FormFieldManager.getDropdownJson(
-                id = newID,
-                label = "Unnamed Dropdown",
-            )
-            FormFieldManager.FieldTypes.REBUILT_HUB_SCORING -> FormFieldManager.getRebuiltHubScoringJson(
-                id = newID,
-                label = "Cycle Result",
-            )
-            FormFieldManager.FieldTypes.REBUILT_STARTING_POSITION -> FormFieldManager.getRebuiltStartingPositionJson(
-                id = newID,
-                label = "Starting Position",
-            )
-
-            else -> throw IllegalArgumentException("Invalid field type: ${selectedFieldTypeToAdd.value}")
-        }
-
-        changeFormContent(newFormContent = formContentPage1.value.plus(field), page = currentPage.value)
+        val newField = FormFieldManager.getEmptyFormFieldOfType(fieldType = selectedFieldTypeToAdd.value, id = newID)
+        changeFormContent(newFormContent = formContentPage1.value.plus(newField), page = currentPage.value)
     }
 
     fun updateFieldParameter(id: Int, parameter: String, value: String) {
