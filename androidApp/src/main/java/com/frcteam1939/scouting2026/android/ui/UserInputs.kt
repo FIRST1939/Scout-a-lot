@@ -350,7 +350,7 @@ object UserInputs {
             modifier: Modifier = Modifier,
             buttonText: String = "",
             containerColor: Color = MaterialTheme.colorScheme.background,
-            iconColor: Color = MaterialTheme.colorScheme.primary
+            iconColor: Color = MaterialTheme.colorScheme.primary,
         ) {
             OutlinedButton(
                 onClick = { onClick() },

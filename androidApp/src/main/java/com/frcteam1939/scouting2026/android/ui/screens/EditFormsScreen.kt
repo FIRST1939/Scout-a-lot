@@ -280,7 +280,7 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                     icon = Icons.Default.Add,
                     modifier = Modifier.padding(horizontal = 8.dp),
                     containerColor = MaterialTheme.colorScheme.primary,
-                    iconColor = MaterialTheme.colorScheme.onPrimary
+                    iconColor = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         }

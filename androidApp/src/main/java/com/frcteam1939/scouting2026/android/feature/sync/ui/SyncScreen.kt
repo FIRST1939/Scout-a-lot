@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,12 +14,15 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.Message
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,6 +47,9 @@ import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.feature.sync.FileSyncViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,20 +134,29 @@ fun SyncScreen(
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Text(
-            text = "Sync",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Sync",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 8.dp),
+                textAlign = TextAlign.Left
+            )
 
-        UserInputs.TextButtonInput(
-            onClick = onOpenFileSync,
-            text = "Open File Sync",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
+            OutlinedButton(
+                onClick = onOpenFileSync,
+                modifier = Modifier.padding(vertical = 4.dp),
+                content = {
+                    Text("Import/export file")
+                    Icon(imageVector = Icons.Default.UploadFile, contentDescription = "")
+                }
+
+                )
+        }
 
         val checked = btServerStatus == BTServerState.LISTENING
         UserInputs.SwitchTextBarInput(
@@ -152,7 +168,7 @@ fun SyncScreen(
                     syncViewModel.closeBTServer()
                 }
             },
-            text = "Bluetooth Server"
+            text = "Enable Bluetooth"
         )
 
 
@@ -192,15 +208,6 @@ fun SyncScreen(
                 }
             )
         }
-
-        UserInputs.TextButtonInput(
-            onClick = {
-                syncViewModel.refreshPairedDevices()
-                Toast.makeText(context, "Device list refreshed", Toast.LENGTH_SHORT).show()
-            },
-            text = "Refresh Devices",
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
 
         Text(
             text = "Paired Devices",
@@ -262,21 +269,42 @@ fun SyncScreen(
                 }
             }
         }
+
+        OutlinedButton(
+            onClick = {
+            syncViewModel.refreshPairedDevices()
+            Toast.makeText(context, "Device list refreshed", Toast.LENGTH_SHORT).show()
+        },
+            modifier = Modifier.padding(vertical = 4.dp)
+        ) {
+            Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
+            Text("Refresh Devices")
+        }
+
+
+
         if (selectedPairedDevice != null && isServerOn) {
-            UserInputs.TextButtonInput(
+            TextButton(
+                modifier = Modifier.padding(vertical = 4.dp),
+                shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.secondary
+                ),
                 onClick = {
-                    if (selectedPairedDevice == null) {
-                        Toast.makeText(
-                            context,
-                            "Please select a device to connect first",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        syncViewModel.connectToDevice(selectedPairedDevice)
-                    }
-                },
-                text = "Connect",
-                modifier = Modifier.padding(vertical = 4.dp)
+                if (selectedPairedDevice == null) {
+                    Toast.makeText(
+                        context,
+                        "Please select a device to connect first",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else {
+                    syncViewModel.connectToDevice(selectedPairedDevice)
+                }
+            },
+                content = {Text("Connect")},
+
             )
         }
 
@@ -345,8 +373,8 @@ fun SyncScreen(
                     modifier = Modifier.padding(vertical = 4.dp),
                     shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.secondary
                     ),
                     content = {Text("Disconnect")},
                     onClick = {
@@ -363,7 +391,13 @@ fun SyncScreen(
                 )
             }
             if (selectedConnectedDevice != null && isServerOn) {
-                UserInputs.TextButtonInput(
+                TextButton(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    shape = MaterialTheme.shapes.small,
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ),
                     onClick = {
                         val connection = selectedConnectedDevice
                         if (connection == null) {
@@ -384,12 +418,17 @@ fun SyncScreen(
                             }
                         }
                     },
-                    text = "Send Pit Data",
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    content = {Text("Send Pit Data")},
                 )
             }
             if (selectedConnectedDevice != null && isServerOn) {
-                UserInputs.TextButtonInput(
+                TextButton(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    shape = MaterialTheme.shapes.small,
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ),
                     onClick = {
                         val connection = selectedConnectedDevice
                         if (connection == null) {
@@ -410,12 +449,12 @@ fun SyncScreen(
                             }
                         }
                     },
-                    text = "Send Match Data",
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    content = {Text("Send Match Data")}
                 )
             }
             if (selectedConnectedDevice != null && isServerOn) {
-                UserInputs.TextButtonInput(
+                OutlinedButton(
+                    modifier = Modifier.padding(vertical = 4.dp),
                     onClick = {
                         if (selectedConnectedDevice == null) {
                             Toast.makeText(
@@ -427,8 +466,11 @@ fun SyncScreen(
                             showDialog = true
                         }
                     },
-                    text = "Test Connection",
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    content = {
+                        Text("Test Connection")
+                        Icon(imageVector = Icons.Default.Bluetooth, contentDescription = "")
+
+                    }
                 )
             }
         }
