@@ -2,7 +2,7 @@ package com.frcteam1939.scouting2026.feature.reports
 
 import androidx.lifecycle.ViewModel
 import com.frcteam1939.scouting2026.feature.scouting.assignPitTeams
-import com.frcteam1939.scouting2026.core.database.entity.AppSettings
+import com.frcteam1939.scouting2026.feature.settings.model.AppSettings
 import com.frcteam1939.scouting2026.feature.events.EventsRepository
 import com.frcteam1939.scouting2026.feature.scouting.ScoutedDataRepository
 import com.frcteam1939.scouting2026.feature.settings.SettingsRepository
