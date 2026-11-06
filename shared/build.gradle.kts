@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.androidx.datastore.preferences)
             api(libs.androidx.lifecycle.viewmodel)
         }
         commonTest.dependencies {
