@@ -2,44 +2,8 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6d9162fe2d7afcbcd7a375ac6472fff4",
+    "identityHash": "618c7cfc5264091e384fa3c467f31ae7",
     "entities": [
-      {
-        "tableName": "app_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `playoffsActive` INTEGER NOT NULL, `deviceRobotAssignment` TEXT NOT NULL, `currentEvent` TEXT NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "playoffsActive",
-            "columnName": "playoffsActive",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "deviceRobotAssignment",
-            "columnName": "deviceRobotAssignment",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "currentEvent",
-            "columnName": "currentEvent",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
       {
         "tableName": "events",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `code` TEXT NOT NULL, `year` INTEGER NOT NULL, `match_info` TEXT NOT NULL, `team_list` TEXT NOT NULL, `team_name_list` TEXT NOT NULL, `pit_form_name` TEXT NOT NULL, `match_form_name` TEXT NOT NULL)",
@@ -262,7 +226,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d9162fe2d7afcbcd7a375ac6472fff4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '618c7cfc5264091e384fa3c467f31ae7')"
     ]
   }
 }
