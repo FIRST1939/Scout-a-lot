@@ -2,7 +2,7 @@ package com.frcteam1939.scouting2026.feature.settings
 
 import androidx.lifecycle.ViewModel
 import com.frcteam1939.scouting2026.DataDependencyContainer.tba
-import com.frcteam1939.scouting2026.core.database.entity.AppSettings
+import com.frcteam1939.scouting2026.feature.settings.model.AppSettings
 import com.frcteam1939.scouting2026.core.database.entity.Event
 import com.frcteam1939.scouting2026.feature.events.EventCodesRepository
 import com.frcteam1939.scouting2026.feature.events.EventsRepository
