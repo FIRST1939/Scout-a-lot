@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -7,6 +8,17 @@ plugins {
 }
 
 kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_21) } }
+
+// Release signing values stay in local.properties so they never enter Git.
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { inputStream ->
+        localProperties.load(inputStream)
+    }
+}
+val releaseStoreFilePath = localProperties.getProperty("release.storeFile")
+val hasReleaseSigning = releaseStoreFilePath != null
 
 android {
     namespace = "com.frcteam1939.scouting2026.android"
@@ -25,6 +37,16 @@ android {
         buildConfig = true
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseStoreFilePath)
+                storePassword = localProperties.getProperty("release.storePassword")
+                keyAlias = localProperties.getProperty("release.keyAlias")
+                keyPassword = localProperties.getProperty("release.keyPassword")
+            }
+        }
+    }
     buildTypes {
         getByName("debug") {
             applicationIdSuffix = ".dev"
@@ -33,7 +55,9 @@ android {
         }
         getByName("release") {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     compileOptions {
