@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.WarningBox
@@ -137,7 +138,7 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
                         )
                     }
                     OutlinedButton(
-                        onClick = {
+                        onClick = dropUnlessResumed {
                             dataViewModel.changeCurrentTeam(team)
                             coroutineScope.launch {
                                 dataViewModel.updateRawData(team)

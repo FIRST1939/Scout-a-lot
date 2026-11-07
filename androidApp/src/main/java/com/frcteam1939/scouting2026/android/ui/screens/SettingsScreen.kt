@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.BuildConfig
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
@@ -97,14 +98,14 @@ fun SettingsScreen(navController: NavController, settingsViewModel: SettingsView
 
         // Add event
         UserInputs.TextButtonInput(
-            onClick = { navController.navigate(AppRoutes.Settings.EDIT_EVENTS) },
+            onClick = dropUnlessResumed { navController.navigate(AppRoutes.Settings.EDIT_EVENTS) },
             text = "Edit Events",
             modifier = Modifier.align(Alignment.CenterHorizontally).padding(all = 4.dp),
         )
 
         // Navigate to operator settings
         UserInputs.TextButtonInput(
-            onClick = { navController.navigate(AppRoutes.Settings.OPERATOR) },
+            onClick = dropUnlessResumed { navController.navigate(AppRoutes.Settings.OPERATOR) },
             text = "Operator Settings",
             modifier = Modifier.align(Alignment.CenterHorizontally).padding(all = 4.dp),
         )
@@ -125,7 +126,7 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
             text = "Add Event",
             buttonText = "",
             icon = Icons.Default.Add,
-            onClick = { navController.navigate(AppRoutes.Settings.ADD_EVENT) }
+            onClick = dropUnlessResumed { navController.navigate(AppRoutes.Settings.ADD_EVENT) }
         )
         UserInputs.OutlinedButtonTextBarInput(
             text = "Refresh Match Info",
