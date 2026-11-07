@@ -31,7 +31,7 @@ Scout-a-Lot is open-source scouting software for *FIRST* Robotics Competition (F
 - **JDK 21**
 - **Android Studio**, a version that supports Android Gradle Plugin 9.3
 - **Android SDK** with API level 36 (Android Studio can install it)
-- An Android device or emulator running Android 7.0 (API 24) or newer. Bluetooth sync needs real devices.
+- An Android device or emulator running Android 7.0 (API 24) or newer.
 
 ## Using the app at an event
 
