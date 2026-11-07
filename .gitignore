@@ -21,3 +21,5 @@ androidApp/src/main/assets/FRCEventsAuthorization.txt
 /iosApp/DerivedData/
 /gradle/gradle-daemon-jvm.properties
 /AGENTS.md
+release/
+*.jks
