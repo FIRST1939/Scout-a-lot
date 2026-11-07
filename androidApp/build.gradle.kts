@@ -10,11 +10,11 @@ kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_21) } }
 
 android {
     namespace = "com.frcteam1939.scouting2026.android"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.frcteam1939.scouting2026.android"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         manifestPlaceholders["appLabel"] = "FRC Scout Maker"
