@@ -2,11 +2,26 @@ name: Android Build
 
 on:
   push:
+    branches: [master]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -21,14 +36,8 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Grant execute permission
-        run: chmod +x ./gradlew
-
-      - name: Compile Kotlin
-        run: ./gradlew :androidApp:compileDebugKotlin
-
-      - name: Assemble Debug APK
-        run: ./gradlew :androidApp:assembleDebug
+      - name: Build and lint
+        run: ./gradlew :androidApp:assembleDebug :androidApp:lintDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v6
@@ -36,3 +45,4 @@ jobs:
           name: android-debug-apk
           path: androidApp/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 7
