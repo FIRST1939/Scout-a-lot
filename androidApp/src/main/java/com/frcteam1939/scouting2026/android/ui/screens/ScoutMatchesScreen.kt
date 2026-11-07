@@ -212,7 +212,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
                 UserInputs.TextButtonInput(
                     onClick = {
                         noShowPopup = false
-                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                        navController.popBackStack(AppRoutes.MatchScouting.SCOUT_MATCHES, inclusive = false)
                     },
                     text = "Robot no-show",
                     containerColor = MaterialTheme.colorScheme.background,
@@ -225,7 +225,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
                 UserInputs.TextButtonInput(
                     onClick = {
                         noShowPopup = false
-                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                        navController.popBackStack(AppRoutes.MatchScouting.SCOUT_MATCHES, inclusive = false)
                     },
                     text = "Team not in match",
                     containerColor = MaterialTheme.colorScheme.background,

@@ -186,12 +186,12 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             buttonOneText = "Submit",
             onButtonOneClick = {
                 scoutingViewModel.savePitData(scoutingViewModel.selectedTeam.value)
-                navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
+                navController.popBackStack(AppRoutes.PitScouting.SCOUT_PITS, inclusive = false)
             },
             iconOne = Icons.Default.Check,
             buttonTwoText = "Cancel",
             onButtonTwoClick = {
-                navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
+                navController.popBackStack(AppRoutes.PitScouting.SCOUT_PITS, inclusive = false)
             },
             iconTwo = Icons.Default.Clear,
         )

@@ -184,11 +184,11 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                         UserInputs.TextButtonInput(
                             onClick = {
                                 if (newFormName.isNotBlank()) {
+                                    nameFormPopup = false
                                     coroutineScope.launch {
                                         editFormsViewModel.saveForm(newFormName, formType = "pit")
+                                        navController.popBackStack(AppRoutes.EditForms.EDIT_FORMS, inclusive = false)
                                     }
-                                    nameFormPopup = false
-                                    navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
                                 } else {
                                     makeText(context, "Please name this form!", Toast.LENGTH_SHORT).show()
                                 }
@@ -232,8 +232,8 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                     } else {
                         coroutineScope.launch {
                             editFormsViewModel.saveForm(editingFormName, formType = "pit")
+                            navController.popBackStack(AppRoutes.EditForms.EDIT_FORMS, inclusive = false)
                         }
-                        navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
                     }
                 },
                 text = "Save",

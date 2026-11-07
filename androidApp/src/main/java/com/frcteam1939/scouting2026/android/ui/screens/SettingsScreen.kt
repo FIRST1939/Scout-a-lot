@@ -263,7 +263,7 @@ fun AddEventScreen(navController: NavController, settingsViewModel: SettingsView
                     if (isValid) {
                         settingsViewModel.createEvent(eventName, eventCode, eventYear.toInt())
                         loadTeamAvatarsByEvent(eventCode)
-                        navController.navigate(AppRoutes.Settings.EDIT_EVENTS)
+                        navController.popBackStack(AppRoutes.Settings.EDIT_EVENTS, inclusive = false)
                         makeText(context, "Event creation successful!", Toast.LENGTH_SHORT)
                             .show()
                     } else makeText(context, "Invalid event info", Toast.LENGTH_SHORT).show()
@@ -297,7 +297,7 @@ fun AddEventScreen(navController: NavController, settingsViewModel: SettingsView
                             else "Demo event already existed, now selected!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        navController.navigate(AppRoutes.Settings.EDIT_EVENTS)
+                        navController.popBackStack(AppRoutes.Settings.EDIT_EVENTS, inclusive = false)
                     }
                 },
                 text = "Add Offline Demo Event"
