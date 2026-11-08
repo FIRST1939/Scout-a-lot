@@ -393,7 +393,7 @@ object UserInputs {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = text, style = MaterialTheme.typography.bodyLarge)
+                Text(text = text, style = MaterialTheme.typography.labelMedium)
                 Switch(checked = checked, onCheckedChange = onCheckedChange)
             }
         }
