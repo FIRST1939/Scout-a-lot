@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
@@ -46,66 +48,55 @@ object UserInputs {
     fun TextboxInput(
         value: String,
         onValueChange: (String) -> Unit,
+        modifier: Modifier = Modifier,
         label: String = "",
         singleLine: Boolean = false,
         forceNumberInput: Boolean = false,
         characterLimit: Int = 2500
     ) {
         val focusManager = LocalFocusManager.current
-        val keyboardOptions = when {
-            forceNumberInput -> KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = if (singleLine) ImeAction.Done else ImeAction.Default
-            )
 
-            !singleLine -> KeyboardOptions(imeAction = ImeAction.Done)
-            else -> KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
-        }
-
-        val keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-            }
-        )
-        Column(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .padding(all = 16.dp)
-                .clip(shape = MaterialTheme.shapes.large)
-                .border(
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    width = 1.dp,
-                    shape = MaterialTheme.shapes.large
-                )
-                .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.surface)
+        Surface(
+            modifier = modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
-            Text(label, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
-            TextField(
-                value = value,
-                onValueChange = { input ->
-                    //state can't be negative if forceNumberInput is true
-                    var validUpdate = true
-                    if (input.length > characterLimit) validUpdate = false
-                    if (forceNumberInput && input.toIntOrNull() == null) validUpdate = false
-                    if (input.isEmpty()) validUpdate = true
-                    if (validUpdate) onValueChange(input)
-                },
-                modifier = Modifier
-                    .padding(all = 8.dp)
-                    .clip(shape = MaterialTheme.shapes.large)
-                    .border(
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        width = 1.dp,
-                        shape = MaterialTheme.shapes.large
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (label.isNotEmpty()) {
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
-                    .fillMaxWidth(),
-                keyboardOptions = keyboardOptions,
-                keyboardActions = keyboardActions,
-                singleLine = singleLine,
-                shape = MaterialTheme.shapes.medium
-            )
+                }
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { input ->
+                        val cleaned = if (forceNumberInput) input.filter(Char::isDigit) else input
+                        onValueChange(cleaned.take(characterLimit))
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    singleLine = singleLine,
+                    shape = MaterialTheme.shapes.medium,
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = if (forceNumberInput) KeyboardType.Number else KeyboardType.Text,
+                        imeAction = if (singleLine) ImeAction.Done else ImeAction.Default
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+                )
+            }
         }
     }
 
