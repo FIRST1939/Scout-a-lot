@@ -138,10 +138,12 @@ class ScoutingViewModel(
 
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
     val currentEvent = settings.value?.currentEvent ?: ""
+    val deviceRobotAssignment: String?
+        get() = settings.value?.deviceRobotAssignment
     val alliance: String?
-        get() = settings.value?.deviceRobotAssignment?.dropLast(2)
+        get() = deviceRobotAssignment?.dropLast(2)
     val robotNumber: Int?
-        get() = settings.value?.deviceRobotAssignment?.takeLast(1)?.toIntOrNull()
+        get() = deviceRobotAssignment?.takeLast(1)?.toIntOrNull()
     private val _matchNumber = MutableStateFlow("")
     val matchNumber: StateFlow<String> = _matchNumber.asStateFlow()
     fun changeMatchNumber(newMatchNumber: String) {
