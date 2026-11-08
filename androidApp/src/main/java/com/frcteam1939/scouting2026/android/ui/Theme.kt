@@ -65,7 +65,7 @@ private fun style(size: Int, weight: FontWeight) = TextStyle(
 )
 
 private val Title = style(48, FontWeight.Normal)    // Screen title
-private val Number = style(40, FontWeight.Bold)     // Scoring counters
+private val Number = style(40, FontWeight.Bold)     // Big counters
 private val Heading = style(28, FontWeight.Medium)  // Page subject, dialog titles
 private val Item = style(20, FontWeight.Medium)     // Row titles, card headings, buttons
 private val Body = style(18, FontWeight.Normal)     // Normal text, typed values
