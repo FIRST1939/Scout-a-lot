@@ -291,284 +291,338 @@ object UserInputs {
         }
     }
 
-        @Composable
-        fun SliderInput(
-            value: Int,
-            onValueChange: (Int) -> Unit,
-            minVal: Int = 0,
-            maxVal: Int,
-            modifier: Modifier = Modifier,
-            // valueRange: ClosedFloatingPointRange<Int>,
-            colors: SliderColors = SliderDefaults.colors()
-        ) {
-            require(minVal <= maxVal) { "minVal must be <= maxVal" }
+    @Composable
+    fun SliderInput(
+        value: Int,
+        onValueChange: (Int) -> Unit,
+        minVal: Int = 0,
+        maxVal: Int,
+        modifier: Modifier = Modifier,
+        // valueRange: ClosedFloatingPointRange<Int>,
+        colors: SliderColors = SliderDefaults.colors()
+    ) {
+        require(minVal <= maxVal) { "minVal must be <= maxVal" }
 
-            val clampedValue = value.coerceIn(minVal, maxVal)
-            val steps = (maxVal - minVal - 1).coerceAtLeast(0)
-            Slider(
-                value = clampedValue.toFloat(),
-                onValueChange = { input ->
-                    onValueChange(input.roundToInt().coerceIn(minVal, maxVal))
+        val clampedValue = value.coerceIn(minVal, maxVal)
+        val steps = (maxVal - minVal - 1).coerceAtLeast(0)
+        Slider(
+            value = clampedValue.toFloat(),
+            onValueChange = { input ->
+                onValueChange(input.roundToInt().coerceIn(minVal, maxVal))
+            },
+            modifier = modifier,
+            colors = colors,
+            steps = steps,
+            valueRange = minVal.toFloat()..maxVal.toFloat()
+        )
+    }
+
+    @Composable
+    fun CounterInput(
+        value: Int,
+        modifier: Modifier = Modifier,
+        minVal: Int = 0,
+        maxVal: Int = Int.MAX_VALUE,
+        step: Int = 1,
+        onValueChange: (Int) -> Unit
+    ) {
+        require(minVal <= maxVal) { "minVal must be <= maxVal" }
+        require(step > 0) { "step must be > 0" }
+
+        val clampedValue = value.coerceIn(minVal, maxVal)
+
+        fun setValue(newValue: Int) {
+            onValueChange(newValue.coerceIn(minVal, maxVal))
+        }
+
+        Row(
+            modifier = modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = {
+                    val next = (clampedValue.toLong() - step.toLong())
+                        .coerceAtLeast(minVal.toLong())
+                        .toInt()
+                    setValue(next)
                 },
-                modifier = modifier,
-                colors = colors,
-                steps = steps,
-                valueRange = minVal.toFloat()..maxVal.toFloat()
-            )
-        }
-
-        @Composable
-        fun CounterInput(
-            value: Int,
-            modifier: Modifier = Modifier,
-            minVal: Int = 0,
-            maxVal: Int = Int.MAX_VALUE,
-            step: Int = 1,
-            onValueChange: (Int) -> Unit
-        ) {
-            require(minVal <= maxVal) { "minVal must be <= maxVal" }
-            require(step > 0) { "step must be > 0" }
-
-            val clampedValue = value.coerceIn(minVal, maxVal)
-
-            fun setValue(newValue: Int) {
-                onValueChange(newValue.coerceIn(minVal, maxVal))
-            }
-
-            Row(
-                modifier = modifier.padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                enabled = clampedValue > minVal
             ) {
-                IconButton(
-                    onClick = {
-                        val next = (clampedValue.toLong() - step.toLong())
-                            .coerceAtLeast(minVal.toLong())
-                            .toInt()
-                        setValue(next)
-                    },
-                    enabled = clampedValue > minVal
-                ) {
-                    Icon(
-                        contentDescription = "Decrease",
-                        imageVector = Icons.Default.Remove
-                    )
-                }
-
-                Text(
-                    text = "$clampedValue",
-                    modifier = Modifier.padding(horizontal = 10.dp)
+                Icon(
+                    contentDescription = "Decrease",
+                    imageVector = Icons.Default.Remove
                 )
+            }
 
-                IconButton(
-                    onClick = {
-                        val next = (clampedValue.toLong() + step.toLong())
-                            .coerceAtMost(maxVal.toLong())
-                            .toInt()
-                        setValue(next)
-                    },
-                    enabled = clampedValue < maxVal
-                ) {
-                    Icon(
-                        contentDescription = "Increase",
-                        imageVector = Icons.Default.Add
-                    )
-                }
+            Text(
+                text = "$clampedValue",
+                modifier = Modifier.padding(horizontal = 10.dp)
+            )
+
+            IconButton(
+                onClick = {
+                    val next = (clampedValue.toLong() + step.toLong())
+                        .coerceAtMost(maxVal.toLong())
+                        .toInt()
+                    setValue(next)
+                },
+                enabled = clampedValue < maxVal
+            ) {
+                Icon(
+                    contentDescription = "Increase",
+                    imageVector = Icons.Default.Add
+                )
             }
         }
+    }
 
-        @Composable
-        fun SwitchTextBarInput(
-            checked: Boolean,
-            onCheckedChange: (Boolean) -> Unit,
-            text: String
+    @Composable
+    fun SwitchTextBarInput(
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        text: String
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
-            Divider(thickness = 1.dp)
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = text)
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange
-                )
+                Text(text = text, style = MaterialTheme.typography.bodyLarge)
+                Switch(checked = checked, onCheckedChange = onCheckedChange)
             }
-            Divider(thickness = 1.dp)
         }
+    }
 
-        @Composable
-        fun OutlinedButtonInput(
-            onClick: () -> Unit,
-            icon: ImageVector,
-            modifier: Modifier = Modifier,
-            buttonText: String = "",
-            containerColor: Color = MaterialTheme.colorScheme.background,
-            iconColor: Color = MaterialTheme.colorScheme.primary
+    @Composable
+    fun OutlinedButtonInput(
+        onClick: () -> Unit,
+        icon: ImageVector,
+        modifier: Modifier = Modifier,
+        buttonText: String = "",
+        containerColor: Color = MaterialTheme.colorScheme.background,
+        iconColor: Color = MaterialTheme.colorScheme.primary
+    ) {
+        OutlinedButton(
+            onClick = { onClick() },
+            modifier = modifier,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = containerColor
+            )
         ) {
+            Text(text = buttonText)
+            Icon(
+                imageVector = icon,
+                contentDescription = "",
+                tint = iconColor
+            )
+        }
+    }
+
+    @Composable
+    fun OutlinedButtonTextBarInput(
+        text: String,
+        textColor: Color = MaterialTheme.colorScheme.onBackground,
+        icon: ImageVector,
+        onClick: () -> Unit,
+        buttonText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                color = textColor,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
+            )
             OutlinedButton(
                 onClick = { onClick() },
-                modifier = modifier,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = containerColor
-                )
             ) {
                 Text(text = buttonText)
                 Icon(
                     imageVector = icon,
-                    contentDescription = "",
-                    tint = iconColor
+                    contentDescription = ""
                 )
             }
         }
+        Divider(thickness = 1.dp)
+    }
 
-        @Composable
-        fun OutlinedButtonTextBarInput(
-            text: String,
-            textColor: Color = MaterialTheme.colorScheme.onBackground,
-            icon: ImageVector,
-            onClick: () -> Unit,
-            buttonText: String = ""
+    // Buttons are enumerated starting from the right
+    @Composable
+    fun DoubleOutlinedButtonTextBarInput(
+        text: String,
+        iconOne: ImageVector,
+        onButtonOneClick: () -> Unit,
+        buttonOneText: String = "",
+        iconTwo: ImageVector,
+        onButtonTwoClick: () -> Unit,
+        buttonTwoText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = text,
-                    color = textColor,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    modifier = Modifier.weight(1f)
-                )
+            Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
-                    onClick = { onClick() },
+                    onClick = { onButtonTwoClick() },
                 ) {
-                    Text(text = buttonText)
+                    Text(text = buttonTwoText)
                     Icon(
-                        imageVector = icon,
+                        imageVector = iconTwo,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonOneClick() },
+                ) {
+                    Text(text = buttonOneText)
+                    Icon(
+                        imageVector = iconOne,
                         contentDescription = ""
                     )
                 }
             }
-            Divider(thickness = 1.dp)
         }
+        Divider(thickness = 1.dp)
+    }
 
-        // Buttons are enumerated starting from the right
-        @Composable
-        fun DoubleOutlinedButtonTextBarInput(
-            text: String,
-            iconOne: ImageVector,
-            onButtonOneClick: () -> Unit,
-            buttonOneText: String = "",
-            iconTwo: ImageVector,
-            onButtonTwoClick: () -> Unit,
-            buttonTwoText: String = ""
+    @Composable
+    fun TripleOutlinedButtonTextBarInput(
+        text: String,
+        iconOne: ImageVector,
+        onButtonOneClick: () -> Unit,
+        buttonOneText: String = "",
+        iconTwo: ImageVector,
+        onButtonTwoClick: () -> Unit,
+        buttonTwoText: String = "",
+        iconThree: ImageVector,
+        onButtonThreeClick: () -> Unit,
+        buttonThreeText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { onButtonThreeClick() },
+                ) {
+                    Text(text = buttonThreeText)
+                    Icon(
+                        imageVector = iconThree,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonTwoClick() },
+                ) {
+                    Text(text = buttonTwoText)
+                    Icon(
+                        imageVector = iconTwo,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonOneClick() },
+                ) {
+                    Text(text = buttonOneText)
+                    Icon(
+                        imageVector = iconOne,
+                        contentDescription = ""
+                    )
+                }
+            }
+        }
+        Divider(thickness = 1.dp)
+    }
+
+    @Composable
+    fun DropdownInput(
+        options: List<String>,
+        selectedOption: String,
+        onOptionSelected: (String) -> Unit
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        var selectedOption by remember { mutableStateOf(selectedOption) }
+
+        Box {
+            OutlinedButton(
+                onClick = { expanded = true },
             ) {
-                Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
-                        onClick = { onButtonTwoClick() },
-                    ) {
-                        Text(text = buttonTwoText)
-                        Icon(
-                            imageVector = iconTwo,
-                            contentDescription = ""
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { onButtonOneClick() },
-                    ) {
-                        Text(text = buttonOneText)
-                        Icon(
-                            imageVector = iconOne,
-                            contentDescription = ""
+                Text(
+                    text = selectedOption,
+                    maxLines = 1
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown arrow"
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                content = {
+                    options.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                onOptionSelected(option)
+                                selectedOption = option
+                                expanded = false // Close the menu
+                            },
                         )
                     }
                 }
-            }
-            Divider(thickness = 1.dp)
+            )
         }
+    }
 
-        @Composable
-        fun TripleOutlinedButtonTextBarInput(
-            text: String,
-            iconOne: ImageVector,
-            onButtonOneClick: () -> Unit,
-            buttonOneText: String = "",
-            iconTwo: ImageVector,
-            onButtonTwoClick: () -> Unit,
-            buttonTwoText: String = "",
-            iconThree: ImageVector,
-            onButtonThreeClick: () -> Unit,
-            buttonThreeText: String = ""
+    @Composable
+    fun DropdownTextBarInput(
+        options: List<String>,
+        selectedOption: String,
+        onOptionSelected: (String) -> Unit,
+        text: String
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        var selectedOption by remember { mutableStateOf(selectedOption) }
+
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
-                        onClick = { onButtonThreeClick() },
-                    ) {
-                        Text(text = buttonThreeText)
-                        Icon(
-                            imageVector = iconThree,
-                            contentDescription = ""
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { onButtonTwoClick() },
-                    ) {
-                        Text(text = buttonTwoText)
-                        Icon(
-                            imageVector = iconTwo,
-                            contentDescription = ""
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { onButtonOneClick() },
-                    ) {
-                        Text(text = buttonOneText)
-                        Icon(
-                            imageVector = iconOne,
-                            contentDescription = ""
-                        )
-                    }
-                }
-            }
-            Divider(thickness = 1.dp)
-        }
-
-        @Composable
-        fun DropdownInput(
-            options: List<String>,
-            selectedOption: String,
-            onOptionSelected: (String) -> Unit
-        ) {
-            var expanded by remember { mutableStateOf(false) }
-            var selectedOption by remember { mutableStateOf(selectedOption) }
-
-            Box {
+            Text(
+                text = text,
+                modifier = Modifier.weight(2f)
+            )
+            Box(modifier = Modifier.weight(1f)) {
                 OutlinedButton(
                     onClick = { expanded = true },
                 ) {
@@ -599,63 +653,9 @@ object UserInputs {
                 )
             }
         }
-
-        @Composable
-        fun DropdownTextBarInput(
-            options: List<String>,
-            selectedOption: String,
-            onOptionSelected: (String) -> Unit,
-            text: String
-        ) {
-            var expanded by remember { mutableStateOf(false) }
-            var selectedOption by remember { mutableStateOf(selectedOption) }
-
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = text,
-                    modifier = Modifier.weight(2f)
-                )
-                Box(modifier = Modifier.weight(1f)) {
-                    OutlinedButton(
-                        onClick = { expanded = true },
-                    ) {
-                        Text(
-                            text = selectedOption,
-                            maxLines = 1
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown arrow"
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        content = {
-                            options.forEach { option ->
-                                DropdownMenuItem(
-                                    text = { Text(option) },
-                                    onClick = {
-                                        onOptionSelected(option)
-                                        selectedOption = option
-                                        expanded = false // Close the menu
-                                    },
-                                )
-                            }
-                        }
-                    )
-                }
-            }
-            Divider(thickness = 1.dp)
-        }
+        Divider(thickness = 1.dp)
     }
+}
 
 
 @Preview
