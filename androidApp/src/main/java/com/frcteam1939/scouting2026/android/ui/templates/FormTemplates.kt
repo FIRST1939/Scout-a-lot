@@ -134,8 +134,8 @@ fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Ch
 @Composable
 fun ButtonBarTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: ButtonBar) {
     val selectedOption = scoutingViewModel.getFieldJson().collectAsState().value[fieldContent.id].fieldContent.toIntOrNull()
-    Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
     UserInputs.SingleSelectButtonBarInput(
+        label = fieldContent.label,
         options = fieldContent.options,
         selectedOption = selectedOption,
         onOptionSelected = {
@@ -427,6 +427,7 @@ fun RebuiltHubScoringFieldTemplate(
             }
         }
         UserInputs.SingleSelectButtonBarInput(
+            label = "",
             options = accuracyOptions,
             selectedOption = accuracy,
             onOptionSelected = {
@@ -467,6 +468,7 @@ fun RebuiltHubScoringFieldTemplate(
             }
         }
         UserInputs.SingleSelectButtonBarInput(
+            label = "",
             options = speedOptions,
             selectedOption = speed,
             onOptionSelected = {

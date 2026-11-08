@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import kotlin.math.roundToInt
 
@@ -210,39 +211,59 @@ object UserInputs {
 
     @Composable
     fun SingleSelectButtonBarInput(
+        label: String,
         options: List<String>,
         selectedOption: Int?,
         onOptionSelected: (Int) -> Unit
     ) {
-        Row(
+        Surface(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
-            options.forEachIndexed { index, option ->
-                val selected = index == selectedOption
-
-                Surface(
-                    onClick = { onOptionSelected(index) },
-                    shape = RoundedCornerShape(24.dp),
-                    color = if (selected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.surface,
-                    contentColor = if (selected)
-                        MaterialTheme.colorScheme.onPrimary
-                    else
-                        MaterialTheme.colorScheme.onSurface,
-                    border = BorderStroke(
-                        1.dp,
-                        if (selected) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                    ),
-                    shadowElevation = if (selected) 6.dp else 2.dp
-                ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (label.isNotEmpty()) {
                     Text(
-                        option,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-                        style = MaterialTheme.typography.bodyLarge
+                        label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    options.forEachIndexed { index, option ->
+                        val selected = index == selectedOption
+                        Surface(
+                            modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+                            onClick = { onOptionSelected(index) },
+                            shape = RoundedCornerShape(9999.dp),
+                            color = if (selected) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.surface,
+                            contentColor = if (selected)
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            else
+                                MaterialTheme.colorScheme.onSurface,
+                            border = BorderStroke(
+                                1.dp,
+                                if (selected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.outlineVariant
+                            )
+                        ) {
+                            Text(
+                                text = option,
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
                 }
             }
         }
