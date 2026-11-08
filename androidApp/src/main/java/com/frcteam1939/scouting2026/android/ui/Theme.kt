@@ -8,6 +8,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -55,6 +56,32 @@ val MaterialTheme.scoutColors: ScoutColors
     @Composable @ReadOnlyComposable
     get() = LocalScoutColors.current
 
+private fun style(size: Int, weight: FontWeight) = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = weight,
+    fontSize = size.sp,
+    lineHeight = (size * 1.25f).sp,
+    letterSpacing = 0.sp
+)
+
+private val Title = style(48, FontWeight.Normal)    // Screen title
+private val Number = style(40, FontWeight.Bold)     // Scoring counters
+private val Heading = style(28, FontWeight.Medium)  // Page subject, dialog titles
+private val Item = style(20, FontWeight.Medium)     // Row titles, card headings, buttons
+private val Body = style(18, FontWeight.Normal)     // Normal text, typed values
+private val Small = style(16, FontWeight.Normal)    // Second line under a row
+private val Tag = style(16, FontWeight.Medium)      // Chips, labels, bottom nav
+
+private val ScoutTypography = Typography(
+    displayMedium = Title,
+    displaySmall = Number,
+    headlineMedium = Heading, headlineSmall = Heading,
+    titleLarge = Item, labelLarge = Item,
+    bodyLarge = Body,
+    bodyMedium = Small, bodySmall = Small,
+    titleMedium = Tag, titleSmall = Tag, labelMedium = Tag, labelSmall = Tag,
+)
+
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -81,7 +108,7 @@ fun MyApplicationTheme(
         lightColorScheme(
             primary = Color(15, 109, 12),
             onPrimary = Color(255, 255, 255),
-            primaryContainer = Color(186, 240, 181),
+            primaryContainer = Color(196, 240, 181),
             onPrimaryContainer = Color(24, 29, 22),
             background = Color(245, 247, 242),
             onBackground = Color(24, 29, 22),
@@ -95,33 +122,21 @@ fun MyApplicationTheme(
             outlineVariant = Color(228, 233, 223)
         )
     }
-    val typography = Typography(
-        bodyLarge = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Normal,
-            fontSize = 20.sp
-        ),
-        bodyMedium = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp
-        ),
-        bodySmall = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Normal,
-            fontSize = 12.sp
-        )
-    )
+
     val shapes = Shapes(
-        small = RoundedCornerShape(4.dp),
-        medium = RoundedCornerShape(8.dp),
+        small = RoundedCornerShape(8.dp),
+        medium = RoundedCornerShape(12.dp),
         large = RoundedCornerShape(16.dp)
     )
 
-    MaterialTheme(
-        colorScheme = colors,
-        typography = typography,
-        shapes = shapes,
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalScoutColors provides if (darkTheme) DarkScoutColors else LightScoutColors
+    ) {
+        MaterialTheme(
+            colorScheme = colors,
+            typography = ScoutTypography,
+            shapes = shapes,
+            content = content
+        )
+    }
 }
