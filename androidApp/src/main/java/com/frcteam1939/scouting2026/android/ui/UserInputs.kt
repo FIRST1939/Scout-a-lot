@@ -55,7 +55,7 @@ object UserInputs {
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
             Column(
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (label.isNotEmpty()) {
@@ -129,48 +129,83 @@ object UserInputs {
         }
     }
 
+    // TODO: Handle maxSelected/minSelected
     @Composable
     fun CheckboxInput(
         checked: List<Boolean>,
         onCheckedChange: (List<Boolean>) -> Unit,
         modifier: Modifier = Modifier,
-        checkboxOptions: List<String> = emptyList<String>(),
+        label: String,
+        checkboxOptions: List<String> = emptyList(),
         maxSelected: Int,
         minSelected: Int,
         ) {
-        Column(modifier.selectableGroup()) {
-            checkboxOptions.forEachIndexed { index, text ->
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .selectable(
-                            selected = (checked[index]),
-                            onClick = {
-                                val updatedList = checked.toMutableList()
-                                updatedList[index] = !updatedList[index]
-                                onCheckedChange(updatedList)
-                            },
-                            role = Role.RadioButton,
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = (checked[index]),
-                        onCheckedChange = null
-                    )
+        Surface(
+            modifier = modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (label.isNotEmpty()) {
                     Text(
-                        text = text,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp)
+                        label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                }
+                Column(modifier.selectableGroup()) {
+                    checkboxOptions.chunked(2).forEachIndexed { index, option ->
+                        Row(
+                            Modifier.fillMaxWidth().height(56.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            option.forEachIndexed { offset, text ->
+                                val trueIndex = index*2 + offset
+                                Surface(
+                                    modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+                                    shape = MaterialTheme.shapes.medium,
+                                    color = MaterialTheme.colorScheme.surface,
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                                ) {
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(48.dp)
+                                            .selectable(
+                                                selected = (checked[trueIndex]),
+                                                onClick = {
+                                                    val updatedList = checked.toMutableList()
+                                                    updatedList[trueIndex] = !updatedList[trueIndex]
+                                                    onCheckedChange(updatedList)
+                                                },
+                                                role = Role.RadioButton,
+                                                indication = ripple(color = MaterialTheme.colorScheme.primary),
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            )
+                                            .padding(horizontal = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Checkbox(
+                                            checked = (checked[trueIndex]),
+                                            onCheckedChange = null
+                                        )
+                                        Text(
+                                            text = text,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            modifier = Modifier.padding(start = 16.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-
     }
 
     @Composable
@@ -318,17 +353,6 @@ object UserInputs {
                     )
                 }
             }
-        }
-
-        @Composable
-        fun SwitchInput(
-            checked: Boolean,
-            onCheckedChange: (Boolean) -> Unit
-        ) {
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange
-            )
         }
 
         @Composable

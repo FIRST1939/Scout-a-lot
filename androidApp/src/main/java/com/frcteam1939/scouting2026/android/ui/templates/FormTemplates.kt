@@ -121,10 +121,10 @@ fun CheckboxFieldTemplate(scoutingViewModel: ScoutingViewModel, fieldContent: Ch
         currentString.toBooleanList(fieldContent.options.size)
     }
 
-    Text(text = fieldContent.label, style = MaterialTheme.typography.headlineSmall)
     UserInputs.CheckboxInput(
         checked = checked,
         onCheckedChange = { scoutingViewModel.saveFieldValue(fieldContent.id, it.toString()) },
+        label = fieldContent.label,
         checkboxOptions = fieldContent.options,
         maxSelected = fieldContent.maxSelected,
         minSelected = fieldContent.minSelected
