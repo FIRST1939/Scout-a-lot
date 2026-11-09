@@ -1,6 +1,9 @@
 package com.frcteam1939.scouting2026.android.ui.navigation
 
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -57,22 +60,39 @@ import com.frcteam1939.scouting2026.feature.settings.SettingsViewModel
 import com.frcteam1939.scouting2026.getViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 
+// Pages opened from the drawer or the bottom bar
+private val topLevelRoutes =
+    setOf(
+        AppRoutes.MatchScouting.SCOUT_MATCHES,
+        AppRoutes.PitScouting.SCOUT_PITS,
+        AppRoutes.Settings.SETTINGS,
+        AppRoutes.MatchReports.MATCH_REPORTS,
+        AppRoutes.TeamStats.TEAM_STATS,
+        AppRoutes.SYNC,
+        AppRoutes.DATA_CHECKLIST,
+        AppRoutes.EditForms.EDIT_FORMS,
+    )
+
+private const val TOP_LEVEL_FADE_MILLIS = 300
+
+// Moving between two top-level pages fades.
+// Opening or closing a sub-page slides like iOS.
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.topLevelEnter(): EnterTransition =
+    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(TOP_LEVEL_FADE_MILLIS))
+    else CupertinoTransitions.popEnterTransition
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.topLevelExit(): ExitTransition =
+    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(TOP_LEVEL_FADE_MILLIS))
+    else CupertinoTransitions.exitTransition
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.topLevelPopExit(): ExitTransition =
+    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(TOP_LEVEL_FADE_MILLIS))
+    else CupertinoTransitions.popExitTransition
+
 @Composable
 fun AppNavigationHost(
     navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope
 ) {
-    val topLevelRoutes =
-        setOf(
-            AppRoutes.MatchScouting.SCOUT_MATCHES,
-            AppRoutes.PitScouting.SCOUT_PITS,
-            AppRoutes.Settings.SETTINGS,
-            AppRoutes.MatchReports.MATCH_REPORTS,
-            AppRoutes.TeamStats.TEAM_STATS,
-            AppRoutes.SYNC,
-            AppRoutes.DATA_CHECKLIST,
-            AppRoutes.EditForms.EDIT_FORMS,
-        )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -92,22 +112,10 @@ fun AppNavigationHost(
         ) {
             composable(
                 route = AppRoutes.MatchScouting.SCOUT_MATCHES,
-                enterTransition = {
-                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                    else CupertinoTransitions.popEnterTransition
-                },
-                exitTransition = {
-                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                    else CupertinoTransitions.exitTransition
-                },
-                popEnterTransition = {
-                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                    else CupertinoTransitions.popEnterTransition
-                },
-                popExitTransition = {
-                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                    else CupertinoTransitions.popExitTransition
-                },
+                enterTransition = { topLevelEnter() },
+                exitTransition = { topLevelExit() },
+                popEnterTransition = { topLevelEnter() },
+                popExitTransition = { topLevelPopExit() },
             ) { backStackEntry ->
                 val scoutingViewModel = getScoutingViewModel(
                     backStackEntry, navController, AppRoutes.MatchScouting.GRAPH
@@ -155,22 +163,10 @@ fun AppNavigationHost(
         ) {
             composable(
                 route = AppRoutes.PitScouting.SCOUT_PITS,
-                enterTransition = {
-                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                    else CupertinoTransitions.popEnterTransition
-                },
-                exitTransition = {
-                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                    else CupertinoTransitions.exitTransition
-                },
-                popEnterTransition = {
-                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                    else CupertinoTransitions.popEnterTransition
-                },
-                popExitTransition = {
-                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                    else CupertinoTransitions.popExitTransition
-                },
+                enterTransition = { topLevelEnter() },
+                exitTransition = { topLevelExit() },
+                popEnterTransition = { topLevelEnter() },
+                popExitTransition = { topLevelPopExit() },
             ) { backStackEntry ->
                 val scoutingViewModel =
                     getScoutingViewModel(backStackEntry, navController, AppRoutes.PitScouting.GRAPH)
@@ -233,22 +229,10 @@ fun AppNavigationHost(
         }
         composable(
             route = AppRoutes.SYNC,
-            enterTransition = {
-                if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                else CupertinoTransitions.popEnterTransition
-            },
-            exitTransition = {
-                if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                else CupertinoTransitions.exitTransition
-            },
-            popEnterTransition = {
-                if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                else CupertinoTransitions.popEnterTransition
-            },
-            popExitTransition = {
-                if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                else CupertinoTransitions.popExitTransition
-            },
+            enterTransition = { topLevelEnter() },
+            exitTransition = { topLevelExit() },
+            popEnterTransition = { topLevelEnter() },
+            popExitTransition = { topLevelPopExit() },
         ) { backStackEntry ->
             // WIP
             val bluetoothViewModel = getBluetoothViewModel()
@@ -285,14 +269,8 @@ fun AppNavigationHost(
             composable(
                 route = AppRoutes.EditForms.EDIT_FORMS,
                 enterTransition = { fadeIn(tween(300)) },
-                exitTransition = {
-                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                    else CupertinoTransitions.exitTransition
-                },
-                popEnterTransition = {
-                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                    else CupertinoTransitions.popEnterTransition
-                },
+                exitTransition = { topLevelExit() },
+                popEnterTransition = { topLevelEnter() },
                 popExitTransition = { fadeOut(tween(300)) },
             ) { backStackEntry ->
                 val editFormsViewModel = getEditFormsViewModel(backStackEntry, navController, AppRoutes.EditForms.GRAPH)
@@ -324,22 +302,10 @@ fun AppNavigationHost(
         ) {
             composable(
                 route = AppRoutes.Settings.SETTINGS,
-                enterTransition = {
-                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                    else CupertinoTransitions.popEnterTransition
-                },
-                exitTransition = {
-                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                    else CupertinoTransitions.exitTransition
-                },
-                popEnterTransition = {
-                    if (initialState.destination.route in topLevelRoutes) fadeIn(tween(300))
-                    else CupertinoTransitions.popEnterTransition
-                },
-                popExitTransition = {
-                    if (targetState.destination.route in topLevelRoutes) fadeOut(tween(300))
-                    else CupertinoTransitions.popExitTransition
-                },
+                enterTransition = { topLevelEnter() },
+                exitTransition = { topLevelExit() },
+                popEnterTransition = { topLevelEnter() },
+                popExitTransition = { topLevelPopExit() },
             ) { backStackEntry ->
                 val settingsViewModel = getSettingsViewModel(backStackEntry, navController, AppRoutes.Settings.GRAPH)
                 MainScreenScaffold(navController, drawerState, scope) {
