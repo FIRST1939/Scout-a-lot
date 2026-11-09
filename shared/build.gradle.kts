@@ -68,7 +68,7 @@ dependencies {
 
 android {
     namespace = "com.frcteam1939.scouting2026"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdk = 24
     }
