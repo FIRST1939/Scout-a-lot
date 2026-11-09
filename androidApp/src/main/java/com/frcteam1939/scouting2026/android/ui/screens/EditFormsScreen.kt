@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
@@ -68,7 +69,7 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
             UserInputs.OutlinedButtonTextBarInput(
                 text = "Create Pit Form",
                 icon = Icons.Default.Add,
-                onClick = {
+                onClick = dropUnlessResumed {
                     editFormsViewModel.changeEditingFormName("")
                     editFormsViewModel.changeCurrentPage(1)
                     editFormsViewModel.resetFormContent()
@@ -85,7 +86,7 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
                         }
                     },
                     iconTwo = Icons.Default.Edit,
-                    onButtonTwoClick = {
+                    onButtonTwoClick = dropUnlessResumed {
                         editFormsViewModel.changeEditingFormName(formName)
                         editFormsViewModel.changeCurrentPage(1)
                         editFormsViewModel.resetFormContent()
@@ -111,7 +112,7 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
             UserInputs.OutlinedButtonTextBarInput(
                 text = "Create Match Form",
                 icon = Icons.Default.Add,
-                onClick = {
+                onClick = dropUnlessResumed {
                     navController.navigate(AppRoutes.EditForms.EDIT_MATCH_FORM)
                 }
             )
@@ -131,7 +132,7 @@ fun EditFormsScreen(navController: NavController, editFormsViewModel: EditFormsV
         UserInputs.OutlinedButtonTextBarInput(
             text = "Assign Forms to Events",
             icon = Icons.Default.ArrowForward,
-            onClick = {
+            onClick = dropUnlessResumed {
                 navController.navigate(AppRoutes.EditForms.ASSIGN_FORMS)
             }
         )
@@ -184,11 +185,11 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                         UserInputs.TextButtonInput(
                             onClick = {
                                 if (newFormName.isNotBlank()) {
+                                    nameFormPopup = false
                                     coroutineScope.launch {
                                         editFormsViewModel.saveForm(newFormName, formType = "pit")
+                                        navController.popBackStack(AppRoutes.EditForms.EDIT_FORMS, inclusive = false)
                                     }
-                                    nameFormPopup = false
-                                    navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
                                 } else {
                                     makeText(context, "Please name this form!", Toast.LENGTH_SHORT).show()
                                 }
@@ -232,8 +233,8 @@ fun EditPitFormsScreen(navController: NavController, editFormsViewModel: EditFor
                     } else {
                         coroutineScope.launch {
                             editFormsViewModel.saveForm(editingFormName, formType = "pit")
+                            navController.popBackStack(AppRoutes.EditForms.EDIT_FORMS, inclusive = false)
                         }
-                        navController.navigate(AppRoutes.EditForms.EDIT_FORMS)
                     }
                 },
                 text = "Save",

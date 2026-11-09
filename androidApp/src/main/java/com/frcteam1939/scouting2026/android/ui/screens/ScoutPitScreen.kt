@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
@@ -149,7 +150,7 @@ fun ScoutPitScreen(scoutingViewModel: ScoutingViewModel, navController: NavContr
                         )
                     }
                     OutlinedButton(
-                        onClick = {
+                        onClick = dropUnlessResumed {
                             scoutingViewModel.resetFormJsons()
                             scoutingViewModel.changeSelectedTeam(team)
                             scoutingViewModel.changeCurrentPage(newCurrentPage = "Pit")
@@ -186,12 +187,12 @@ fun ScoutPitForm(scoutingViewModel: ScoutingViewModel, navController: NavControl
             buttonOneText = "Submit",
             onButtonOneClick = {
                 scoutingViewModel.savePitData(scoutingViewModel.selectedTeam.value)
-                navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
+                navController.popBackStack(AppRoutes.PitScouting.SCOUT_PITS, inclusive = false)
             },
             iconOne = Icons.Default.Check,
             buttonTwoText = "Cancel",
             onButtonTwoClick = {
-                navController.navigate(AppRoutes.PitScouting.SCOUT_PITS)
+                navController.popBackStack(AppRoutes.PitScouting.SCOUT_PITS, inclusive = false)
             },
             iconTwo = Icons.Default.Clear,
         )

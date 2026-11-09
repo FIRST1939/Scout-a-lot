@@ -12,7 +12,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 object AppRoutes {
-    var titles = mapOf(
+    val titles = mapOf(
         MatchScouting.SCOUT_MATCHES to "Scout Matches",
         MatchScouting.TEAM_CONFIRMATION to "Team Confirmation",
         MatchScouting.SCOUT_AUTO to "Scout Auto",

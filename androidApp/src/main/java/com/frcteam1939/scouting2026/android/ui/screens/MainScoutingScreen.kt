@@ -307,7 +307,7 @@ fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: Scouting
             UserInputs.TextButtonInput(
                 onClick = {
                     scoutingViewModel.saveMatchData()
-                    navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                    navController.popBackStack(AppRoutes.MatchScouting.SCOUT_MATCHES, inclusive = false)
                 },
                 text = "Submit Match Data",
                 modifier = Modifier.padding(all = 32.dp)
