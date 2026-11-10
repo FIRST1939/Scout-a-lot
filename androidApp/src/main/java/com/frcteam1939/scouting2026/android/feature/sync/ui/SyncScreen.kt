@@ -220,7 +220,7 @@ fun SyncScreen(
 
         if (pairedDevices.isNullOrEmpty()) {
             Text(
-                text = "No paired Bluetooth devices found",
+                text = "No paired Bluetooth devices found. Pair devices in your system settings",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
@@ -327,7 +327,7 @@ fun SyncScreen(
             )
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 140.dp),
+                columns = GridCells.Adaptive(minSize = 300.dp),
                 contentPadding = PaddingValues(bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -364,83 +364,114 @@ fun SyncScreen(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        TextButton(
-                            modifier = Modifier.padding(vertical = 4.dp),
-                            shape = MaterialTheme.shapes.small,
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.tertiary,
-                                contentColor = MaterialTheme.colorScheme.secondary
-                            ),
-                            content = {Text("Disconnect")},
-                            onClick = {
-                                if (selectedConnectedDevice == null) {
-                                    Toast.makeText(
-                                        context,
-                                        "Please select a device to disconnect first",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    syncViewModel.closeExistingConnection(selectedConnectedDevice)
+
+                        Row () {
+                            TextButton(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                shape = MaterialTheme.shapes.small,
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.secondary
+                                ),
+                                onClick = {
+                                    val connection = selectedConnectedDevice
+                                    if (connection == null) {
+                                        Toast.makeText(
+                                            context,
+                                            "Please select a connected device first",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        coroutineScope.launch {
+                                            val pitData = fileSyncViewModel.getPitDataForExport()
+                                            if (pitData.isBlank()) {
+                                                Toast.makeText(context, "No pit data to send", Toast.LENGTH_SHORT)
+                                                    .show()
+                                            } else {
+                                                syncViewModel.sendPitData(connection, pitData)
+                                            }
+                                        }
+                                    }
+                                },
+                                content = {Text("Send Pit Data")},
+                            )
+                            TextButton(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                shape = MaterialTheme.shapes.small,
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.secondary
+                                ),
+                                onClick = {
+                                    val connection = selectedConnectedDevice
+                                    if (connection == null) {
+                                        Toast.makeText(
+                                            context,
+                                            "Please select a connected device first",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        coroutineScope.launch {
+                                            val matchData = fileSyncViewModel.getMatchDataForExport()
+                                            if (matchData.isBlank()) {
+                                                Toast.makeText(context, "No match data to send", Toast.LENGTH_SHORT)
+                                                    .show()
+                                            } else {
+                                                syncViewModel.sendMatchData(connection, matchData)
+                                            }
+                                        }
+                                    }
+                                },
+                                content = {Text("Send Match Data")}
+                            )
+                        }
+                        Row() {
+                            TextButton(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                shape = MaterialTheme.shapes.small,
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.secondary
+                                ),
+                                content = { Text("Disconnect") },
+                                onClick = {
+                                    if (selectedConnectedDevice == null) {
+                                        Toast.makeText(
+                                            context,
+                                            "Please select a device to disconnect first",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        syncViewModel.closeExistingConnection(
+                                            selectedConnectedDevice
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                            )
+                            OutlinedButton(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                onClick = {
+                                    if (selectedConnectedDevice == null) {
+                                        Toast.makeText(
+                                            context,
+                                            "Please select a connected device first",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        showDialog = true
+                                    }
+                                },
+                                content = {
+                                    Text("Test Connection")
+                                    Icon(imageVector = Icons.Default.Bluetooth, contentDescription = "")
+
+                                }
+                            )
+                        }
                     }
                 }
             }
 
-            if (selectedConnectedDevice != null && isServerOn) {
-                TextButton(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    shape = MaterialTheme.shapes.small,
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    content = {Text("Disconnect")},
-                    onClick = {
-                        if (selectedConnectedDevice == null) {
-                            Toast.makeText(
-                                context,
-                                "Please select a device to disconnect first",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            syncViewModel.closeExistingConnection(selectedConnectedDevice)
-                        }
-                    }
-                )
-            }
-            if (selectedConnectedDevice != null && isServerOn) {
-                TextButton(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    shape = MaterialTheme.shapes.small,
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    onClick = {
-                        val connection = selectedConnectedDevice
-                        if (connection == null) {
-                            Toast.makeText(
-                                context,
-                                "Please select a connected device first",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            coroutineScope.launch {
-                                val pitData = fileSyncViewModel.getPitDataForExport()
-                                if (pitData.isBlank()) {
-                                    Toast.makeText(context, "No pit data to send", Toast.LENGTH_SHORT)
-                                        .show()
-                                } else {
-                                    syncViewModel.sendPitData(connection, pitData)
-                                }
-                            }
-                        }
-                    },
-                    content = {Text("Send Pit Data")},
-                )
-            }
             if (selectedConnectedDevice != null && isServerOn) {
                 TextButton(
                     modifier = Modifier.padding(vertical = 4.dp),
