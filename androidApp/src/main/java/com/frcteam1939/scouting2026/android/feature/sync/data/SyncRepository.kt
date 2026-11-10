@@ -92,7 +92,11 @@ class SyncRepository(context: Context) {
     }
 
     fun closeBTServer(): BTServerEvent {
-        return btServer.closeBTServer()
+        val event = btServer.closeBTServer()
+        if (event == BTServerEvent.OFF || event == BTServerEvent.OFF_SKIPPED) {
+            closeAllConnections()
+        }
+        return event
     }
 
     fun closeExistingConnection(btConnection: BTConnection?) {
@@ -103,10 +107,12 @@ class SyncRepository(context: Context) {
         }
     }
 
-    private fun closeAllConnection() {
+    private fun closeAllConnections() {
         for (btConnection in currentConnection.values) {
             btConnection.closeSocket()
         }
+        currentConnection.clear()
+        notifyConnectionChanged()
     }
 
     fun getPairedDevices(): List<BluetoothDevice> {
@@ -114,7 +120,7 @@ class SyncRepository(context: Context) {
     }
 
     fun shutdown() {
-        closeAllConnection()
+        closeAllConnections()
         btClient.shutdown()
         btServer.shutdown()
     }

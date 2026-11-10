@@ -424,6 +424,14 @@ object UserInputs {
         }
     }
 
+        @Composable
+        fun OutlinedButtonInput(
+            onClick: () -> Unit,
+            icon: ImageVector,
+            modifier: Modifier = Modifier,
+            buttonText: String = "",
+            containerColor: Color = MaterialTheme.colorScheme.background,
+            iconColor: Color = MaterialTheme.colorScheme.primary,
     @Composable
     fun OutlinedButtonTextBarInput(
         text: String,

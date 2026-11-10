@@ -38,10 +38,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     if (incomingTransfer != null) {
                         _incomingTransfer.postValue(incomingTransfer)
                     } else {
-                        _uiMessage.postValue("Received: " + msg)
+                        _uiMessage.postValue("Received a message: " + msg)
                     }
                 } else {
-                    _uiMessage.postValue("Failed to receive message")
+                    _uiMessage.postValue("Disconnected")
                 }
             }
 
@@ -94,13 +94,13 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     _uiMessage.postValue(String.format("Successfully connected to %s", result.connection!!.remoteDeviceName))
                 }
                 BTConnectStatus.SKIPPED_ALREADY_CONNECTED ->
-                    _uiMessage.postValue("Already connected to this device!")
+                    _uiMessage.postValue("Already connected to this device")
                 BTConnectStatus.FAILED_TO_CONNECT ->
-                    _uiMessage.postValue("Failed to connect. Server on?")
+                    _uiMessage.postValue("Failed to connect. Is the other device's server on?")
                 BTConnectStatus.FAILED_NO_ADAPTER ->
-                    _uiMessage.postValue("No Bluetooth Adapter.")
+                    _uiMessage.postValue("Target device does not support Bluetooth")
                 BTConnectStatus.FAILED_NO_PERMISSION ->
-                    _uiMessage.postValue("No Bluetooth permission.")
+                    _uiMessage.postValue("The app does not have permission to use Bluetooth")
                 else ->
                     _uiMessage.postValue("Unknown error.")
             }
@@ -111,12 +111,12 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         _btServerStatus.postValue(BTServerState.LISTENING)
         when (repository.startServerListening()) {
             BTServerEvent.ON -> {
-                _uiMessage.value = "BT server started, waiting for connection..."
+                _uiMessage.value = "Bluetooth server started, waiting for connection..."
                 repository.acceptRemoteConnection().thenAccept(::handleServerAcceptResult)
             }
-            BTServerEvent.ON_SKIPPED -> _uiMessage.postValue("Already listening! Skipped")
+            BTServerEvent.ON_SKIPPED -> _uiMessage.postValue("Already listening, skipped")
             BTServerEvent.ON_FAILED -> {
-                _uiMessage.postValue("Failed to start the server")
+                _uiMessage.postValue("Failed to start Bluetooth server")
                 _btServerStatus.postValue(BTServerState.OFF)
             }
             else -> Unit
@@ -125,23 +125,23 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun handleServerAcceptResult(result: BTServerResult) {
         if (result.event == BTServerEvent.CONNECT_SUCCESS) {
-            _uiMessage.postValue(String.format("Successfully auto accept connection from %s", result.connection!!.remoteDeviceName))
+            _uiMessage.postValue(String.format("Auto accepted connection request from %s", result.connection!!.remoteDeviceName))
             repository.acceptRemoteConnection().thenAccept(::handleServerAcceptResult)
         } else if (result.event == BTServerEvent.OFF) {
             return
         } else {
-            _uiMessage.postValue("Failed to accept connection")
+            _uiMessage.postValue("Failed to accept a connection request")
         }
     }
 
     fun closeBTServer() {
         when (repository.closeBTServer()) {
             BTServerEvent.OFF -> {
-                _uiMessage.value = "Successfully closed BT server."
+                _uiMessage.value = "Successfully closed Bluetooth server."
                 _btServerStatus.value = BTServerState.OFF
             }
             BTServerEvent.OFF_SKIPPED -> _uiMessage.value = "Already closed"
-            BTServerEvent.OFF_FAILED -> _uiMessage.value = "Failed to close BT server"
+            BTServerEvent.OFF_FAILED -> _uiMessage.value = "Failed to close Bluetooth server"
             else -> Unit
         }
     }
