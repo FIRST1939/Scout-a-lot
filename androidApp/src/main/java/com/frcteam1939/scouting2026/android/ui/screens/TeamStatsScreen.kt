@@ -132,7 +132,7 @@ fun TeamStatsMainScreen(dataViewModel: DataViewModel, navController: NavControll
                         val value = rankings[team.toInt()]?.get(index)?.value
                         Text(
                             text = value?.toString() ?: "N/A",
-                            color = MaterialTheme.colorScheme.tertiary,
+                            color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(end = 8.dp),
                             style = MaterialTheme.typography.bodyLarge
                         )
@@ -272,7 +272,7 @@ fun ViewTeamStatsScreen(dataViewModel: DataViewModel, navController: NavControll
             Text(comment, modifier = Modifier.padding(all = 4.dp))
         }
         if (robotDeathCount != "0") {
-            Text("Robot has died in $robotDeathCount matches", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.tertiary)
+            Text("Robot has died in $robotDeathCount matches", modifier = Modifier.padding(all = 4.dp), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.error)
         }
     }
 }

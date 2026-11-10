@@ -274,8 +274,8 @@ object UserInputs {
         onClick: () -> Unit,
         text: String,
         modifier: Modifier = Modifier,
-        containerColor: Color = MaterialTheme.colorScheme.tertiary,
-        contentColor: Color = MaterialTheme.colorScheme.secondary,
+        containerColor: Color = MaterialTheme.colorScheme.error,
+        contentColor: Color = MaterialTheme.colorScheme.onError,
         shape: Shape = MaterialTheme.shapes.small
     ) {
         TextButton(

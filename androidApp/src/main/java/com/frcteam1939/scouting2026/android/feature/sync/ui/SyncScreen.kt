@@ -50,7 +50,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import com.frcteam1939.scouting2026.android.ui.scoutColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -289,8 +288,8 @@ fun SyncScreen(
                 modifier = Modifier.padding(vertical = 4.dp),
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.textButtonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.secondary
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
                 ),
                 onClick = {
                 if (selectedPairedDevice == null) {
@@ -371,8 +370,8 @@ fun SyncScreen(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 shape = MaterialTheme.shapes.small,
                                 colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiary,
-                                    contentColor = MaterialTheme.colorScheme.secondary
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
                                 ),
                                 onClick = {
                                     val connection = selectedConnectedDevice
@@ -400,8 +399,8 @@ fun SyncScreen(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 shape = MaterialTheme.shapes.small,
                                 colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiary,
-                                    contentColor = MaterialTheme.colorScheme.secondary
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
                                 ),
                                 onClick = {
                                     val connection = selectedConnectedDevice
@@ -431,7 +430,8 @@ fun SyncScreen(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 shape = MaterialTheme.shapes.small,
                                 colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.scoutColors.redText
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
                                 ),
                                 content = { Text("Disconnect") },
                                 onClick = {

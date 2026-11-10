@@ -84,12 +84,12 @@ fun MainScreenScaffold(
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         colors = NavigationDrawerItemDefaults.colors(
-                            selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                             selectedTextColor = MaterialTheme.colorScheme.onBackground,
                             selectedIconColor = MaterialTheme.colorScheme.onBackground,
                             unselectedContainerColor = MaterialTheme.colorScheme.primary,
-                            unselectedTextColor = MaterialTheme.colorScheme.secondary,
-                            unselectedIconColor = MaterialTheme.colorScheme.secondary,
+                            unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
                         )
                     )
                 }
@@ -105,9 +105,9 @@ fun MainScreenScaffold(
                             )
                         }
                     }, colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        titleContentColor = MaterialTheme.colorScheme.secondary,
-                        navigationIconContentColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
