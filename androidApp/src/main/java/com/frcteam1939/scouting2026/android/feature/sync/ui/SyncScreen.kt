@@ -364,6 +364,26 @@ fun SyncScreen(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+                        TextButton(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            shape = MaterialTheme.shapes.small,
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.secondary
+                            ),
+                            content = {Text("Disconnect")},
+                            onClick = {
+                                if (selectedConnectedDevice == null) {
+                                    Toast.makeText(
+                                        context,
+                                        "Please select a device to disconnect first",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    syncViewModel.closeExistingConnection(selectedConnectedDevice)
+                                }
+                            }
+                        )
                     }
                 }
             }
