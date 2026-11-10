@@ -471,59 +471,6 @@ fun SyncScreen(
                     }
                 }
             }
-
-            if (selectedConnectedDevice != null && isServerOn) {
-                TextButton(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    shape = MaterialTheme.shapes.small,
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    onClick = {
-                        val connection = selectedConnectedDevice
-                        if (connection == null) {
-                            Toast.makeText(
-                                context,
-                                "Please select a connected device first",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            coroutineScope.launch {
-                                val matchData = fileSyncViewModel.getMatchDataForExport()
-                                if (matchData.isBlank()) {
-                                    Toast.makeText(context, "No match data to send", Toast.LENGTH_SHORT)
-                                        .show()
-                                } else {
-                                    syncViewModel.sendMatchData(connection, matchData)
-                                }
-                            }
-                        }
-                    },
-                    content = {Text("Send Match Data")}
-                )
-            }
-            if (selectedConnectedDevice != null && isServerOn) {
-                OutlinedButton(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    onClick = {
-                        if (selectedConnectedDevice == null) {
-                            Toast.makeText(
-                                context,
-                                "Please select a connected device first",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            showDialog = true
-                        }
-                    },
-                    content = {
-                        Text("Test Connection")
-                        Icon(imageVector = Icons.Default.Bluetooth, contentDescription = "")
-
-                    }
-                )
-            }
         }
     }
 }
