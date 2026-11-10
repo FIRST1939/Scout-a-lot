@@ -32,53 +32,65 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import kotlin.math.roundToInt
-import kotlin.text.toIntOrNull
 
 object UserInputs {
     @Composable
     fun TextboxInput(
         value: String,
         onValueChange: (String) -> Unit,
+        modifier: Modifier = Modifier,
         label: String = "",
         singleLine: Boolean = false,
         forceNumberInput: Boolean = false,
         characterLimit: Int = 2500
     ) {
         val focusManager = LocalFocusManager.current
-        val keyboardOptions = when {
-            forceNumberInput -> KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = if (singleLine) ImeAction.Done else ImeAction.Default
-            )
 
-            !singleLine -> KeyboardOptions(imeAction = ImeAction.Done)
-            else -> KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
-        }
-
-        val keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
+        Surface(
+            modifier = modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (label.isNotEmpty()) {
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { input ->
+                        val cleaned = if (forceNumberInput) input.filter(Char::isDigit) else input
+                        onValueChange(cleaned.take(characterLimit))
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    singleLine = singleLine,
+                    shape = MaterialTheme.shapes.medium,
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = if (forceNumberInput) KeyboardType.Number else KeyboardType.Text,
+                        imeAction = if (singleLine) ImeAction.Done else ImeAction.Default
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+                )
             }
-        )
-
-        TextField(
-            value = value,
-            onValueChange = { input ->
-                //state can't be negative if forceNumberInput is true
-                var validUpdate = true
-                if (input.length > characterLimit) validUpdate = false
-                if (forceNumberInput && input.toIntOrNull() == null) validUpdate = false
-                if (input.isEmpty()) validUpdate = true
-                if (validUpdate) onValueChange(input)
-            },
-            modifier = Modifier.padding(all = 8.dp),
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-            singleLine = singleLine,
-            label = { Text(label) },
-        )
+        }
     }
 
     @Composable
@@ -118,85 +130,140 @@ object UserInputs {
         }
     }
 
+    // TODO: Handle maxSelected/minSelected
     @Composable
     fun CheckboxInput(
         checked: List<Boolean>,
         onCheckedChange: (List<Boolean>) -> Unit,
         modifier: Modifier = Modifier,
-        checkboxOptions: List<String> = emptyList<String>(),
+        label: String,
+        checkboxOptions: List<String> = emptyList(),
         maxSelected: Int,
         minSelected: Int,
         ) {
-        Column(modifier.selectableGroup()) {
-            checkboxOptions.forEachIndexed { index, text ->
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .selectable(
-                            selected = (checked[index]),
-                            onClick = {
-                                val updatedList = checked.toMutableList()
-                                updatedList[index] = !updatedList[index]
-                                onCheckedChange(updatedList)
-                            },
-                            role = Role.RadioButton,
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = (checked[index]),
-                        onCheckedChange = null
-                    )
+        Surface(
+            modifier = modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (label.isNotEmpty()) {
                     Text(
-                        text = text,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp)
+                        label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                }
+                Column(modifier.selectableGroup()) {
+                    checkboxOptions.chunked(2).forEachIndexed { index, option ->
+                        Row(
+                            Modifier.fillMaxWidth().height(56.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            option.forEachIndexed { offset, text ->
+                                val trueIndex = index*2 + offset
+                                Surface(
+                                    modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+                                    shape = MaterialTheme.shapes.medium,
+                                    color = MaterialTheme.colorScheme.surface,
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                                ) {
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(48.dp)
+                                            .selectable(
+                                                selected = (checked[trueIndex]),
+                                                onClick = {
+                                                    val updatedList = checked.toMutableList()
+                                                    updatedList[trueIndex] = !updatedList[trueIndex]
+                                                    onCheckedChange(updatedList)
+                                                },
+                                                role = Role.RadioButton,
+                                                indication = ripple(color = MaterialTheme.colorScheme.primary),
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            )
+                                            .padding(horizontal = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Checkbox(
+                                            checked = (checked[trueIndex]),
+                                            onCheckedChange = null
+                                        )
+                                        Text(
+                                            text = text,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            modifier = Modifier.padding(start = 16.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-
     }
 
     @Composable
     fun SingleSelectButtonBarInput(
+        label: String,
         options: List<String>,
         selectedOption: Int?,
         onOptionSelected: (Int) -> Unit
     ) {
-        Row(
+        Surface(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
-            options.forEachIndexed { index, option ->
-                val selected = index == selectedOption
-
-                Surface(
-                    onClick = { onOptionSelected(index) },
-                    shape = RoundedCornerShape(24.dp),
-                    color = if (selected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.surface,
-                    contentColor = if (selected)
-                        MaterialTheme.colorScheme.onPrimary
-                    else
-                        MaterialTheme.colorScheme.onSurface,
-                    border = BorderStroke(
-                        1.dp,
-                        if (selected) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                    ),
-                    shadowElevation = if (selected) 6.dp else 2.dp
-                ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (label.isNotEmpty()) {
                     Text(
-                        option,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-                        style = MaterialTheme.typography.bodyLarge
+                        label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    options.forEachIndexed { index, option ->
+                        val selected = index == selectedOption
+                        Surface(
+                            modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+                            onClick = { onOptionSelected(index) },
+                            shape = RoundedCornerShape(9999.dp),
+                            color = if (selected) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.surface,
+                            contentColor = if (selected)
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            else
+                                MaterialTheme.colorScheme.onSurface,
+                            border = BorderStroke(
+                                1.dp,
+                                if (selected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.outlineVariant
+                            )
+                        ) {
+                            Text(
+                                text = option,
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -224,124 +291,138 @@ object UserInputs {
         }
     }
 
-        @Composable
-        fun SliderInput(
-            value: Int,
-            onValueChange: (Int) -> Unit,
-            minVal: Int = 0,
-            maxVal: Int,
-            modifier: Modifier = Modifier,
-            // valueRange: ClosedFloatingPointRange<Int>,
-            colors: SliderColors = SliderDefaults.colors()
-        ) {
-            require(minVal <= maxVal) { "minVal must be <= maxVal" }
+    @Composable
+    fun SliderInput(
+        value: Int,
+        onValueChange: (Int) -> Unit,
+        minVal: Int = 0,
+        maxVal: Int,
+        modifier: Modifier = Modifier,
+        // valueRange: ClosedFloatingPointRange<Int>,
+        colors: SliderColors = SliderDefaults.colors()
+    ) {
+        require(minVal <= maxVal) { "minVal must be <= maxVal" }
 
-            val clampedValue = value.coerceIn(minVal, maxVal)
-            val steps = (maxVal - minVal - 1).coerceAtLeast(0)
-            Slider(
-                value = clampedValue.toFloat(),
-                onValueChange = { input ->
-                    onValueChange(input.roundToInt().coerceIn(minVal, maxVal))
+        val clampedValue = value.coerceIn(minVal, maxVal)
+        val steps = (maxVal - minVal - 1).coerceAtLeast(0)
+        Slider(
+            value = clampedValue.toFloat(),
+            onValueChange = { input ->
+                onValueChange(input.roundToInt().coerceIn(minVal, maxVal))
+            },
+            modifier = modifier,
+            colors = colors,
+            steps = steps,
+            valueRange = minVal.toFloat()..maxVal.toFloat()
+        )
+    }
+
+    @Composable
+    fun CounterInput(
+        value: Int,
+        modifier: Modifier = Modifier,
+        minVal: Int = 0,
+        maxVal: Int = Int.MAX_VALUE,
+        step: Int = 1,
+        onValueChange: (Int) -> Unit
+    ) {
+        require(minVal <= maxVal) { "minVal must be <= maxVal" }
+        require(step > 0) { "step must be > 0" }
+
+        val clampedValue = value.coerceIn(minVal, maxVal)
+
+        fun setValue(newValue: Int) {
+            onValueChange(newValue.coerceIn(minVal, maxVal))
+        }
+
+        Row(
+            modifier = modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = {
+                    val next = (clampedValue.toLong() - step.toLong())
+                        .coerceAtLeast(minVal.toLong())
+                        .toInt()
+                    setValue(next)
                 },
-                modifier = modifier,
-                colors = colors,
-                steps = steps,
-                valueRange = minVal.toFloat()..maxVal.toFloat()
-            )
-        }
-
-        @Composable
-        fun CounterInput(
-            value: Int,
-            modifier: Modifier = Modifier,
-            minVal: Int = 0,
-            maxVal: Int = Int.MAX_VALUE,
-            step: Int = 1,
-            onValueChange: (Int) -> Unit
-        ) {
-            require(minVal <= maxVal) { "minVal must be <= maxVal" }
-            require(step > 0) { "step must be > 0" }
-
-            val clampedValue = value.coerceIn(minVal, maxVal)
-
-            fun setValue(newValue: Int) {
-                onValueChange(newValue.coerceIn(minVal, maxVal))
-            }
-
-            Row(
-                modifier = modifier.padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                enabled = clampedValue > minVal
             ) {
-                IconButton(
-                    onClick = {
-                        val next = (clampedValue.toLong() - step.toLong())
-                            .coerceAtLeast(minVal.toLong())
-                            .toInt()
-                        setValue(next)
-                    },
-                    enabled = clampedValue > minVal
-                ) {
-                    Icon(
-                        contentDescription = "Decrease",
-                        imageVector = Icons.Default.Remove
-                    )
-                }
-
-                Text(
-                    text = "$clampedValue",
-                    modifier = Modifier.padding(horizontal = 10.dp)
+                Icon(
+                    contentDescription = "Decrease",
+                    imageVector = Icons.Default.Remove
                 )
+            }
 
-                IconButton(
-                    onClick = {
-                        val next = (clampedValue.toLong() + step.toLong())
-                            .coerceAtMost(maxVal.toLong())
-                            .toInt()
-                        setValue(next)
-                    },
-                    enabled = clampedValue < maxVal
-                ) {
-                    Icon(
-                        contentDescription = "Increase",
-                        imageVector = Icons.Default.Add
-                    )
-                }
+            Text(
+                text = "$clampedValue",
+                modifier = Modifier.padding(horizontal = 10.dp)
+            )
+
+            IconButton(
+                onClick = {
+                    val next = (clampedValue.toLong() + step.toLong())
+                        .coerceAtMost(maxVal.toLong())
+                        .toInt()
+                    setValue(next)
+                },
+                enabled = clampedValue < maxVal
+            ) {
+                Icon(
+                    contentDescription = "Increase",
+                    imageVector = Icons.Default.Add
+                )
             }
         }
+    }
 
-        @Composable
-        fun SwitchInput(
-            checked: Boolean,
-            onCheckedChange: (Boolean) -> Unit
+    @Composable
+    fun SwitchTextBarInput(
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        text: String
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange
-            )
-        }
-
-        @Composable
-        fun SwitchTextBarInput(
-            checked: Boolean,
-            onCheckedChange: (Boolean) -> Unit,
-            text: String
-        ) {
-            Divider(thickness = 1.dp)
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = text)
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange
-                )
+                Text(text = text, style = MaterialTheme.typography.labelMedium)
+                Switch(checked = checked, onCheckedChange = onCheckedChange)
             }
-            Divider(thickness = 1.dp)
         }
+    }
+
+    @Composable
+    fun OutlinedButtonInput(
+        onClick: () -> Unit,
+        icon: ImageVector,
+        modifier: Modifier = Modifier,
+        buttonText: String = "",
+        containerColor: Color = MaterialTheme.colorScheme.background,
+        iconColor: Color = MaterialTheme.colorScheme.primary
+    ) {
+        OutlinedButton(
+            onClick = { onClick() },
+            modifier = modifier,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = containerColor
+            )
+        ) {
+            Text(text = buttonText)
+            Icon(
+                imageVector = icon,
+                contentDescription = "",
+                tint = iconColor
+            )
+        }
+    }
 
         @Composable
         fun OutlinedButtonInput(
@@ -351,168 +432,205 @@ object UserInputs {
             buttonText: String = "",
             containerColor: Color = MaterialTheme.colorScheme.background,
             iconColor: Color = MaterialTheme.colorScheme.primary,
+    @Composable
+    fun OutlinedButtonTextBarInput(
+        text: String,
+        textColor: Color = MaterialTheme.colorScheme.onBackground,
+        icon: ImageVector,
+        onClick: () -> Unit,
+        buttonText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = text,
+                color = textColor,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
+            )
             OutlinedButton(
                 onClick = { onClick() },
-                modifier = modifier,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = containerColor
-                )
             ) {
                 Text(text = buttonText)
                 Icon(
                     imageVector = icon,
-                    contentDescription = "",
-                    tint = iconColor
+                    contentDescription = ""
                 )
             }
         }
+        Divider(thickness = 1.dp)
+    }
 
-        @Composable
-        fun OutlinedButtonTextBarInput(
-            text: String,
-            textColor: Color = MaterialTheme.colorScheme.onBackground,
-            icon: ImageVector,
-            onClick: () -> Unit,
-            buttonText: String = ""
+    // Buttons are enumerated starting from the right
+    @Composable
+    fun DoubleOutlinedButtonTextBarInput(
+        text: String,
+        iconOne: ImageVector,
+        onButtonOneClick: () -> Unit,
+        buttonOneText: String = "",
+        iconTwo: ImageVector,
+        onButtonTwoClick: () -> Unit,
+        buttonTwoText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = text,
-                    color = textColor,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    modifier = Modifier.weight(1f)
-                )
+            Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
-                    onClick = { onClick() },
+                    onClick = { onButtonTwoClick() },
                 ) {
-                    Text(text = buttonText)
+                    Text(text = buttonTwoText)
                     Icon(
-                        imageVector = icon,
+                        imageVector = iconTwo,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonOneClick() },
+                ) {
+                    Text(text = buttonOneText)
+                    Icon(
+                        imageVector = iconOne,
                         contentDescription = ""
                     )
                 }
             }
-            Divider(thickness = 1.dp)
         }
+        Divider(thickness = 1.dp)
+    }
 
-        // Buttons are enumerated starting from the right
-        @Composable
-        fun DoubleOutlinedButtonTextBarInput(
-            text: String,
-            iconOne: ImageVector,
-            onButtonOneClick: () -> Unit,
-            buttonOneText: String = "",
-            iconTwo: ImageVector,
-            onButtonTwoClick: () -> Unit,
-            buttonTwoText: String = ""
+    @Composable
+    fun TripleOutlinedButtonTextBarInput(
+        text: String,
+        iconOne: ImageVector,
+        onButtonOneClick: () -> Unit,
+        buttonOneText: String = "",
+        iconTwo: ImageVector,
+        onButtonTwoClick: () -> Unit,
+        buttonTwoText: String = "",
+        iconThree: ImageVector,
+        onButtonThreeClick: () -> Unit,
+        buttonThreeText: String = ""
+    ) {
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { onButtonThreeClick() },
+                ) {
+                    Text(text = buttonThreeText)
+                    Icon(
+                        imageVector = iconThree,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonTwoClick() },
+                ) {
+                    Text(text = buttonTwoText)
+                    Icon(
+                        imageVector = iconTwo,
+                        contentDescription = ""
+                    )
+                }
+                OutlinedButton(
+                    onClick = { onButtonOneClick() },
+                ) {
+                    Text(text = buttonOneText)
+                    Icon(
+                        imageVector = iconOne,
+                        contentDescription = ""
+                    )
+                }
+            }
+        }
+        Divider(thickness = 1.dp)
+    }
+
+    @Composable
+    fun DropdownInput(
+        options: List<String>,
+        selectedOption: String,
+        onOptionSelected: (String) -> Unit
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        var selectedOption by remember { mutableStateOf(selectedOption) }
+
+        Box {
+            OutlinedButton(
+                onClick = { expanded = true },
             ) {
-                Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
-                        onClick = { onButtonTwoClick() },
-                    ) {
-                        Text(text = buttonTwoText)
-                        Icon(
-                            imageVector = iconTwo,
-                            contentDescription = ""
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { onButtonOneClick() },
-                    ) {
-                        Text(text = buttonOneText)
-                        Icon(
-                            imageVector = iconOne,
-                            contentDescription = ""
+                Text(
+                    text = selectedOption,
+                    maxLines = 1
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown arrow"
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                content = {
+                    options.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                onOptionSelected(option)
+                                selectedOption = option
+                                expanded = false // Close the menu
+                            },
                         )
                     }
                 }
-            }
-            Divider(thickness = 1.dp)
+            )
         }
+    }
 
-        @Composable
-        fun TripleOutlinedButtonTextBarInput(
-            text: String,
-            iconOne: ImageVector,
-            onButtonOneClick: () -> Unit,
-            buttonOneText: String = "",
-            iconTwo: ImageVector,
-            onButtonTwoClick: () -> Unit,
-            buttonTwoText: String = "",
-            iconThree: ImageVector,
-            onButtonThreeClick: () -> Unit,
-            buttonThreeText: String = ""
+    @Composable
+    fun DropdownTextBarInput(
+        options: List<String>,
+        selectedOption: String,
+        onOptionSelected: (String) -> Unit,
+        text: String
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        var selectedOption by remember { mutableStateOf(selectedOption) }
+
+        Divider(thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
-                        onClick = { onButtonThreeClick() },
-                    ) {
-                        Text(text = buttonThreeText)
-                        Icon(
-                            imageVector = iconThree,
-                            contentDescription = ""
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { onButtonTwoClick() },
-                    ) {
-                        Text(text = buttonTwoText)
-                        Icon(
-                            imageVector = iconTwo,
-                            contentDescription = ""
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { onButtonOneClick() },
-                    ) {
-                        Text(text = buttonOneText)
-                        Icon(
-                            imageVector = iconOne,
-                            contentDescription = ""
-                        )
-                    }
-                }
-            }
-            Divider(thickness = 1.dp)
-        }
-
-        @Composable
-        fun DropdownInput(
-            options: List<String>,
-            selectedOption: String,
-            onOptionSelected: (String) -> Unit
-        ) {
-            var expanded by remember { mutableStateOf(false) }
-            var selectedOption by remember { mutableStateOf(selectedOption) }
-
-            Box {
+            Text(
+                text = text,
+                modifier = Modifier.weight(2f)
+            )
+            Box(modifier = Modifier.weight(1f)) {
                 OutlinedButton(
                     onClick = { expanded = true },
                 ) {
@@ -543,63 +661,9 @@ object UserInputs {
                 )
             }
         }
-
-        @Composable
-        fun DropdownTextBarInput(
-            options: List<String>,
-            selectedOption: String,
-            onOptionSelected: (String) -> Unit,
-            text: String
-        ) {
-            var expanded by remember { mutableStateOf(false) }
-            var selectedOption by remember { mutableStateOf(selectedOption) }
-
-            Divider(thickness = 1.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = text,
-                    modifier = Modifier.weight(2f)
-                )
-                Box(modifier = Modifier.weight(1f)) {
-                    OutlinedButton(
-                        onClick = { expanded = true },
-                    ) {
-                        Text(
-                            text = selectedOption,
-                            maxLines = 1
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown arrow"
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        content = {
-                            options.forEach { option ->
-                                DropdownMenuItem(
-                                    text = { Text(option) },
-                                    onClick = {
-                                        onOptionSelected(option)
-                                        selectedOption = option
-                                        expanded = false // Close the menu
-                                    },
-                                )
-                            }
-                        }
-                    )
-                }
-            }
-            Divider(thickness = 1.dp)
-        }
+        Divider(thickness = 1.dp)
     }
+}
 
 
 @Preview

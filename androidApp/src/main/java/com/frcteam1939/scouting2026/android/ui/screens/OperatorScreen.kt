@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
@@ -42,13 +43,13 @@ fun OperatorScreen(navController: NavController) {
                 modifier = Modifier.padding(all = 10.dp),
             )
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.Settings.SELECT) },
+                onClick = dropUnlessResumed { navController.navigate(AppRoutes.Settings.SELECT) },
                 text = "Edit Forms",
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Text(text = "Selected: sigmaboi2026 (match scout)")
             UserInputs.TextButtonInput(
-                onClick = { navController.navigate(AppRoutes.Settings.SAVED) },
+                onClick = dropUnlessResumed { navController.navigate(AppRoutes.Settings.SAVED) },
                 text = "Saved Sets",
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )

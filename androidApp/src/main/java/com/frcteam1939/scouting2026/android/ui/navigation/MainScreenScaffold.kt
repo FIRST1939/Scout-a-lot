@@ -71,8 +71,8 @@ fun MainScreenScaffold(
                             }
                         },
                         onClick = {
+                            scope.launch { drawerState.close() }
                             if (screen.route != currentRoute) {
-                                scope.launch { drawerState.close() }
                                 navController.navigate(screen.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true

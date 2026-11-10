@@ -7,6 +7,7 @@ import com.frcteam1939.scouting2026.core.network.FRCEvents
 import com.frcteam1939.scouting2026.core.network.FRCEventsAuth
 import com.frcteam1939.scouting2026.core.network.TBA
 import com.frcteam1939.scouting2026.core.network.TBAAuth
+import com.frcteam1939.scouting2026.core.storage.getSettingsDataStore
 import com.frcteam1939.scouting2026.feature.events.EventCodesRepository
 import com.frcteam1939.scouting2026.feature.events.EventsRepository
 import com.frcteam1939.scouting2026.feature.scouting.ScoutedDataRepository
@@ -27,7 +28,7 @@ object DataDependencyContainer {
     val frcEvents: FRCEvents by lazy { FRCEvents(FRCEventsAuth()) }
 
     val settingsRepository: SettingsRepository by lazy {
-        SettingsRepository(database, applicationScope)
+        SettingsRepository(getSettingsDataStore(), applicationScope)
     }
 
     val eventsRepository: EventsRepository by lazy {

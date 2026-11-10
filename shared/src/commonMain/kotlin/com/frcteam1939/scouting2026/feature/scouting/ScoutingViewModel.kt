@@ -3,7 +3,7 @@ package com.frcteam1939.scouting2026.feature.scouting
 // android ViewModel import can be replaced with a general ViewModel class later, im too lazy
 import androidx.lifecycle.ViewModel
 
-import com.frcteam1939.scouting2026.core.database.entity.AppSettings
+import com.frcteam1939.scouting2026.feature.settings.model.AppSettings
 import com.frcteam1939.scouting2026.core.database.entity.ScoutedData
 import com.frcteam1939.scouting2026.feature.events.EventsRepository
 import com.frcteam1939.scouting2026.feature.scouting.ScoutedDataRepository
@@ -138,10 +138,12 @@ class ScoutingViewModel(
 
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
     val currentEvent = settings.value?.currentEvent ?: ""
+    val deviceRobotAssignment: String?
+        get() = settings.value?.deviceRobotAssignment
     val alliance: String?
-        get() = settings.value?.deviceRobotAssignment?.dropLast(2)
+        get() = deviceRobotAssignment?.dropLast(2)
     val robotNumber: Int?
-        get() = settings.value?.deviceRobotAssignment?.takeLast(1)?.toIntOrNull()
+        get() = deviceRobotAssignment?.takeLast(1)?.toIntOrNull()
     private val _matchNumber = MutableStateFlow("")
     val matchNumber: StateFlow<String> = _matchNumber.asStateFlow()
     fun changeMatchNumber(newMatchNumber: String) {

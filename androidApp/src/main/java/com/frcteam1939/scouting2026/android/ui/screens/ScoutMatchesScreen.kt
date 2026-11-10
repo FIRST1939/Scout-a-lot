@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.android.R
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
@@ -148,7 +149,7 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
                 ) { }
         )
         UserInputs.TextButtonInput(
-            onClick = {
+            onClick = dropUnlessResumed {
                 // Check if scouting is allowed to happen
                 var canStartScouting = true
                 if (currentEvent.isEmpty()) {
@@ -212,7 +213,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
                 UserInputs.TextButtonInput(
                     onClick = {
                         noShowPopup = false
-                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                        navController.popBackStack(AppRoutes.MatchScouting.SCOUT_MATCHES, inclusive = false)
                     },
                     text = "Robot no-show",
                     containerColor = MaterialTheme.colorScheme.background,
@@ -225,7 +226,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
                 UserInputs.TextButtonInput(
                     onClick = {
                         noShowPopup = false
-                        navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
+                        navController.popBackStack(AppRoutes.MatchScouting.SCOUT_MATCHES, inclusive = false)
                     },
                     text = "Team not in match",
                     containerColor = MaterialTheme.colorScheme.background,
@@ -267,7 +268,7 @@ fun TeamConfirmationScreen(navController: NavController, scoutingViewModel: Scou
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             // Yes button
             UserInputs.TextButtonInput(
-                onClick = {
+                onClick = dropUnlessResumed {
                     scoutingViewModel.changeSelectedTeam(team)
                     navController.navigate(AppRoutes.MatchScouting.SCOUT_AUTO)
                     scoutingViewModel.changeCurrentPage(newCurrentPage = "Auto")

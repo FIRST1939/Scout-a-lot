@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import com.frcteam1939.scouting2026.feature.reports.DataViewModel
 import androidx.compose.runtime.setValue
@@ -42,7 +43,7 @@ fun MatchReportsScreen(navController: NavController, dataViewModel: DataViewMode
                 text = match,
                 buttonText = "",
                 icon = Icons.Default.ArrowForward,
-                onClick = {
+                onClick = dropUnlessResumed {
                     dataViewModel.changeCurrentMatch(match)
                     navController.navigate(AppRoutes.MatchReports.VIEW_MATCH_REPORT)
                 }

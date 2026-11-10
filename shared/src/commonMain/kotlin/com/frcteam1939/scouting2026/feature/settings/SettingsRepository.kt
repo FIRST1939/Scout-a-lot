@@ -1,59 +1,64 @@
 package com.frcteam1939.scouting2026.feature.settings
 
-import com.frcteam1939.scouting2026.core.database.AppDatabase
-import com.frcteam1939.scouting2026.core.database.entity.AppSettings
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.frcteam1939.scouting2026.feature.settings.model.AppSettings
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SettingsRepository(private val db: AppDatabase, private val applicationScope: CoroutineScope) {
-    private val dao = db.settingsDao()
+private val PLAYOFFS_ACTIVE_KEY = booleanPreferencesKey("playoffs_active")
+private val DEVICE_ROBOT_ASSIGNMENT_KEY = stringPreferencesKey("device_robot_assignment")
+private val CURRENT_EVENT_KEY = stringPreferencesKey("current_event")
 
-    init {
-        applicationScope.launch {
-            if (dao.getSettings().first() == null) {
-                restoreDefaultSettings()
-            }
-        }
-    }
+private const val DEFAULT_PLAYOFFS_ACTIVE = false
+private const val DEFAULT_DEVICE_ROBOT_ASSIGNMENT = "Red 1"
+private const val DEFAULT_CURRENT_EVENT = ""
 
-    val settings: StateFlow<AppSettings?> = dao.getSettings()
+class SettingsRepository(
+    private val dataStore: DataStore<Preferences>,
+    private val applicationScope: CoroutineScope
+) {
+    val settings: StateFlow<AppSettings?> = dataStore.data
+        .map { preferences -> toAppSettings(preferences) }
         .stateIn(applicationScope, SharingStarted.Lazily, null)
 
     fun updatePlayoffsActive(enabled: Boolean) {
         applicationScope.launch {
-            settings.value?.let {
-                dao.saveSettings(it.copy(playoffsActive = enabled))
+            dataStore.edit { preferences ->
+                preferences[PLAYOFFS_ACTIVE_KEY] = enabled
             }
         }
     }
 
     fun updateDeviceRobotAssignment(assignment: String) {
         applicationScope.launch {
-            settings.value?.let {
-                dao.saveSettings(it.copy(deviceRobotAssignment = assignment))
+            dataStore.edit { preferences ->
+                preferences[DEVICE_ROBOT_ASSIGNMENT_KEY] = assignment
             }
         }
     }
 
     fun updateCurrentEvent(customEventName: String) {
         applicationScope.launch {
-            settings.value?.let {
-                dao.saveSettings(it.copy(currentEvent = customEventName))
+            dataStore.edit { preferences ->
+                preferences[CURRENT_EVENT_KEY] = customEventName
             }
         }
     }
 
-    suspend fun restoreDefaultSettings() {
-        val defaultSettings = AppSettings(
-            playoffsActive = false,
-            deviceRobotAssignment = "Red 1",
-            currentEvent = ""
+    private fun toAppSettings(preferences: Preferences): AppSettings {
+        return AppSettings(
+            playoffsActive = preferences[PLAYOFFS_ACTIVE_KEY] ?: DEFAULT_PLAYOFFS_ACTIVE,
+            deviceRobotAssignment = preferences[DEVICE_ROBOT_ASSIGNMENT_KEY]
+                ?: DEFAULT_DEVICE_ROBOT_ASSIGNMENT,
+            currentEvent = preferences[CURRENT_EVENT_KEY] ?: DEFAULT_CURRENT_EVENT
         )
-
-        dao.saveSettings(defaultSettings)
     }
 }

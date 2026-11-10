@@ -2,7 +2,7 @@ package com.frcteam1939.scouting2026.feature.settings
 
 import androidx.lifecycle.ViewModel
 import com.frcteam1939.scouting2026.DataDependencyContainer.tba
-import com.frcteam1939.scouting2026.core.database.entity.AppSettings
+import com.frcteam1939.scouting2026.feature.settings.model.AppSettings
 import com.frcteam1939.scouting2026.core.database.entity.Event
 import com.frcteam1939.scouting2026.feature.events.EventCodesRepository
 import com.frcteam1939.scouting2026.feature.events.EventsRepository
@@ -85,10 +85,6 @@ class SettingsViewModel(
      * Returns true if a new event was created, false if it already existed.
      */
     suspend fun seedDemoEvent(): Boolean {
-        // The settings row loads lazily, and updateCurrentEvent is a no-op while it is
-        // still null, so wait for it before selecting anything.
-        settingsRepository.settings.filterNotNull().first()
-
         val alreadyExists = eventsRepository.getEventByName(DemoEvent.EVENT_NAME).first() != null
         if (!alreadyExists) {
             eventsRepository.createEvent(DemoEvent.buildEvent())

@@ -3,7 +3,9 @@ package com.frcteam1939.scouting2026.android.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.frcteam1939.scouting2026.android.ui.TagsAndWarnings
 import com.frcteam1939.scouting2026.android.ui.navigation.AppRoutes
 import com.frcteam1939.scouting2026.android.ui.UserInputs
 import com.frcteam1939.scouting2026.android.ui.templates.ButtonBarTemplate
@@ -116,182 +119,199 @@ fun MatchScoutingScaffold(
 @Composable
 fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.verticalScroll(rememberScrollState()).padding(top = 8.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        Text(text = "Scouting Auto", style = MaterialTheme.typography.headlineLarge)
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        TextboxFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Textbox(
-                id = 0,
-                label = "Scouter Name",
-                singleLine = true,
-                forceNumberInput = false
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(text = "Scouting Auto", style = MaterialTheme.typography.headlineLarge)
+            TagsAndWarnings.RobotAssignmentPill(scoutingViewModel.deviceRobotAssignment)
+        }
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TextboxFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Textbox(
+                    id = 0,
+                    label = "Scouter Name",
+                    singleLine = true,
+                    forceNumberInput = false
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        RebuiltStartingPositionTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = RebuiltStartingPosition(
-                id = 1,
-                label = "Starting Position"
+            RebuiltStartingPositionTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = RebuiltStartingPosition(
+                    id = 1,
+                    label = "Starting Position"
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        SwitchFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Switch(
-                id = 2,
-                label = "Robot is preloaded?"
+            SwitchFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Switch(
+                    id = 2,
+                    label = "Robot is preloaded?"
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        CheckboxFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Checkbox(
-                id = 3,
-                label = "Robot picks up from...",
-                options = listOf("Depot", "Outpost", "Alliance Zone (Ground)", "Neutral Zone")
+            CheckboxFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Checkbox(
+                    id = 3,
+                    label = "Robot picks up from...",
+                    options = listOf("Depot", "Outpost", "Alliance Zone (Ground)", "Neutral Zone")
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        RebuiltHubScoringFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = RebuiltHubScoring(
-                id = 4,
-                label = "Hub Scoring"
-            ),
-            auto = true
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        SwitchFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Switch(
-                id = 5,
-                label = "Robot climbs tower?"
+            RebuiltHubScoringFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = RebuiltHubScoring(
+                    id = 4,
+                    label = "Hub Scoring"
+                ),
+                auto = true
             )
-        )
+            SwitchFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Switch(
+                    id = 5,
+                    label = "Robot climbs tower?"
+                )
+            )
+        }
     }
 }
 
 @Composable
 fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.verticalScroll(rememberScrollState()).padding(top = 8.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        Text(text = "Scouting Teleop", style = MaterialTheme.typography.headlineLarge)
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        CheckboxFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Checkbox(
-                id = 0,
-                label = "Travel",
-                options = listOf("Under trench?", "Over bump?")
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(text = "Scouting Teleop", style = MaterialTheme.typography.headlineLarge)
+            TagsAndWarnings.RobotAssignmentPill(scoutingViewModel.deviceRobotAssignment)
+        }
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CheckboxFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Checkbox(
+                    id = 0,
+                    label = "Travel",
+                    options = listOf("Under trench?", "Over bump?")
+                )
             )
-        )
-        SwitchFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Switch(
-                id = 1,
-                label = "Difficulty travelling (explain in qualitative)"
+            SwitchFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Switch(
+                    id = 1,
+                    label = "Difficulty travelling (explain in qualitative)"
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        SwitchFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Switch(
-                id = 2,
-                label = "Plays defense"
+            SwitchFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Switch(
+                    id = 2,
+                    label = "Plays defense"
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        CheckboxFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Checkbox(
-                id = 3,
-                label = "Robot picks up from...",
-                options = listOf("Depot", "Outpost", "Ground")
+            CheckboxFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Checkbox(
+                    id = 3,
+                    label = "Robot picks up from...",
+                    options = listOf("Depot", "Outpost", "Ground")
+                )
             )
-        )
-        SwitchFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Switch(
-                id = 4,
-                label = "Pushes fuel into outpost"
+            SwitchFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Switch(
+                    id = 4,
+                    label = "Pushes fuel into outpost"
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        ButtonBarTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = ButtonBar(
-                id = 5,
-                label = "Ferry volume",
-                options = listOf("Low", "Medium", "High", "Very High")
+            ButtonBarTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = ButtonBar(
+                    id = 5,
+                    label = "Ferry volume",
+                    options = listOf("Low", "Medium", "High", "Very High")
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        RebuiltHubScoringFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = RebuiltHubScoring(
-                id = 6,
-                label = "Hub Scoring"
-            ),
-            auto = false
-        )
+            RebuiltHubScoringFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = RebuiltHubScoring(
+                    id = 6,
+                    label = "Hub Scoring"
+                ),
+                auto = false
+            )
+        }
     }
 }
 
 @Composable
 fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
-    // TODO: add endgame scouting screen
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.verticalScroll(rememberScrollState()).padding(top = 8.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        Text(text = "Scouting Teleop", style = MaterialTheme.typography.headlineLarge)
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        DropdownFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Dropdown(
-                id = 0,
-                label = "Tower level",
-                options = listOf("Did not climb", "Level 1", "Level 2", "Level 3")
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(text = "Scouting Endgame", style = MaterialTheme.typography.headlineLarge)
+            TagsAndWarnings.RobotAssignmentPill(scoutingViewModel.deviceRobotAssignment)
+        }
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DropdownFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Dropdown(
+                    id = 0,
+                    label = "Tower level",
+                    options = listOf("Did not climb", "Level 1", "Level 2", "Level 3")
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        SwitchFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Switch(
-                id = 1,
-                label = "Robot died during match?"
+            SwitchFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Switch(
+                    id = 1,
+                    label = "Robot died during match?"
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        TextboxFieldTemplate(
-            scoutingViewModel = scoutingViewModel,
-            fieldContent = Textbox(
-                id = 2,
-                label = "Qualitative notes",
-                singleLine = false,
-                forceNumberInput = false
+            TextboxFieldTemplate(
+                scoutingViewModel = scoutingViewModel,
+                fieldContent = Textbox(
+                    id = 2,
+                    label = "Qualitative notes",
+                    singleLine = false,
+                    forceNumberInput = false
+                )
             )
-        )
-        Divider(thickness = 4.dp, color = MaterialTheme.colorScheme.primary)
-        UserInputs.TextButtonInput(
-            onClick = {
-                scoutingViewModel.saveMatchData()
-                navController.navigate(AppRoutes.MatchScouting.SCOUT_MATCHES)
-            },
-            text = "Submit Match Data",
-            modifier = Modifier.padding(all = 32.dp)
-        )
+            UserInputs.TextButtonInput(
+                onClick = {
+                    scoutingViewModel.saveMatchData()
+                    navController.popBackStack(AppRoutes.MatchScouting.SCOUT_MATCHES, inclusive = false)
+                },
+                text = "Submit Match Data",
+                modifier = Modifier.padding(all = 32.dp)
+            )
+        }
     }
 }
