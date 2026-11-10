@@ -94,7 +94,8 @@ fun MatchScoutingBottomBar(navController: NavController, scoutingViewModel: Scou
                     selectedIconColor = Color(0xFF000000),
                     unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                     selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
         }

@@ -299,7 +299,10 @@ object UserInputs {
         maxVal: Int,
         modifier: Modifier = Modifier,
         // valueRange: ClosedFloatingPointRange<Int>,
-        colors: SliderColors = SliderDefaults.colors()
+        colors: SliderColors = SliderDefaults.colors(
+            activeTickColor = MaterialTheme.colorScheme.primaryContainer,
+            inactiveTrackColor = MaterialTheme.colorScheme.primaryContainer
+        )
     ) {
         require(minVal <= maxVal) { "minVal must be <= maxVal" }
 
