@@ -50,6 +50,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import com.frcteam1939.scouting2026.android.ui.scoutColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -430,8 +431,7 @@ fun SyncScreen(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 shape = MaterialTheme.shapes.small,
                                 colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiary,
-                                    contentColor = MaterialTheme.colorScheme.secondary
+                                    contentColor = MaterialTheme.scoutColors.redText
                                 ),
                                 content = { Text("Disconnect") },
                                 onClick = {
