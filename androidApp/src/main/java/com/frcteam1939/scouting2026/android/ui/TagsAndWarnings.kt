@@ -56,4 +56,24 @@ object TagsAndWarnings {
             contentColor = robotAssignmentPillContentColor
         )
     }
+
+    @Composable
+    fun MatchNumberTag(
+        matchNumber: String,
+        matchType: String
+    ) {
+        val matchTypeText = when (matchType) {
+            "f" -> "Finals"
+            "sf" -> "Semifinals"
+            "qf" -> "Quarterfinals"
+            "qm" -> "Quals"
+            else -> "Match"
+        }
+
+        Tag(
+            text = "$matchTypeText $matchNumber",
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }
