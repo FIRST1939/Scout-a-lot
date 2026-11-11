@@ -1,19 +1,20 @@
 package com.frcteam1939.scouting2026.android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.VideogameAsset
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -21,8 +22,14 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +46,8 @@ import com.frcteam1939.scouting2026.android.ui.templates.RebuiltHubScoringFieldT
 import com.frcteam1939.scouting2026.android.ui.templates.RebuiltStartingPositionTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.SwitchFieldTemplate
 import com.frcteam1939.scouting2026.android.ui.templates.TextboxFieldTemplate
+import com.frcteam1939.scouting2026.android.utils.getTeamAvatar
+import com.frcteam1939.scouting2026.feature.events.getTeamNameByNumber
 import com.frcteam1939.scouting2026.feature.forms.model.ButtonBar
 import com.frcteam1939.scouting2026.feature.forms.model.Checkbox
 import com.frcteam1939.scouting2026.feature.forms.model.Dropdown
@@ -117,19 +126,55 @@ fun MatchScoutingScaffold(
 }
 
 @Composable
+fun MatchScoutingInfoBar(
+    scoutingViewModel: ScoutingViewModel,
+    gameSection: String
+) {
+    val matchNumber by scoutingViewModel.matchNumber.collectAsState()
+    var team by remember { mutableStateOf("") }
+    var teamName by remember { mutableStateOf("") }
+
+    LaunchedEffect(matchNumber) {
+        team = scoutingViewModel.getCurrentTeam()
+        teamName = getTeamNameByNumber(team)
+    }
+
+    Row(
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(text = "Scouting $gameSection", style = MaterialTheme.typography.headlineLarge)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TagsAndWarnings.MatchNumberTag(matchNumber, "qm") //TODO: Make this adaptively change by match type
+            TagsAndWarnings.RobotAssignmentTag(scoutingViewModel.deviceRobotAssignment)
+        }
+    }
+    Row(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp).fillMaxWidth().height(32.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Image(
+            bitmap = getTeamAvatar(team),
+            contentDescription = "Team Avatar",
+            modifier = Modifier.size(32.dp)
+        )
+        Text(team, style = MaterialTheme.typography.bodyLarge)
+        VerticalDivider(color = MaterialTheme.colorScheme.outline)
+        Text(teamName, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
 fun ScoutAutoScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()).padding(top = 8.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(text = "Scouting Auto", style = MaterialTheme.typography.headlineLarge)
-            TagsAndWarnings.RobotAssignmentPill(scoutingViewModel.deviceRobotAssignment)
-        }
+        MatchScoutingInfoBar(scoutingViewModel, gameSection = "Auto")
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -192,13 +237,7 @@ fun ScoutTeleopScreen(scoutingViewModel: ScoutingViewModel, modifier: Modifier =
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(text = "Scouting Teleop", style = MaterialTheme.typography.headlineLarge)
-            TagsAndWarnings.RobotAssignmentPill(scoutingViewModel.deviceRobotAssignment)
-        }
+        MatchScoutingInfoBar(scoutingViewModel, gameSection = "Teleop")
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -268,13 +307,7 @@ fun ScoutEndgameScreen(navController: NavController, scoutingViewModel: Scouting
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(text = "Scouting Endgame", style = MaterialTheme.typography.headlineLarge)
-            TagsAndWarnings.RobotAssignmentPill(scoutingViewModel.deviceRobotAssignment)
-        }
+        MatchScoutingInfoBar(scoutingViewModel, gameSection = "Endgame")
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
