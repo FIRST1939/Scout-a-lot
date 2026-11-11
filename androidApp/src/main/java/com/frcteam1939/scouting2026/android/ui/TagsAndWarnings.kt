@@ -34,7 +34,7 @@ fun Tag(
 
 object TagsAndWarnings {
     @Composable
-    fun RobotAssignmentPill(
+    fun RobotAssignmentTag(
         deviceRobotAssignment: String?
     ) {
         var robotAssignmentPillColor = MaterialTheme.colorScheme.surfaceVariant

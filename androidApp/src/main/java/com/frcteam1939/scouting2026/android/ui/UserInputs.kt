@@ -423,7 +423,7 @@ object UserInputs {
             )
         }
     }
-    
+
     @Composable
     fun OutlinedButtonTextBarInput(
         text: String,
