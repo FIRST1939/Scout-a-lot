@@ -133,7 +133,7 @@ fun ScoutMatchesScreen(navController: NavController, scoutingViewModel: Scouting
         )
 
         if (flipCount.intValue >= 4) {
-            Text("👿 Don't play with me. 👿", color = MaterialTheme.colorScheme.tertiary)
+            Text("👿 Don't play with me. 👿", color = MaterialTheme.colorScheme.error)
         }
 
         Image(

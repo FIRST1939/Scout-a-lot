@@ -54,7 +54,7 @@ fun ChecklistScreen(navController: NavController, checklistViewModel: ChecklistV
                         }
                     },
                     icon = Icons.Default.Refresh,
-                    buttonText = "Refresh"
+                    buttonText = "Refresh",
                 )
             }
         }

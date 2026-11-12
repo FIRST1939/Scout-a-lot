@@ -274,8 +274,8 @@ object UserInputs {
         onClick: () -> Unit,
         text: String,
         modifier: Modifier = Modifier,
-        containerColor: Color = MaterialTheme.colorScheme.tertiary,
-        contentColor: Color = MaterialTheme.colorScheme.secondary,
+        containerColor: Color = MaterialTheme.colorScheme.error,
+        contentColor: Color = MaterialTheme.colorScheme.onError,
         shape: Shape = MaterialTheme.shapes.small
     ) {
         TextButton(
@@ -299,7 +299,10 @@ object UserInputs {
         maxVal: Int,
         modifier: Modifier = Modifier,
         // valueRange: ClosedFloatingPointRange<Int>,
-        colors: SliderColors = SliderDefaults.colors()
+        colors: SliderColors = SliderDefaults.colors(
+            activeTickColor = MaterialTheme.colorScheme.primaryContainer,
+            inactiveTrackColor = MaterialTheme.colorScheme.primaryContainer
+        )
     ) {
         require(minVal <= maxVal) { "minVal must be <= maxVal" }
 

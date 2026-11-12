@@ -34,7 +34,7 @@ fun Tag(
 
 object TagsAndWarnings {
     @Composable
-    fun RobotAssignmentPill(
+    fun RobotAssignmentTag(
         deviceRobotAssignment: String?
     ) {
         var robotAssignmentPillColor = MaterialTheme.colorScheme.surfaceVariant
@@ -54,6 +54,26 @@ object TagsAndWarnings {
             text = deviceRobotAssignment ?: "Unassigned",
             color = robotAssignmentPillColor,
             contentColor = robotAssignmentPillContentColor
+        )
+    }
+
+    @Composable
+    fun MatchNumberTag(
+        matchNumber: String,
+        matchType: String
+    ) {
+        val matchTypeText = when (matchType) {
+            "f" -> "Finals"
+            "sf" -> "Semifinals"
+            "qf" -> "Quarterfinals"
+            "qm" -> "Quals"
+            else -> "Match"
+        }
+
+        Tag(
+            text = "$matchTypeText $matchNumber",
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

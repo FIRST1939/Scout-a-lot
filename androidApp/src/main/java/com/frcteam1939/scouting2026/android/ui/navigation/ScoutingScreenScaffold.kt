@@ -74,13 +74,13 @@ fun ScoutingScaffold(
                                         .onPrimary,
                                 indicatorColor =
                                     MaterialTheme.colorScheme
-                                        .secondary,
+                                        .primaryContainer,
                                 unselectedIconColor =
                                     MaterialTheme.colorScheme
-                                        .secondary,
+                                        .onPrimary,
                                 unselectedTextColor =
                                     MaterialTheme.colorScheme
-                                        .secondary,
+                                        .onPrimary,
                             )
                     )
                 }

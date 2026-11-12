@@ -10,8 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.frcteam1939.scouting2026.android.ScoutingApp
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
-import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
-import com.frcteam1939.scouting2026.android.ui.screens.SelectScreen
+
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
@@ -41,18 +40,6 @@ fun ScoutingAppPreview() {
 @Composable
 fun OperatorScreenPreview() {
     PreviewSurface { OperatorScreen(navController = rememberNavController()) }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun SavedScreenPreview() {
-    PreviewSurface { SavedScreen(navController = rememberNavController()) }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun SelectScreenPreview() {
-    PreviewSurface { SelectScreen(navController = rememberNavController()) }
 }
 
 @Composable

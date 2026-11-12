@@ -182,7 +182,7 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
                 } else {
                     Text(
                         text = "Quals Matches: Not Loaded.",
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
 
@@ -194,7 +194,7 @@ fun EditEventsScreen(navController: NavController, settingsViewModel: SettingsVi
                 } else {
                     Text(
                         text = "Playoff Matches: Not Loaded.",
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
             }

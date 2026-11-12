@@ -25,59 +25,9 @@ fun OperatorScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "This is for operators.. One pint! 😂😂",
+            " // TODO: operator settings....",
             style = MaterialTheme.typography.headlineMedium
         )
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            UserInputs.TextButtonInput(
-                onClick = {},
-                text = "Create a set",
-                modifier = Modifier.padding(all = 10.dp),
-            )
-            UserInputs.TextButtonInput(
-                onClick = dropUnlessResumed { navController.navigate(AppRoutes.Settings.SELECT) },
-                text = "Edit Forms",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Text(text = "Selected: sigmaboi2026 (match scout)")
-            UserInputs.TextButtonInput(
-                onClick = dropUnlessResumed { navController.navigate(AppRoutes.Settings.SAVED) },
-                text = "Saved Sets",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-        UserInputs.TextButtonInput(onClick = { navController.popBackStack() }, text = "Go Back")
     }
 }
 
-@Composable
-// shows all created sets to manage
-fun SavedScreen(navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            "You can see and manage saved ones . . at one pint",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        UserInputs.TextButtonInput(onClick = { navController.popBackStack() }, text = "Go Back")
-    }
-}
-
-@Composable
-// this is where you select a set that the scouter will use
-fun SelectScreen(navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("You will select here. . at one pint")
-        UserInputs.TextButtonInput(onClick = { navController.popBackStack() }, text = "Go Back")
-    }
-}

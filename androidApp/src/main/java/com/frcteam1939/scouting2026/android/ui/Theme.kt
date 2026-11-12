@@ -28,6 +28,7 @@ data class ScoutColors(
     val allianceBlue: Color,
     val onAllianceBlue: Color,
     val blueText: Color,
+    val redText: Color,
 )
 
 private val LightScoutColors = ScoutColors(
@@ -38,6 +39,7 @@ private val LightScoutColors = ScoutColors(
     allianceBlue = Color(214, 227, 255),
     onAllianceBlue = Color(14, 47, 102),
     blueText = Color(31, 91, 174),
+    redText = Color(177, 38, 28)
 )
 
 private val DarkScoutColors = ScoutColors(
@@ -48,6 +50,7 @@ private val DarkScoutColors = ScoutColors(
     allianceBlue = Color(14, 47, 102),
     onAllianceBlue = Color(214, 227, 255),
     blueText = Color(168, 199, 250),
+    redText = Color(253, 178, 167)
 )
 
 private val LocalScoutColors = staticCompositionLocalOf { LightScoutColors }

@@ -35,14 +35,12 @@ import com.frcteam1939.scouting2026.android.ui.screens.EditPitFormsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchReportsScreen
 import com.frcteam1939.scouting2026.android.ui.screens.MatchScoutingScaffold
 import com.frcteam1939.scouting2026.android.ui.screens.OperatorScreen
-import com.frcteam1939.scouting2026.android.ui.screens.SavedScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutAutoScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutEndgameScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutMatchesScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutPitForm
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutPitScreen
 import com.frcteam1939.scouting2026.android.ui.screens.ScoutTeleopScreen
-import com.frcteam1939.scouting2026.android.ui.screens.SelectScreen
 import com.frcteam1939.scouting2026.android.ui.screens.SettingsScreen
 import com.frcteam1939.scouting2026.android.feature.sync.ui.FileSyncScreen
 import com.frcteam1939.scouting2026.android.feature.sync.ui.SyncScreen
@@ -332,20 +330,10 @@ fun AppNavigationHost(
                     OperatorScreen(navController)
                 }
             }
-            composable(AppRoutes.Settings.SELECT) {
-                SubScreenScaffold(navController) {
-                    SelectScreen(navController)
-                }
-            }
-            composable(AppRoutes.Settings.SAVED) {
-                SubScreenScaffold(navController) {
-                    SavedScreen(navController)
-                }
             }
         }
         }
     }
-}
 
 @Composable
 fun getScoutingViewModel(
